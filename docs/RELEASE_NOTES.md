@@ -2,6 +2,8 @@
 
 Initial public research snapshot.
 
+**No license is granted for the code or model weights.** Public visibility and downloading do not authorize reuse, modification, redistribution, commercial use, or derivative work. See `RIGHTS.md`.
+
 Included:
 
 - Stage 1–3.6 source and configuration files;
