@@ -10,4 +10,4 @@ GitHub's platform terms may provide the limited rights required for GitHub to ho
 
 Datasets used in the experiments are not distributed here and remain subject to their own ownership, access, citation, and usage conditions.
 
-For permission or collaboration requests, contact `92454508+plHXeF@users.noreply.github.com`.
+For permission or collaboration requests, contact the author through the [GitHub profile](https://github.com/plHXeF) or send a direct message through a social profile linked there.

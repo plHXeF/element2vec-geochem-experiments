@@ -14,6 +14,34 @@ The detailed state of every stage is in [EXPERIMENT_STATUS.md](EXPERIMENT_STATUS
 - [Multiscale PCA subspace report](stage3_6_element2vec_space_exploration/subspace_audit/reports/subspace_exploration_report.md)
 - [Experiment × dimension matrix](stage3_6_element2vec_space_exploration/subspace_audit/reports/experiment_dimension_matrix.csv)
 
+## Representative results
+
+These figures summarize the current evidence; they are not standalone proof. The linked reports define the metrics, baselines, bootstrap procedures, and confounder controls.
+
+### Breadth-first audit: positive and negative outcomes were both retained
+
+![Experiment outcomes by family](stage3_6_element2vec_space_exploration/reports/figures/status_by_family.png)
+
+The original experiment registry preserves weak, negative, confounded, and technically failed results alongside positive ones. Idealized process trajectories account for many positive outcomes, while static element semantics and sample–label alignment remain much less convincing. A status here describes a prespecified experiment metric, not geological generalization by itself.
+
+### Clearest low-rank recovery: single-element perturbation directions
+
+![Single-element perturbation consistency across dimensions](stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/F2_single_element_jacobian.png)
+
+The single-element finite-difference/Jacobian experiment is the one strict low-rank recovery in the current replay: PCA64 and PCA32 improve direction consistency relative to both FULL and matched random projections, with bootstrap support. The PCA3/PCA2 values should not be interpreted alone because very small random projections have broad, projection-sensitive ranges.
+
+### Compression removes nuisance signal and geological signal together
+
+![Sample-neighborhood signals across dimensions](stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/sample_signal_dimension_curve.png)
+
+Source, reference, and missingness neighborhood structure generally weaken under aggressive compression, but rock-type structure also weakens. This argues against treating PCA2/PCA3 as a clean geological space: dimensionality reduction changes the balance of signals rather than simply deleting nuisance structure.
+
+### Principal components mix geology, chemistry, and acquisition history
+
+![Semantic attribution of contextual-mean principal components](stage3_6_element2vec_space_exploration/subspace_audit/figures/pc_attribution/contextual_mean_pc_attribution.png)
+
+The leading contextual-mean PCs respond to overlapping geological, compositional, source, missingness, and token-count variables. The mixed attribution motivates nuisance-aware evaluation and held-out source tests instead of assigning a single geological meaning to each dominant axis.
+
 ## Repository map
 
 ```text
@@ -128,4 +156,4 @@ Read [AGENTS.md](AGENTS.md) before changing or rerunning the project. It records
 
 ## Citation and contact
 
-This is a personal, staged experiment by `plHXeF`, not a stable library or a peer-reviewed software release. For permission or collaboration requests, contact `92454508+plHXeF@users.noreply.github.com`.
+This is a personal, staged experiment by `plHXeF`, not a stable library or a peer-reviewed software release. For permission or collaboration requests, contact the author through the [GitHub profile](https://github.com/plHXeF) or send a direct message through a social profile linked there.
