@@ -5,19 +5,38 @@
   "files": [
     {
       "name": "decoders.pt",
-      "sha256": "50ea31a13e95edc3f154395fcc0751b69a4c56067546e73b2fcf4b1a76b897d4"
+      "size": 398101,
+      "sha256": "50ea31a13e95edc3f154395fcc0751b69a4c56067546e73b2fcf4b1a76b897d4",
+      "assets": ["decoders.pt"]
     },
     {
       "name": "full_model.pt",
-      "sha256": "1d9210c0db29f243193df23bd434e98d169a1fe112e87c8809b4b3716397bd1e"
+      "size": 1041807213,
+      "sha256": "1d9210c0db29f243193df23bd434e98d169a1fe112e87c8809b4b3716397bd1e",
+      "assets": [
+        "full_model.pt.part-000", "full_model.pt.part-001", "full_model.pt.part-002",
+        "full_model.pt.part-003", "full_model.pt.part-004", "full_model.pt.part-005",
+        "full_model.pt.part-006", "full_model.pt.part-007", "full_model.pt.part-008",
+        "full_model.pt.part-009", "full_model.pt.part-010", "full_model.pt.part-011",
+        "full_model.pt.part-012", "full_model.pt.part-013", "full_model.pt.part-014",
+        "full_model.pt.part-015"
+      ]
     },
     {
       "name": "token_projector.pt",
-      "sha256": "3e5b6bfb487e66d59523fb9c1fccde8c3460bc67b0254a480d327e036ce15ca4"
+      "size": 6317317,
+      "sha256": "3e5b6bfb487e66d59523fb9c1fccde8c3460bc67b0254a480d327e036ce15ca4",
+      "assets": ["token_projector.pt"]
     },
     {
       "name": "transformer_encoder.pt",
-      "sha256": "40445719c14a2a3223e3ddfd5e03b9ea5d0d2005a71a1e84ad9ab7e5db545173"
+      "size": 340270567,
+      "sha256": "40445719c14a2a3223e3ddfd5e03b9ea5d0d2005a71a1e84ad9ab7e5db545173",
+      "assets": [
+        "transformer_encoder.pt.part-000", "transformer_encoder.pt.part-001",
+        "transformer_encoder.pt.part-002", "transformer_encoder.pt.part-003",
+        "transformer_encoder.pt.part-004", "transformer_encoder.pt.part-005"
+      ]
     }
   ]
 }

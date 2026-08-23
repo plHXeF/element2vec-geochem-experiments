@@ -20,6 +20,8 @@ Destination:
 stage3_5_element2vec_v2/outputs/checkpoints/
 ```
 
+The two small files are direct Release assets. The full model and Transformer encoder are stored as ordered 64 MiB parts because large single-request uploads were unreliable on the publication connection. The fetch script downloads the parts and reconstructs the original files automatically.
+
 ## Files
 
 - `full_model.pt`: complete step-13,200 training state, including model, optimizer, scheduler, config, and vocabulary state. Use this for resuming or exact model reconstruction.
@@ -31,7 +33,7 @@ The component files are convenience exports, not four independently trained mode
 
 ## Integrity
 
-Checksums and byte sizes are recorded in `docs/checkpoint_manifest.json`. The fetch script verifies every file before moving it into place. If an existing file has the wrong checksum, the script stops unless `--force` is supplied.
+Checksums, byte sizes, and ordered asset names are recorded in `docs/checkpoint_manifest.json`. The fetch script verifies each reconstructed file before moving it into place. If an existing file has the wrong checksum, the script stops unless `--force` is supplied.
 
 PyTorch checkpoints use Python/pickle-based serialization. Load only the files published by this repository and verify checksums first. Prefer `map_location="cpu"` when auditing on an unknown machine.
 

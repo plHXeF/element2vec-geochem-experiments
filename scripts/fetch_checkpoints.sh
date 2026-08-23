@@ -29,12 +29,28 @@ fi
 
 mkdir -p "$DEST"
 
+download_asset() {
+  local name="$1"
+  local target="$2"
+  local temporary="$target.download"
+  local url="https://github.com/$REPO/releases/download/$TAG/$name"
+
+  if [[ -f "$target" ]]; then
+    echo "Using existing part $name"
+    return
+  fi
+  echo "Downloading $name"
+  curl --fail --location --retry 5 --retry-all-errors --output "$temporary" "$url"
+  mv "$temporary" "$target"
+}
+
 download_one() {
   local name="$1"
   local expected="$2"
+  shift 2
   local target="$DEST/$name"
-  local temporary="$target.part"
-  local url="https://github.com/$REPO/releases/download/$TAG/$name"
+  local temporary="$target.assembling"
+  local part_dir="$DEST/.${name}.parts"
 
   if [[ -f "$target" ]]; then
     local existing
@@ -49,8 +65,16 @@ download_one() {
     fi
   fi
 
-  echo "Downloading $name"
-  curl --fail --location --retry 3 --output "$temporary" "$url"
+  mkdir -p "$part_dir"
+  local asset
+  for asset in "$@"; do
+    download_asset "$asset" "$part_dir/$asset"
+  done
+
+  : > "$temporary"
+  for asset in "$@"; do
+    cat "$part_dir/$asset" >> "$temporary"
+  done
   local actual
   actual="$(hash_file "$temporary")"
   if [[ "$actual" != "$expected" ]]; then
@@ -60,12 +84,24 @@ download_one() {
     exit 1
   fi
   mv "$temporary" "$target"
+  rm -rf "$part_dir"
   echo "Verified $name"
 }
 
-download_one "decoders.pt" "50ea31a13e95edc3f154395fcc0751b69a4c56067546e73b2fcf4b1a76b897d4"
-download_one "full_model.pt" "1d9210c0db29f243193df23bd434e98d169a1fe112e87c8809b4b3716397bd1e"
-download_one "token_projector.pt" "3e5b6bfb487e66d59523fb9c1fccde8c3460bc67b0254a480d327e036ce15ca4"
-download_one "transformer_encoder.pt" "40445719c14a2a3223e3ddfd5e03b9ea5d0d2005a71a1e84ad9ab7e5db545173"
+download_one "decoders.pt" "50ea31a13e95edc3f154395fcc0751b69a4c56067546e73b2fcf4b1a76b897d4" \
+  "decoders.pt"
+download_one "full_model.pt" "1d9210c0db29f243193df23bd434e98d169a1fe112e87c8809b4b3716397bd1e" \
+  "full_model.pt.part-000" "full_model.pt.part-001" "full_model.pt.part-002" \
+  "full_model.pt.part-003" "full_model.pt.part-004" "full_model.pt.part-005" \
+  "full_model.pt.part-006" "full_model.pt.part-007" "full_model.pt.part-008" \
+  "full_model.pt.part-009" "full_model.pt.part-010" "full_model.pt.part-011" \
+  "full_model.pt.part-012" "full_model.pt.part-013" "full_model.pt.part-014" \
+  "full_model.pt.part-015"
+download_one "token_projector.pt" "3e5b6bfb487e66d59523fb9c1fccde8c3460bc67b0254a480d327e036ce15ca4" \
+  "token_projector.pt"
+download_one "transformer_encoder.pt" "40445719c14a2a3223e3ddfd5e03b9ea5d0d2005a71a1e84ad9ab7e5db545173" \
+  "transformer_encoder.pt.part-000" "transformer_encoder.pt.part-001" \
+  "transformer_encoder.pt.part-002" "transformer_encoder.pt.part-003" \
+  "transformer_encoder.pt.part-004" "transformer_encoder.pt.part-005"
 
 echo "All Element2Vec V2 checkpoints are ready in $DEST"

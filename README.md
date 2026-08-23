@@ -109,7 +109,7 @@ Long training is intentionally not hidden behind a one-command bootstrap. Monito
 
 ## Checkpoints
 
-The small Stage 3 prototype checkpoint is stored directly in the repository. The four Element2Vec V2 files are GitHub Release assets because the full model is about 1 GB. `scripts/fetch_checkpoints.sh` downloads them into the exact path expected by the configs and verifies SHA-256 checksums. See [docs/CHECKPOINTS.md](docs/CHECKPOINTS.md).
+The small Stage 3 prototype checkpoint is stored directly in the repository. The four Element2Vec V2 files are distributed through GitHub Release assets; the two large files are split into ordered 64 MiB parts for transfer reliability. `scripts/fetch_checkpoints.sh` downloads/reassembles them into the exact path expected by the configs and verifies SHA-256 checksums. See [docs/CHECKPOINTS.md](docs/CHECKPOINTS.md).
 
 ## Known limitations
 
