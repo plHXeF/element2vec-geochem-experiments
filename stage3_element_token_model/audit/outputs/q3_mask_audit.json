@@ -1,0 +1,4 @@
+{
+  "joint_mask_leak_detected": false,
+  "severity": "NOT DETECTED in this run (but bug exists in code — probabilistic)"
+}

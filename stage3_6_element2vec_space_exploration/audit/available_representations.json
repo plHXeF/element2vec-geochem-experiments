@@ -1,0 +1,108 @@
+{
+  "checkpoint_files": [
+    {
+      "file": "stage3_5_element2vec_v2/outputs/checkpoints/decoders.pt",
+      "size_mb": 0.37965869903564453
+    },
+    {
+      "file": "stage3_5_element2vec_v2/outputs/checkpoints/full_model.pt",
+      "size_mb": 993.5447816848755
+    },
+    {
+      "file": "stage3_5_element2vec_v2/outputs/checkpoints/token_projector.pt",
+      "size_mb": 6.024662971496582
+    },
+    {
+      "file": "stage3_5_element2vec_v2/outputs/checkpoints/transformer_encoder.pt",
+      "size_mb": 324.5073003768921
+    }
+  ],
+  "numeric_tag_embedding": {
+    "available": true,
+    "shape": [
+      35,
+      509
+    ]
+  },
+  "pure_label_embedding": {
+    "available": true,
+    "shape": [
+      96,
+      509
+    ]
+  },
+  "projected_token": {
+    "available": true,
+    "shape_per_token": [
+      768
+    ],
+    "source": "model.encode()['projected_tokens']"
+  },
+  "contextual_token": {
+    "available": true,
+    "shape_per_token": [
+      768
+    ],
+    "source": "model.encode()['encoded'][:,1:]"
+  },
+  "sample_cls": {
+    "available": true,
+    "shape_per_sample": [
+      768
+    ]
+  },
+  "sample_mean_numeric": {
+    "available": true,
+    "shape_per_sample": [
+      768
+    ]
+  },
+  "sample_projected_mean_numeric": {
+    "available": true,
+    "shape_per_sample": [
+      768
+    ]
+  },
+  "pooling": [
+    "CLS",
+    "mean_numeric_contextual",
+    "mean_numeric_projected"
+  ],
+  "input_modes": [
+    "numeric_only",
+    "masked_labels",
+    "visible_labels_control"
+  ],
+  "unavailable_model_inputs": {
+    "isotopes": [
+      "sr87_sr86",
+      "epsilon_nd",
+      "epsilon_hf",
+      "pb206_pb204",
+      "pb207_pb204",
+      "pb208_pb204"
+    ],
+    "typical_missing_numeric_tags": [
+      "Cs",
+      "Hf",
+      "Ta",
+      "Pr",
+      "Sm",
+      "Eu",
+      "Gd",
+      "Dy",
+      "Er",
+      "Lu",
+      "Mo",
+      "W",
+      "Ho"
+    ],
+    "pure_label_fields": [
+      "tectonic_setting",
+      "alteration",
+      "province",
+      "suite",
+      "locality"
+    ]
+  }
+}

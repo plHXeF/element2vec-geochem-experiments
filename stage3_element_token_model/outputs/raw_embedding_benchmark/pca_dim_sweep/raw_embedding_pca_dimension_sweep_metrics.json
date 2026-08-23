@@ -1,0 +1,227 @@
+[
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 8,
+    "n_features": 476,
+    "cumulative_variance": 0.755052924156189,
+    "knn15": 0.9079540584554727,
+    "kmeans_ari": 0.15868415605315148,
+    "kmeans_nmi": 0.2700554029627876
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 9,
+    "n_features": 476,
+    "cumulative_variance": 0.7890728712081909,
+    "knn15": 0.9174337876060684,
+    "kmeans_ari": 0.16247984319653053,
+    "kmeans_nmi": 0.27240848056398603
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 10,
+    "n_features": 476,
+    "cumulative_variance": 0.8195384740829468,
+    "knn15": 0.9236050398560041,
+    "kmeans_ari": 0.16379558470369748,
+    "kmeans_nmi": 0.2732873670175016
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 11,
+    "n_features": 476,
+    "cumulative_variance": 0.844349205493927,
+    "knn15": 0.9264249592868775,
+    "kmeans_ari": 0.16272492836279004,
+    "kmeans_nmi": 0.2713518217248264
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 12,
+    "n_features": 476,
+    "cumulative_variance": 0.8662009835243225,
+    "knn15": 0.9270935116139539,
+    "kmeans_ari": 0.16349316303362746,
+    "kmeans_nmi": 0.27265367617740255
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 13,
+    "n_features": 476,
+    "cumulative_variance": 0.8860782980918884,
+    "knn15": 0.9278906316962372,
+    "kmeans_ari": 0.14441974426908477,
+    "kmeans_nmi": 0.2877375783252017
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 14,
+    "n_features": 476,
+    "cumulative_variance": 0.9052053689956665,
+    "knn15": 0.92922773635039,
+    "kmeans_ari": 0.14354636437800802,
+    "kmeans_nmi": 0.28782308149479396
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 15,
+    "n_features": 476,
+    "cumulative_variance": 0.9209752082824707,
+    "knn15": 0.9289191737378932,
+    "kmeans_ari": 0.14554765394941882,
+    "kmeans_nmi": 0.2895939593148141
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 16,
+    "n_features": 476,
+    "cumulative_variance": 0.9360434412956238,
+    "knn15": 0.9292191651667095,
+    "kmeans_ari": 0.14631954425934982,
+    "kmeans_nmi": 0.2906361801502738
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 17,
+    "n_features": 476,
+    "cumulative_variance": 0.9493277072906494,
+    "knn15": 0.9290305991257393,
+    "kmeans_ari": 0.14446530012030426,
+    "kmeans_nmi": 0.28690547814897566
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 18,
+    "n_features": 476,
+    "cumulative_variance": 0.9612157940864563,
+    "knn15": 0.9288677466358104,
+    "kmeans_ari": 0.14428918689860445,
+    "kmeans_nmi": 0.2856703064016536
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 19,
+    "n_features": 476,
+    "cumulative_variance": 0.9704256057739258,
+    "knn15": 0.929613439616011,
+    "kmeans_ari": 0.1452599027960119,
+    "kmeans_nmi": 0.2871114038067515
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 20,
+    "n_features": 476,
+    "cumulative_variance": 0.9777296781539917,
+    "knn15": 0.9296477243507328,
+    "kmeans_ari": 0.14465368627430142,
+    "kmeans_nmi": 0.28666637648815274
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 21,
+    "n_features": 476,
+    "cumulative_variance": 0.9827390909194946,
+    "knn15": 0.9296905802691352,
+    "kmeans_ari": 0.1442030758788564,
+    "kmeans_nmi": 0.28597790502599457
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 22,
+    "n_features": 476,
+    "cumulative_variance": 0.9869239330291748,
+    "knn15": 0.9295620125139282,
+    "kmeans_ari": 0.14432267787418662,
+    "kmeans_nmi": 0.2861958222944091
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 23,
+    "n_features": 476,
+    "cumulative_variance": 0.9905984401702881,
+    "knn15": 0.9294591583097626,
+    "kmeans_ari": 0.1443612379441229,
+    "kmeans_nmi": 0.2861229721028297
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 24,
+    "n_features": 476,
+    "cumulative_variance": 0.9933013319969177,
+    "knn15": 0.9295020142281649,
+    "kmeans_ari": 0.14492202137189736,
+    "kmeans_nmi": 0.2872399784420416
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 25,
+    "n_features": 476,
+    "cumulative_variance": 0.9957762956619263,
+    "knn15": 0.9296905802691352,
+    "kmeans_ari": 0.14152543399346493,
+    "kmeans_nmi": 0.2813175327054242
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 26,
+    "n_features": 476,
+    "cumulative_variance": 0.997635006904602,
+    "knn15": 0.9296648667180938,
+    "kmeans_ari": 0.1445106401620909,
+    "kmeans_nmi": 0.2863317429360353
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 27,
+    "n_features": 476,
+    "cumulative_variance": 0.9985097646713257,
+    "knn15": 0.9296391531670524,
+    "kmeans_ari": 0.14420868054983982,
+    "kmeans_nmi": 0.28599695224567206
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 28,
+    "n_features": 476,
+    "cumulative_variance": 0.9991453289985657,
+    "knn15": 0.9295705836976086,
+    "kmeans_ari": 0.14425867485367475,
+    "kmeans_nmi": 0.2861470932357023
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 29,
+    "n_features": 476,
+    "cumulative_variance": 0.9991679787635803,
+    "knn15": 0.9295705836976086,
+    "kmeans_ari": 0.14425867485367475,
+    "kmeans_nmi": 0.2861470932357023
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 30,
+    "n_features": 476,
+    "cumulative_variance": 0.9991894364356995,
+    "knn15": 0.9295705836976086,
+    "kmeans_ari": 0.14425867485367475,
+    "kmeans_nmi": 0.2861470932357023
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 31,
+    "n_features": 476,
+    "cumulative_variance": 0.9992103576660156,
+    "knn15": 0.9295705836976086,
+    "kmeans_ari": 0.14425867485367475,
+    "kmeans_nmi": 0.2861470932357023
+  },
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "dim": 32,
+    "n_features": 476,
+    "cumulative_variance": 0.9992288947105408,
+    "knn15": 0.9295705836976086,
+    "kmeans_ari": 0.14425867485367475,
+    "kmeans_nmi": 0.2861470932357023
+  }
+]

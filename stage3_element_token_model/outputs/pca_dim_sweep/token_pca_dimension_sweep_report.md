@@ -1,0 +1,40 @@
+# Stage 3 PCA Dimension Sweep
+
+Scan range: PCA dimensions 8 to 32.
+
+Spaces:
+
+- `sample_input_token_flat`
+- `sample_encoded_token_flat`
+- `transformer_latent_label_masked_mean_element`
+
+Metrics:
+
+- cumulative explained variance
+- kNN15 label purity
+- KMeans ARI
+- KMeans NMI
+
+The vertical dashed line in the figures marks 12 dimensions, because the previous Stage3 benchmark used PCA12 for the flattened token matrices.
+
+## Summary
+
+| space_name | n_features | dim12_variance | dim12_knn15 | dim12_kmeans_ari | dim12_kmeans_nmi | max_dim | maxdim_variance | maxdim_knn15 | maxdim_kmeans_ari | maxdim_kmeans_nmi | knn15_gap_maxdim_minus_12 | ari_gap_maxdim_minus_12 | nmi_gap_maxdim_minus_12 | best_knn15 | best_knn15_dim | best_kmeans_ari | best_kmeans_ari_dim | best_kmeans_nmi | best_kmeans_nmi_dim |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| sample_input_token_flat | 896 | 0.7824222445487976 | 0.9284391874517871 | 0.1736566720692255 | 0.3416139056788869 | 32 | 0.9695811867713928 | 0.934799005742693 | 0.17482590102442305 | 0.3398617712874085 | 0.0063598182909059275 | 0.0011692289551975543 | -0.001752134391478366 | 0.934799005742693 | 32 | 0.19189456079121853 | 8 | 0.3547477947101212 | 8 |
+| sample_encoded_token_flat | 896 | 0.6891704201698303 | 0.9456329819148024 | 0.21648725740592448 | 0.4704414972673196 | 32 | 0.8246074318885803 | 0.9556269820862261 | 0.21625004136692125 | 0.4697447674364013 | 0.009994000171423711 | -0.00023721603900322963 | -0.0006967298309182857 | 0.9556269820862261 | 29 | 0.21667263132448245 | 20 | 0.4704414972673196 | 12 |
+| transformer_latent_label_masked_mean_element | 64 | 0.914399266242981 | 0.9429159166880946 | 0.2984907372033913 | 0.49917443576395915 | 32 | 0.9866023659706116 | 0.9484957572640782 | 0.3212627349390475 | 0.5146993086842687 | 0.005579840575983597 | 0.02277199773565619 | 0.015524872920309574 | 0.9485214708151196 | 31 | 0.34595013454564494 | 24 | 0.5232106550241371 | 24 |
+
+
+## Reading On Whether 12D Is Too Small
+
+- `sample_input_token_flat`: 12D is close to the upper scan range for the tracked metrics.
+- `sample_encoded_token_flat`: 12D is close to the upper scan range for the tracked metrics.
+- `transformer_latent_label_masked_mean_element`: 12D is close to the upper scan range for the tracked metrics.
+
+## Outputs
+
+- `token_pca_dimension_sweep_metrics.csv`
+- `token_pca_dimension_sweep_summary.csv`
+- `figures/*_comparison.png/.svg`
+- `figures/*_pca_dim_sweep.png/.svg`

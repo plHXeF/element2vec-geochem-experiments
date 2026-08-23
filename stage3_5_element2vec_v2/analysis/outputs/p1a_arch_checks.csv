@@ -1,0 +1,24 @@
+﻿check,actual,expected,ok,note
+label_embedding_dim,509.0,509.0,True,config 中设定 509 → 凑到 512
+label_emb + value + mask_tag + mask_value,512.0,512.0,True,509+1+1+1=512
+token_input_dim matches,512.0,512.0,True,config 中设定 512
+projector input = token_input_dim,512.0,512.0,True,projector 接收 512
+projector hidden,768.0,768.0,True,隐藏层 = d_model
+projector output = d_model,768.0,768.0,True,输出 = 768
+CLS as nn.Parameter,,,True,
+"CLS init N(0, 0.02)",,,True,合理的 ViT/BERT 风格初始化
+CLS prepend to tokens,,,True,CLS 在序列最前
+CLS attention_mask=1,,,True,CLS 对所有位置可见
+attention_mask 正确拼接,,,True,CLS mask + padding mask
+随机 shuffle 已启用,,,True,数据级别的置换不变性
+shuffle 后 mask_position 重新映射,,,True,从 old_i → new_i 正确映射
+mask_positions + 1 (skip CLS),,,True,"CLS 在 index 0, 所以 token positions 需要 +1"
+使用 torch.arange 做 batch indexing,,,True,正确的高级索引
+numeric_value_decoder Linear(d_model → 1),,,True,输出标量用于 Huber 回归
+numeric_tag_decoder Linear(768 → 35),,,True,34+1 分类
+pure_label_decoder[rock_group] Linear(768 → 4),,,True,包含 [MASK] token
+pure_label_decoder[rock_origin] Linear(768 → 10),,,True,包含 [MASK] token
+pure_label_decoder[rock_type] Linear(768 → 82),,,True,包含 [MASK] token
+use_positional_embedding = false,,,True,纯置换不变设计
+TransformerEncoder 无额外位置编码,,,True,仅包装 nn.TransformerEncoder
+build_model 显式移除 use_positional_embedding,,,True,避免传入 TransformerEncoder

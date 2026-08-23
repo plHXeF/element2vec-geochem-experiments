@@ -1,0 +1,14 @@
+# Core packages. Stage 3 was written to avoid extra downloads where possible.
+numpy
+pandas
+scikit-learn
+matplotlib
+
+# Required for the token Transformer training.
+torch
+
+# Optional. Scripts use fallbacks when these are unavailable.
+xgboost
+umap-learn
+plotly
+PyYAML

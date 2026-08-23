@@ -1,0 +1,11 @@
+﻿risk,evidence,required_mitigation
+Full-data label supervision,The checkpoint used rock_group/origin/type both as visible inputs and prediction targets. Chemistry-only inference removes direct tokens but not weight-level target exposure.,Treat fixed-latent label metrics as decodability; use fold-specific or disjoint pretraining for generalization.
+Publication and analytical-panel structure,Source kNN purity is about 0.94–0.96 even for mask-only and random encoders on the controlled subset.,Every neighborhood result must report source/reference and mask-only controls.
+Computed rock_type,rock_type is derived from database chemistry and is hierarchically coupled to rock_origin/group.,Do not interpret label separability as independent geological discovery.
+Missingness semantics,"Missing fields create no token, so the set itself reveals analytical coverage. Random 30% token removal reduces encoded-mean cosine to about 0.33.",Evaluate realistic analytical panels and explicitly model censoring/detection limits.
+Sparse external geology,"Tectonic setting, alteration, locality, province, suite, metamorphic grade, and most isotope targets are absent or sparse.",Acquire explicit group metadata before process-level claims.
+Incomplete element vocabulary,"Only La, Ce, Nd, Yb among REE and no Hf, Ta, Cs, Pr, Eu, Ho, Mo, W tags.",Static periodic/REE conclusions are coverage-limited.
+Synthetic process assumptions,"Mixing, melting, weathering, and alteration scans use declared broad proxies, not calibrated petrological simulators.",Use natural suites or documented physical models for second-round tests.
+CIPW approximation,The current norm is an NNLS stoichiometric proxy and can admit non-unique/mutually incompatible phases.,Validate a strict CIPW implementation before mineral-specific claims.
+Single final checkpoint,"No epoch checkpoints exist, so representation stability across training time cannot be tested.",Save periodic checkpoints in future runs.
+Low-dimensional methods,PCA is auxiliary; UMAP is unavailable and SpectralEmbedding crashed in native code.,Base claims on high-dimensional metrics and isolate future graph/UMAP environments.

@@ -1,0 +1,235 @@
+﻿experiment_id,experiment_name,family,representation_level,metric_name,is_primary_metric,full_metric_value,metric_range_across_dimensions,normalized_metric_range,smallest_dimension_within_full_tolerance,within_full_tolerance_fraction,varies_across_dimensions
+A1_periodic_properties,Periodic and chemical property readability,A,static numeric-tag embedding,mean_delta_cv_r2_vs_random,False,0.0034785878474565407,0.02093931038422879,1.0469655192114395,2.0,1.0,True
+A1_periodic_properties,Periodic and chemical property readability,A,static numeric-tag embedding,mean_trained_distance_spearman,False,0.015575211154858602,0.0249448806002038,1.24724403001019,3.0,0.2222222222222222,True
+A1_periodic_properties,Periodic and chemical property readability,A,static numeric-tag embedding,pca_variance_first3[0],False,0.04398730769753456,0.4793078191578388,10.896502746966336,32.0,0.4444444444444444,True
+A1_periodic_properties,Periodic and chemical property readability,A,static numeric-tag embedding,pca_variance_first3[1],False,0.04262518510222435,0.45529116317629814,10.681271226961528,32.0,0.4444444444444444,True
+A1_periodic_properties,Periodic and chemical property readability,A,static numeric-tag embedding,pca_variance_first3[2],False,0.041923943907022476,0.2890697382390499,6.895098869518076,32.0,0.5,True
+A1_periodic_properties,Periodic and chemical property readability,A,static numeric-tag embedding,primary::mean_delta_cv_r2_vs_random,True,0.0034785878474565,0.0209393103842287,1.0469655192114349,2.0,1.0,True
+A1_periodic_properties,Periodic and chemical property readability,A,static numeric-tag embedding,properties_tested,False,8.0,0.0,0.0,2.0,1.0,False
+A2_geochemical_affinity,Geochemical affinity and expected element neighbors,A,static numeric-tag embedding,available_expected_pairs,False,7.0,0.0,0.0,2.0,1.0,False
+A2_geochemical_affinity,Geochemical affinity and expected element neighbors,A,static numeric-tag embedding,combined_primary_effect,False,-0.0008577611224317453,0.06784329715608223,3.3921648578041115,3.0,0.7777777777777778,True
+A2_geochemical_affinity,Geochemical affinity and expected element neighbors,A,static numeric-tag embedding,mean_group_effect_delta,False,-0.0017155222448634905,0.04145301097535266,2.072650548767633,3.0,0.8888888888888888,True
+A2_geochemical_affinity,Geochemical affinity and expected element neighbors,A,static numeric-tag embedding,primary::combined_pair_and_group_effect,True,-0.0008577611224317,0.0678432971560822,3.3921648578041097,3.0,0.7777777777777778,True
+A2_geochemical_affinity,Geochemical affinity and expected element neighbors,A,static numeric-tag embedding,random_expected_pair_mrr,False,0.15733564680933101,0.15762968239162228,1.0018688427464095,,0.0,True
+A2_geochemical_affinity,Geochemical affinity and expected element neighbors,A,static numeric-tag embedding,trained_expected_pair_mrr,False,0.15733564680933101,0.19335724439411073,1.2289474655952117,2.0,0.3333333333333333,True
+A2_geochemical_affinity,Geochemical affinity and expected element neighbors,A,static numeric-tag embedding,unavailable_expected_pairs,False,5.0,0.0,0.0,2.0,1.0,False
+A3_ree_sequence,Available REE sequence structure,A,static numeric-tag embedding,primary::abs_pc1_atomic_number_spearman,True,0.3999999999999999,0.2,0.5000000000000001,2.0,0.4444444444444444,True
+A3_ree_sequence,Available REE sequence structure,A,static numeric-tag embedding,random_abs_pc1_atomic_number_rho,False,0.19999999999999998,0.19999999999999998,1.0,5.0,0.3333333333333333,True
+A3_ree_sequence,Available REE sequence structure,A,static numeric-tag embedding,trained_abs_pc1_atomic_number_rho,False,0.39999999999999997,0.19999999999999998,0.5,2.0,0.4444444444444444,True
+B1_numeric_trajectories,Single-field numeric MLP trajectories,B,MLP-projected numeric token,fields,False,34.0,0.0,0.0,2.0,1.0,False
+B1_numeric_trajectories,Single-field numeric MLP trajectories,B,MLP-projected numeric token,median_outer_to_center_step_ratio,False,0.4646329191533006,0.0847058459194241,0.18230702653136016,16.0,0.5555555555555556,True
+B1_numeric_trajectories,Single-field numeric MLP trajectories,B,MLP-projected numeric token,median_random_pc1_monotonicity,False,1.0,0.0,0.0,2.0,1.0,False
+B1_numeric_trajectories,Single-field numeric MLP trajectories,B,MLP-projected numeric token,median_trained_pc1_monotonicity,False,1.0,0.0,0.0,2.0,1.0,False
+B1_numeric_trajectories,Single-field numeric MLP trajectories,B,MLP-projected numeric token,median_trained_straightness,False,0.8229577713268101,0.09069419834139025,0.11020516665778479,5.0,0.7777777777777778,True
+B1_numeric_trajectories,Single-field numeric MLP trajectories,B,MLP-projected numeric token,primary::median_pc1_monotonicity,True,1.0,0.0,0.0,2.0,1.0,False
+B2_absolute_relative,Absolute versus relative two-token changes,B,mean of MLP-projected tokens,mean_random_ratio_to_common_displacement,False,0.6077460567438636,0.36980199568921723,0.6084811107957075,16.0,0.5555555555555556,True
+B2_absolute_relative,Absolute versus relative two-token changes,B,mean of MLP-projected tokens,mean_trained_ratio_to_common_displacement,False,0.46344572668338535,0.12611819195213958,0.2721315241262337,64.0,0.3333333333333333,True
+B2_absolute_relative,Absolute versus relative two-token changes,B,mean of MLP-projected tokens,primary::ratio_to_common_displacement,True,0.4634457266833853,0.12611819195213964,0.2721315241262338,64.0,0.3333333333333333,True
+B3_numeric_scale_consistency,Cross-field numeric encoding consistency,B,MLP-projected numeric token,combined_consistency_gain,False,-0.10527492411294587,0.2121472102057973,2.015173242758093,64.0,0.3333333333333333,True
+B3_numeric_scale_consistency,Cross-field numeric encoding consistency,B,MLP-projected numeric token,primary::combined_direction_and_scale_consistency_gain,True,-0.1052749241129458,0.2121472102057972,2.0151732427580935,64.0,0.3333333333333333,True
+B3_numeric_scale_consistency,Cross-field numeric encoding consistency,B,MLP-projected numeric token,random_direction_mean_cosine,False,0.4499519987286554,0.2726443583481585,0.6059409873020195,64.0,0.3333333333333333,True
+B3_numeric_scale_consistency,Cross-field numeric encoding consistency,B,MLP-projected numeric token,random_displacement_cv,False,0.07297582179307938,0.391442246735096,5.363999159132706,64.0,0.3333333333333333,True
+B3_numeric_scale_consistency,Cross-field numeric encoding consistency,B,MLP-projected numeric token,trained_direction_mean_cosine,False,0.8607711557195112,0.10513744906993217,0.1221433227302426,16.0,0.5555555555555556,True
+B3_numeric_scale_consistency,Cross-field numeric encoding consistency,B,MLP-projected numeric token,trained_displacement_cv,False,0.5890699028968811,0.01616525650024414,0.02744200038186967,2.0,1.0,True
+B4_detection_limit_unavailable,Detection-limit trajectory audit,B,numeric token,available,False,0.0,0.0,0.0,2.0,1.0,False
+B4_detection_limit_unavailable,Detection-limit trajectory audit,B,numeric token,primary::available,True,0.0,0.0,0.0,2.0,1.0,False
+C1_same_value_context,Same value in different rock backgrounds,C,projected versus contextual token,fields_tested,False,6.0,0.0,0.0,2.0,1.0,False
+C1_same_value_context,Same value in different rock backgrounds,C,projected versus contextual token,mean_contextual_gain,False,0.5210638619261413,0.4788146755351676,0.9189174504737342,32.0,0.4444444444444444,True
+C1_same_value_context,Same value in different rock backgrounds,C,projected versus contextual token,mean_contextual_score,False,0.9421435721909921,0.44461051181773364,0.4719137559722181,32.0,0.4444444444444444,True
+C1_same_value_context,Same value in different rock backgrounds,C,projected versus contextual token,mean_projected_score,False,0.42107971026485075,0.04809567522566721,0.1142198829656646,2.0,1.0,True
+C1_same_value_context,Same value in different rock backgrounds,C,projected versus contextual token,primary::mean_contextual_background_probe_gain,True,0.942143572190992,0.4446105118177338,0.4719137559722183,32.0,0.4444444444444444,True
+C2_element_role_proxies,Contextual element-role proxy branches,C,projected versus contextual token,mean_contextual_gain,False,0.22117721217055525,0.2176239319397872,0.9839346911198609,64.0,0.2222222222222222,True
+C2_element_role_proxies,Contextual element-role proxy branches,C,projected versus contextual token,primary::mean_contextual_role_proxy_gain,True,0.2211772121705552,0.2176239319397871,0.9839346911198606,64.0,0.2222222222222222,True
+C2_element_role_proxies,Contextual element-role proxy branches,C,projected versus contextual token,role_proxies,False,7.0,0.0,0.0,2.0,1.0,False
+C3_contextual_neighbors,Contextual token neighborhood controls,C,projected versus contextual token,geology_gain,False,0.13092549019607844,0.12897156862745096,0.9850760797939254,64.0,0.3333333333333333,True
+C3_contextual_neighbors,Contextual token neighborhood controls,C,projected versus contextual token,geology_minus_source_gain,False,0.0029627450980392045,0.016318627450980394,0.8159313725490197,2.0,1.0,True
+C3_contextual_neighbors,Contextual token neighborhood controls,C,projected versus contextual token,mean_contextual_gains.reference_purity,False,0.07278039215686274,0.07557647058823529,1.038418018212188,64.0,0.3333333333333333,True
+C3_contextual_neighbors,Contextual token neighborhood controls,C,projected versus contextual token,mean_contextual_gains.rock_group_purity,False,0.06968823529411766,0.06767450980392158,0.9711037956163303,32.0,0.4444444444444444,True
+C3_contextual_neighbors,Contextual token neighborhood controls,C,projected versus contextual token,mean_contextual_gains.rock_type_purity,False,0.1921627450980392,0.1906921568627451,0.9923471730457231,64.0,0.3333333333333333,True
+C3_contextual_neighbors,Contextual token neighborhood controls,C,projected versus contextual token,mean_contextual_gains.source_purity,False,0.1831450980392157,0.18427450980392154,1.0061667594535564,64.0,0.3333333333333333,True
+C3_contextual_neighbors,Contextual token neighborhood controls,C,projected versus contextual token,primary::geology_minus_source_neighbor_gain,True,0.1309254901960784,0.1289715686274509,0.9850760797939252,64.0,0.3333333333333333,True
+C3_contextual_neighbors,Contextual token neighborhood controls,C,projected versus contextual token,source_gain,False,0.12796274509803923,0.1299254901960784,1.0153384103829237,64.0,0.3333333333333333,True
+D1_rock_continuity,Rock classes and continuous transitions,D,sample pooled latent,encoded_minus_raw,False,0.12924444444444444,0.2235777777777778,1.7298830811554335,16.0,0.5555555555555556,True
+D1_rock_continuity,Rock classes and continuous transitions,D,sample pooled latent,encoded_pca_first3_variance[0],False,0.10036623477935791,0.5006405324675143,4.988137032021847,,0.0,True
+D1_rock_continuity,Rock classes and continuous transitions,D,sample pooled latent,encoded_pca_first3_variance[1],False,0.07355008274316788,0.48654565354809165,6.615161199030565,16.0,0.1111111111111111,True
+D1_rock_continuity,Rock classes and continuous transitions,D,sample pooled latent,encoded_pca_first3_variance[2],False,0.056324552744627,0.32008909014984965,5.682940645816031,16.0,0.125,True
+D1_rock_continuity,Rock classes and continuous transitions,D,sample pooled latent,encoded_rock_type_knn15,False,0.39966666666666667,0.2235777777777778,0.5594106199610787,16.0,0.5555555555555556,True
+D1_rock_continuity,Rock classes and continuous transitions,D,sample pooled latent,primary::rock_type_knn15,True,0.3996666666666666,0.2235777777777778,0.5594106199610788,16.0,0.5555555555555556,True
+D1_rock_continuity,Rock classes and continuous transitions,D,sample pooled latent,raw_rock_type_knn15,False,0.27042222222222223,0.0,0.0,2.0,1.0,False
+D1_rock_continuity,Rock classes and continuous transitions,D,sample pooled latent,sample_size,False,3000.0,0.0,0.0,2.0,1.0,False
+D2_local_geological_neighbors,Local-neighborhood geology versus source,D,sample pooled latent,encoded_geology_purity_mean,False,0.6114888888888889,0.15072222222222226,0.2464839917142131,8.0,0.6666666666666666,True
+D2_local_geological_neighbors,Local-neighborhood geology versus source,D,sample pooled latent,encoded_source_reference_purity_mean,False,0.3396111111111111,0.1958222222222222,0.5766072304923933,16.0,0.5555555555555556,True
+D2_local_geological_neighbors,Local-neighborhood geology versus source,D,sample pooled latent,net_gain_after_source_purity,False,-0.2724777777777777,0.05639999999999995,0.20698935693022863,16.0,0.5555555555555556,True
+D2_local_geological_neighbors,Local-neighborhood geology versus source,D,sample pooled latent,primary::geology_neighbor_purity,True,0.6114888888888889,0.15072222222222226,0.2464839917142131,8.0,0.6666666666666666,True
+D2_local_geological_neighbors,Local-neighborhood geology versus source,D,sample pooled latent,raw_geology_purity_mean,False,0.5443555555555555,0.0,0.0,2.0,1.0,False
+D3_global_axes,Global linear and nonlinear latent directions,D,sample pooled latent,mean_best_axis_abs_rho_encoded,False,0.4766679156219372,0.42565912423304747,0.8929888299229548,3.0,0.2222222222222222,True
+D3_global_axes,Global linear and nonlinear latent directions,D,sample pooled latent,mean_best_axis_abs_rho_raw,False,0.6048527077253905,0.0,0.0,2.0,1.0,False
+D3_global_axes,Global linear and nonlinear latent directions,D,sample pooled latent,primary::mean_best_axis_abs_spearman,True,0.4766679156219372,0.4256591242330475,0.8929888299229549,3.0,0.2222222222222222,True
+D3_global_axes,Global linear and nonlinear latent directions,D,sample pooled latent,sample_size,False,6000.0,0.0,0.0,2.0,1.0,False
+D3b_nonlinear_axis_failure,Nonlinear spectral-axis scan,D,sample pooled latent,exit_code,False,139.0,0.0,0.0,2.0,1.0,False
+D3b_nonlinear_axis_failure,Nonlinear spectral-axis scan,D,sample pooled latent,primary::technical_success,True,0.0,0.0,0.0,2.0,1.0,False
+D3b_nonlinear_axis_failure,Nonlinear spectral-axis scan,D,sample pooled latent,sample_size,False,2000.0,0.0,0.0,2.0,1.0,False
+D4_geographic_neighbors,Geographic proximity in latent neighborhoods,D,sample latent,encoded_median_neighbor_km,False,5933.294275534066,2864.826317447004,0.48283907461999864,16.0,0.5555555555555556,True
+D4_geographic_neighbors,Geographic proximity in latent neighborhoods,D,sample latent,encoded_minus_raw_km,False,-82.29414253100731,2864.826317447004,34.81203193006813,128.0,0.1111111111111111,True
+D4_geographic_neighbors,Geographic proximity in latent neighborhoods,D,sample latent,primary::median_geographic_neighbor_distance_km,True,5933.294275534066,2864.826317447004,0.48283907461999864,16.0,0.5555555555555556,True
+D4_geographic_neighbors,Geographic proximity in latent neighborhoods,D,sample latent,raw_median_neighbor_km,False,6015.588418065074,0.0,0.0,2.0,1.0,False
+D5_external_isotopes_age,External isotope and age readability,D,sample latent,mean_latent_grouped_r2,False,0.2554215641328802,0.26701034166585036,1.0453711791027214,16.0,0.1111111111111111,True
+D5_external_isotopes_age,External isotope and age readability,D,sample latent,mean_raw_grouped_r2,False,0.17836269943248406,0.0,0.0,2.0,1.0,False
+D5_external_isotopes_age,External isotope and age readability,D,sample latent,primary::external_isotope_age_grouped_r2,True,0.2554215641328802,0.2670103416658503,1.0453711791027211,16.0,0.1111111111111111,True
+D5_external_isotopes_age,External isotope and age readability,D,sample latent,targets_with_coverage,False,1.0,0.0,0.0,2.0,1.0,False
+E1_two_endmember_mixing,Linear and closed two-endmember mixing,E,chemistry-only encoded sample latent,closure_straightness_delta,False,-0.005487911702105247,0.04439734765406697,2.2198673827033484,2.0,0.7777777777777778,True
+E1_two_endmember_mixing,Linear and closed two-endmember mixing,E,chemistry-only encoded sample latent,mean_parameter_monotonicity,False,0.9613636363636363,0.2209415584415585,0.22982100641675116,5.0,0.6666666666666666,True
+E1_two_endmember_mixing,Linear and closed two-endmember mixing,E,chemistry-only encoded sample latent,mean_straightness,False,0.35371480556716184,0.15020464503603792,0.42464901856509285,32.0,0.4444444444444444,True
+E1_two_endmember_mixing,Linear and closed two-endmember mixing,E,chemistry-only encoded sample latent,paths,False,8.0,0.0,0.0,2.0,1.0,False
+E1_two_endmember_mixing,Linear and closed two-endmember mixing,E,chemistry-only encoded sample latent,primary::mean_mixing_parameter_monotonicity,True,0.9613636363636364,0.22094155844155838,0.22982100641675102,5.0,0.6666666666666666,True
+E2_multiendmember_simplex,Three-endmember mixture topology,E,chemistry-only encoded sample latent,barycentric_vs_latent_distance_spearman,False,0.9200104878490165,0.4277275038770186,0.46491589990136417,16.0,0.5555555555555556,True
+E2_multiendmember_simplex,Three-endmember mixture topology,E,chemistry-only encoded sample latent,primary::simplex_distance_rank_preservation,True,0.9200104878490164,0.42772750387701847,0.4649158999013641,16.0,0.5555555555555556,True
+E2_multiendmember_simplex,Three-endmember mixture topology,E,chemistry-only encoded sample latent,pvalue,False,0.0,3.855181221684729e-133,1.9275906108423646e-131,2.0,1.0,False
+E2_multiendmember_simplex,Three-endmember mixture topology,E,chemistry-only encoded sample latent,simplex_points,False,66.0,0.0,0.0,2.0,1.0,False
+E3_magmatic_differentiation,Natural magmatic differentiation sequences,E,chemistry-only class-centroid latent,mean_sequence_monotonicity,False,0.8499999999999999,0.5999999999999999,0.7058823529411764,,0.0,True
+E3_magmatic_differentiation,Natural magmatic differentiation sequences,E,chemistry-only class-centroid latent,primary::natural_sequence_monotonicity,True,0.8499999999999999,0.5999999999999999,0.7058823529411764,,0.0,True
+E3_magmatic_differentiation,Natural magmatic differentiation sequences,E,chemistry-only class-centroid latent,sequences,False,2.0,0.0,0.0,2.0,1.0,False
+E3_magmatic_differentiation,Natural magmatic differentiation sequences,E,chemistry-only class-centroid latent,volcanic_plutonic_endpoint_direction_cosine,False,0.8349698233010279,0.060520830298201767,0.07248265579100152,2.0,1.0,True
+E4_partial_melting,Simplified batch-melting paths,E,chemistry-only encoded sample latent,branches,False,4.0,0.0,0.0,2.0,1.0,False
+E4_partial_melting,Simplified batch-melting paths,E,chemistry-only encoded sample latent,mean_melt_fraction_monotonicity,False,1.0,0.17321428571428577,0.17321428571428577,3.0,0.8888888888888888,True
+E4_partial_melting,Simplified batch-melting paths,E,chemistry-only encoded sample latent,mean_straightness,False,0.8002240967473003,0.18801309918310116,0.2349505594087016,2.0,0.8888888888888888,True
+E4_partial_melting,Simplified batch-melting paths,E,chemistry-only encoded sample latent,primary::melt_fraction_monotonicity,True,1.0,0.17321428571428577,0.17321428571428577,3.0,0.8888888888888888,True
+E5_weathering_sediment,Weathering and K-metasomatism proxies,E,chemistry-only encoded sample latent,leaching_vs_k_metasomatism_direction_cosine,False,0.7475299967780368,0.21808805721184277,0.291744890709181,32.0,0.4444444444444444,True
+E5_weathering_sediment,Weathering and K-metasomatism proxies,E,chemistry-only encoded sample latent,mean_weathering_monotonicity,False,1.0,0.05259740259740253,0.05259740259740253,2.0,1.0,True
+E5_weathering_sediment,Weathering and K-metasomatism proxies,E,chemistry-only encoded sample latent,primary::weathering_intensity_monotonicity,True,1.0,0.05259740259740242,0.05259740259740242,2.0,1.0,True
+E6_hydrothermal,Hydrothermal alteration proxy paths,E,chemistry-only encoded sample latent,mean_between_style_direction_cosine,False,0.12013470380785514,0.5189562426456312,4.319786258229395,2.0,0.5555555555555556,True
+E6_hydrothermal,Hydrothermal alteration proxy paths,E,chemistry-only encoded sample latent,mean_intensity_monotonicity,False,1.0,0.025490196078431393,0.025490196078431393,2.0,1.0,True
+E6_hydrothermal,Hydrothermal alteration proxy paths,E,chemistry-only encoded sample latent,primary::alteration_proxy_monotonicity,True,1.0,0.025490196078431393,0.025490196078431393,2.0,1.0,True
+E6_hydrothermal,Hydrothermal alteration proxy paths,E,chemistry-only encoded sample latent,styles,False,3.0,0.0,0.0,2.0,1.0,False
+E7_metamorphic,Metamorphic inheritance within matched rock type,E,chemistry-only encoded sample latent,matched_rock_types,False,11.0,0.0,0.0,2.0,1.0,False
+E7_metamorphic,Metamorphic inheritance within matched rock type,E,chemistry-only encoded sample latent,mean_metamorphic_nonmetamorphic_centroid_distance,False,0.11296082239332006,0.17947606691933715,1.5888346341390525,3.0,0.1111111111111111,True
+E7_metamorphic,Metamorphic inheritance within matched rock type,E,chemistry-only encoded sample latent,primary::matched_rock_types,True,11.0,0.0,0.0,2.0,1.0,False
+F1_lithology_perturbation,Compositionally closed rhyolite→basalt perturbation,F,chemistry-only encoded sample latent,mean_alignment,False,0.29253069203106374,0.32289824585813476,1.103809804079793,64.0,0.3333333333333333,True
+F1_lithology_perturbation,Compositionally closed rhyolite→basalt perturbation,F,chemistry-only encoded sample latent,positive_alignment_fraction,False,1.0,0.0,0.0,2.0,1.0,False
+F1_lithology_perturbation,Compositionally closed rhyolite→basalt perturbation,F,chemistry-only encoded sample latent,primary::perturbation_to_class_direction_cosine,True,0.2925306920310637,0.32289824585813476,1.1038098040797932,64.0,0.3333333333333333,True
+F1_lithology_perturbation,Compositionally closed rhyolite→basalt perturbation,F,chemistry-only encoded sample latent,samples,False,100.0,0.0,0.0,2.0,1.0,False
+F2_single_element_jacobian,Single-element finite-difference responses,F,chemistry-only encoded sample latent,backgrounds,False,3.0,0.0,0.0,2.0,1.0,False
+F2_single_element_jacobian,Single-element finite-difference responses,F,chemistry-only encoded sample latent,fields,False,34.0,0.0,0.0,2.0,1.0,False
+F2_single_element_jacobian,Single-element finite-difference responses,F,chemistry-only encoded sample latent,mean_cross_background_direction_cosine,False,0.3949832551803644,0.1489135007084576,0.3770121866063867,128.0,0.2222222222222222,True
+F2_single_element_jacobian,Single-element finite-difference responses,F,chemistry-only encoded sample latent,median_response_norm,False,3.9349215030670166,3.2893480509519577,0.8359374001204659,256.0,0.1111111111111111,True
+F2_single_element_jacobian,Single-element finite-difference responses,F,chemistry-only encoded sample latent,primary::cross_background_single_element_direction_cosine,True,0.3949832551803644,0.1489135007084576,0.3770121866063867,128.0,0.2222222222222222,True
+F3_combined_interventions,Combined geochemical intervention additivity,F,chemistry-only encoded sample latent,backgrounds,False,3.0,0.0,0.0,2.0,1.0,False
+F3_combined_interventions,Combined geochemical intervention additivity,F,chemistry-only encoded sample latent,groups,False,4.0,0.0,0.0,2.0,1.0,False
+F3_combined_interventions,Combined geochemical intervention additivity,F,chemistry-only encoded sample latent,mean_additive_direction_cosine,False,0.9423126178395828,0.03995524148387808,0.04240125912298881,2.0,1.0,True
+F3_combined_interventions,Combined geochemical intervention additivity,F,chemistry-only encoded sample latent,mean_interaction_residual_ratio,False,0.37415802106261253,0.17674677229175967,0.47238536217878496,128.0,0.2222222222222222,True
+F3_combined_interventions,Combined geochemical intervention additivity,F,chemistry-only encoded sample latent,primary::combined_vs_additive_direction_cosine,True,0.9423126178395828,0.03995524148387797,0.04240125912298869,2.0,1.0,True
+F3_combined_interventions,Combined geochemical intervention additivity,F,chemistry-only encoded sample latent,unavailable_interventions,False,2.0,0.0,0.0,2.0,1.0,False
+G1_label_neighbors,Pure-label neighborhoods,G,static pure-label embedding,primary::pure_label_field_knn5_purity,True,0.7763440860215054,0.03870967741935483,0.04986149584487533,2.0,1.0,True
+G1_label_neighbors,Pure-label neighborhoods,G,static pure-label embedding,random_field_knn5_purity,False,0.7720430107526882,0.032258064516129004,0.041782729805013887,2.0,1.0,True
+G1_label_neighbors,Pure-label neighborhoods,G,static pure-label embedding,tokens,False,93.0,0.0,0.0,2.0,1.0,False
+G1_label_neighbors,Pure-label neighborhoods,G,static pure-label embedding,trained_field_knn5_purity,False,0.7763440860215054,0.03870967741935483,0.04986149584487533,2.0,1.0,True
+G2_volcanic_plutonic,Volcanic–plutonic relation vectors,G,MLP-projected pure-label token,available_pairs,False,7.0,0.0,0.0,2.0,1.0,False
+G2_volcanic_plutonic,Volcanic–plutonic relation vectors,G,MLP-projected pure-label token,chance_rank_mrr,False,0.061454629110590894,0.0,0.0,2.0,1.0,False
+G2_volcanic_plutonic,Volcanic–plutonic relation vectors,G,MLP-projected pure-label token,combined_effect,False,0.42581192222034236,0.14181225004276388,0.3330396417819911,3.0,0.5555555555555556,True
+G2_volcanic_plutonic,Volcanic–plutonic relation vectors,G,MLP-projected pure-label token,leave_one_pair_out_mrr,False,0.2688172938172938,0.2010019159178823,0.7477268782212227,2.0,0.7777777777777778,True
+G2_volcanic_plutonic,Volcanic–plutonic relation vectors,G,MLP-projected pure-label token,primary::combined_relation_cohesion_and_mrr,True,0.4258119222203423,0.14181225004276393,0.33303964178199125,3.0,0.5555555555555556,True
+G2_volcanic_plutonic,Volcanic–plutonic relation vectors,G,MLP-projected pure-label token,random_relation_mean_cosine,False,0.00762293949826627,0.12103714874301863,6.0518574371509315,5.0,0.6666666666666666,True
+G2_volcanic_plutonic,Volcanic–plutonic relation vectors,G,MLP-projected pure-label token,trained_relation_mean_cosine,False,0.6518841192322481,0.3349876009046793,0.5138759957815947,32.0,0.4444444444444444,True
+G3_protolith_metamorphic,Protolith–metamorphic relation coverage,G,pure-label vocabulary,available_pairs,False,0.0,0.0,0.0,2.0,1.0,False
+G3_protolith_metamorphic,Protolith–metamorphic relation coverage,G,pure-label vocabulary,prespecified_pairs,False,6.0,0.0,0.0,2.0,1.0,False
+G3_protolith_metamorphic,Protolith–metamorphic relation coverage,G,pure-label vocabulary,primary::available_metamorphic_pairs,True,0.0,0.0,0.0,2.0,1.0,False
+G4_magmatic_sequences,Magmatic evolution label sequences,G,MLP-projected pure-label token,primary::mean_sequence_pc1_monotonicity,True,0.5999999999999999,0.4,0.6666666666666669,3.0,0.4444444444444444,True
+G4_magmatic_sequences,Magmatic evolution label sequences,G,MLP-projected pure-label token,random_mean_monotonicity,False,0.049999999999999996,0.34999999999999987,6.999999999999998,,0.0,True
+G4_magmatic_sequences,Magmatic evolution label sequences,G,MLP-projected pure-label token,sequences,False,2.0,0.0,0.0,2.0,1.0,False
+G4_magmatic_sequences,Magmatic evolution label sequences,G,MLP-projected pure-label token,trained_mean_monotonicity,False,0.5999999999999999,0.3999999999999999,0.6666666666666666,3.0,0.4444444444444444,True
+G5_other_geological_relations,Alkaline–subalkaline relation directions,G,MLP-projected pure-label token,available_pairs,False,3.0,0.0,0.0,2.0,1.0,False
+G5_other_geological_relations,Alkaline–subalkaline relation directions,G,MLP-projected pure-label token,primary::alkaline_relation_cosine,True,0.2371570374470001,0.2890838040607614,1.2189552002030128,3.0,0.4444444444444444,True
+G5_other_geological_relations,Alkaline–subalkaline relation directions,G,MLP-projected pure-label token,random_relation_cosine,False,0.16563525757169065,0.3775802305932143,2.279588513513128,8.0,0.5555555555555556,True
+G5_other_geological_relations,Alkaline–subalkaline relation directions,G,MLP-projected pure-label token,trained_relation_cosine,False,0.23715703744700012,0.2890838040607613,1.2189552002030122,3.0,0.4444444444444444,True
+H1_sample_label_retrieval,Direct sample-to-rock-label retrieval,H,chemistry-only sample latent versus projected label token,chance_top1,False,0.012345679012345678,0.0,0.0,2.0,1.0,False
+H1_sample_label_retrieval,Direct sample-to-rock-label retrieval,H,chemistry-only sample latent versus projected label token,classes,False,81.0,0.0,0.0,2.0,1.0,False
+H1_sample_label_retrieval,Direct sample-to-rock-label retrieval,H,chemistry-only sample latent versus projected label token,mrr,False,0.07536351839247739,0.025356233510975795,0.33645235853939104,2.0,0.4444444444444444,True
+H1_sample_label_retrieval,Direct sample-to-rock-label retrieval,H,chemistry-only sample latent versus projected label token,n,False,3000.0,0.0,0.0,2.0,1.0,False
+H1_sample_label_retrieval,Direct sample-to-rock-label retrieval,H,chemistry-only sample latent versus projected label token,primary::direct_sample_to_label_top1,True,0.0233333333333333,0.011000000000000001,0.47142857142857214,2.0,1.0,True
+H1_sample_label_retrieval,Direct sample-to-rock-label retrieval,H,chemistry-only sample latent versus projected label token,top1,False,0.023333333333333334,0.011,0.47142857142857136,2.0,1.0,True
+H1_sample_label_retrieval,Direct sample-to-rock-label retrieval,H,chemistry-only sample latent versus projected label token,top5,False,0.068,0.03899999999999999,0.5735294117647057,2.0,0.8888888888888888,True
+H2_centroid_label_alignment,Low-capacity label-to-centroid alignment,H,label and sample-centroid spaces,chance_top1,False,0.013333333333333334,0.0,0.0,2.0,1.0,False
+H2_centroid_label_alignment,Low-capacity label-to-centroid alignment,H,label and sample-centroid spaces,classes,False,75.0,0.0,0.0,2.0,1.0,False
+H2_centroid_label_alignment,Low-capacity label-to-centroid alignment,H,label and sample-centroid spaces,leave_one_class_out_top1,False,0.05333333333333334,0.04,0.75,16.0,0.3333333333333333,True
+H2_centroid_label_alignment,Low-capacity label-to-centroid alignment,H,label and sample-centroid spaces,mrr,False,0.1376003664199539,0.07772994075906167,0.564896321001292,32.0,0.1111111111111111,True
+H2_centroid_label_alignment,Low-capacity label-to-centroid alignment,H,label and sample-centroid spaces,primary::leave_one_class_out_alignment_top1,True,0.0533333333333333,0.04,0.7500000000000004,16.0,0.3333333333333333,True
+H2_centroid_label_alignment,Low-capacity label-to-centroid alignment,H,label and sample-centroid spaces,top5,False,0.21333333333333335,0.13333333333333333,0.625,,0.0,True
+H3_cross_space_relations,Cross-space relation preservation,H,label and sample-centroid distance structures,classes,False,75.0,0.0,0.0,2.0,1.0,False
+H3_cross_space_relations,Cross-space relation preservation,H,label and sample-centroid distance structures,cross_space_distance_spearman,False,0.04914232910461787,0.05424007197338813,1.1037342543923345,,0.0,True
+H3_cross_space_relations,Cross-space relation preservation,H,label and sample-centroid distance structures,permutation_p,False,0.02,0.5549999999999999,27.749999999999996,,0.0,True
+H3_cross_space_relations,Cross-space relation preservation,H,label and sample-centroid distance structures,primary::cross_space_relation_distance_spearman,True,0.0491423291046178,0.054240071973387996,1.1037342543923334,,0.0,True
+H3_cross_space_relations,Cross-space relation preservation,H,label and sample-centroid distance structures,spearman_p,False,0.009621853903874995,0.9380942079863033,46.904710399315164,8.0,0.1111111111111111,True
+I0_strict_cipw_unavailable,Strict sequential CIPW norm availability,I,major-oxide composition,primary::technical_success,True,0.0,0.0,0.0,2.0,1.0,False
+I1_normative_readability,CIPW-like normative mineral readability,I,chemistry-only encoded sample latent,mean_latent_cv_r2,False,0.6238620356494634,0.3299355927701158,0.5288598663110518,16.0,0.2222222222222222,True
+I1_normative_readability,CIPW-like normative mineral readability,I,chemistry-only encoded sample latent,mean_raw_major_cv_r2,False,0.7647562829162917,0.0,0.0,2.0,1.0,False
+I1_normative_readability,CIPW-like normative mineral readability,I,chemistry-only encoded sample latent,median_reconstruction_rmse,False,2.580736037345489e-15,0.0,0.0,2.0,1.0,False
+I1_normative_readability,CIPW-like normative mineral readability,I,chemistry-only encoded sample latent,minerals,False,14.0,0.0,0.0,2.0,1.0,False
+I1_normative_readability,CIPW-like normative mineral readability,I,chemistry-only encoded sample latent,primary::mean_normative_mineral_cv_r2,True,0.6238620356494634,0.3299355927701158,0.5288598663110518,16.0,0.2222222222222222,True
+I1_normative_readability,CIPW-like normative mineral readability,I,chemistry-only encoded sample latent,samples,False,2943.0,0.0,0.0,2.0,1.0,False
+I1_normative_readability,CIPW-like normative mineral readability,I,chemistry-only encoded sample latent,strict_cipw,False,0.0,0.0,0.0,2.0,1.0,False
+I2_normative_assemblages,Normative assemblage neighborhood relation,I,chemistry-only encoded sample latent,latent_assemblage_knn15,False,0.8838222222222222,0.2561555555555556,0.28982701397968424,5.0,0.7777777777777778,True
+I2_normative_assemblages,Normative assemblage neighborhood relation,I,chemistry-only encoded sample latent,primary::normative_assemblage_knn15,True,0.8838222222222222,0.2561555555555556,0.28982701397968424,5.0,0.7777777777777778,True
+I2_normative_assemblages,Normative assemblage neighborhood relation,I,chemistry-only encoded sample latent,raw_assemblage_knn15,False,0.9252666666666667,0.0,0.0,2.0,1.0,False
+I2_normative_assemblages,Normative assemblage neighborhood relation,I,chemistry-only encoded sample latent,samples,False,3000.0,0.0,0.0,2.0,1.0,False
+I3_ideal_norm_retrieval,Idealized normative mixture retrieval,I,chemistry-only encoded sample latent,chance_mrr,False,0.06466465164855117,0.0,0.0,2.0,1.0,False
+I3_ideal_norm_retrieval,Idealized normative mixture retrieval,I,chemistry-only encoded sample latent,expected_family_mrr,False,0.65,0.4283882783882784,0.6590588898281207,16.0,0.5555555555555556,True
+I3_ideal_norm_retrieval,Idealized normative mixture retrieval,I,chemistry-only encoded sample latent,ideal_mixtures,False,4.0,0.0,0.0,2.0,1.0,False
+I3_ideal_norm_retrieval,Idealized normative mixture retrieval,I,chemistry-only encoded sample latent,primary::ideal_mixture_expected_family_mrr,True,0.65,0.4283882783882784,0.6590588898281207,16.0,0.5555555555555556,True
+I4_label_residual_norms,Label-aligned residual mineral variation,I,sample latent residual after label mapping,classes,False,35.0,0.0,0.0,2.0,1.0,False
+I4_label_residual_norms,Label-aligned residual mineral variation,I,sample latent residual after label mapping,mean_best_residual_pc_abs_spearman,False,0.2239036516574721,0.21071190632629858,0.9410829379801529,64.0,0.1111111111111111,True
+I4_label_residual_norms,Label-aligned residual mineral variation,I,sample latent residual after label mapping,primary::label_residual_normative_abs_spearman,True,0.2239036516574721,0.21071190632629858,0.9410829379801529,64.0,0.1111111111111111,True
+I4_label_residual_norms,Label-aligned residual mineral variation,I,sample latent residual after label mapping,samples,False,1828.0,0.0,0.0,2.0,1.0,False
+J1_beyond_traditional_indicators,Conditional value beyond traditional indicators,J,chemistry-only encoded sample latent,max_increment,False,0.2095696114436026,0.12584572881986977,0.6004960736100625,32.0,0.2222222222222222,True
+J1_beyond_traditional_indicators,Conditional value beyond traditional indicators,J,chemistry-only encoded sample latent,mean_increment,False,0.1767940810981193,0.11949017761690525,0.6758720477219435,32.0,0.1111111111111111,True
+J1_beyond_traditional_indicators,Conditional value beyond traditional indicators,J,chemistry-only encoded sample latent,primary::mean_balanced_accuracy_increment_over_traditional_indicators,True,0.1767940810981193,0.1194901776169052,0.6758720477219432,32.0,0.1111111111111111,True
+J1_beyond_traditional_indicators,Conditional value beyond traditional indicators,J,chemistry-only encoded sample latent,sample_size,False,6000.0,0.0,0.0,2.0,1.0,False
+J1_beyond_traditional_indicators,Conditional value beyond traditional indicators,J,chemistry-only encoded sample latent,targets,False,3.0,0.0,0.0,2.0,1.0,False
+J2_grouped_increment,Publication-grouped conditional incremental probes,J,sample latent,mean_publication_grouped_increment,False,0.10059029180732276,0.0431365164715605,0.4288337939628111,,0.0,True
+J2_grouped_increment,Publication-grouped conditional incremental probes,J,sample latent,primary::publication_grouped_balanced_accuracy_increment,True,0.1005902918073227,0.0431365164715605,0.42883379396281146,,0.0,True
+J2_grouped_increment,Publication-grouped conditional incremental probes,J,sample latent,targets,False,2.0,0.0,0.0,2.0,1.0,False
+K1_representation_baselines,"Traditional, random, projected, contextual, and pooling baselines",K,all major representation levels,best_traditional_rock_type_knn15,False,0.25106666666666666,0.0,0.0,2.0,1.0,False
+K1_representation_baselines,"Traditional, random, projected, contextual, and pooling baselines",K,all major representation levels,encoded_rock_type_knn15,False,0.4587777777777778,0.35073333333333334,0.7644950351174619,16.0,0.5555555555555556,True
+K1_representation_baselines,"Traditional, random, projected, contextual, and pooling baselines",K,all major representation levels,primary::rock_type_knn15_against_best_traditional,True,0.4587777777777778,0.3507333333333334,0.764495035117462,16.0,0.5555555555555556,True
+K1_representation_baselines,"Traditional, random, projected, contextual, and pooling baselines",K,all major representation levels,random_encoded_rock_type_knn15,False,0.1256,0.06764444444444445,0.5385704175513094,16.0,0.5555555555555556,True
+K1_representation_baselines,"Traditional, random, projected, contextual, and pooling baselines",K,all major representation levels,spaces,False,10.0,0.0,0.0,2.0,1.0,False
+K2_input_mode_stability,Label-input mode and pooling stability,K,sample pooled latent,encoded_numeric_vs_masked_cosine,False,0.9741827952360202,0.0226544173833656,0.02325479108659171,2.0,1.0,True
+K2_input_mode_stability,Label-input mode and pooling stability,K,sample pooled latent,encoded_numeric_vs_visible_cosine,False,0.9344206478525146,0.05005350048782764,0.05356634680843215,2.0,1.0,True
+K2_input_mode_stability,Label-input mode and pooling stability,K,sample pooled latent,poolings,False,3.0,0.0,0.0,2.0,1.0,False
+K2_input_mode_stability,Label-input mode and pooling stability,K,sample pooled latent,primary::numeric_only_vs_masked_label_cosine,True,0.9741827952360202,0.0226544173833656,0.02325479108659171,2.0,1.0,True
+K3_order_dropout_robustness,Permutation invariance and token-dropout robustness,K,chemistry-only encoded sample latent,drop10_mean_cosine,False,0.6171817076895308,0.0,0.0,2.0,1.0,False
+K3_order_dropout_robustness,Permutation invariance and token-dropout robustness,K,chemistry-only encoded sample latent,drop30_mean_cosine,False,0.3287086275206431,0.0,0.0,2.0,1.0,False
+K3_order_dropout_robustness,Permutation invariance and token-dropout robustness,K,chemistry-only encoded sample latent,primary::token_order_invariance_cosine,True,0.9999999999999571,0.0,0.0,2.0,1.0,False
+K3_order_dropout_robustness,Permutation invariance and token-dropout robustness,K,chemistry-only encoded sample latent,samples,False,128.0,0.0,0.0,2.0,1.0,False
+K3_order_dropout_robustness,Permutation invariance and token-dropout robustness,K,chemistry-only encoded sample latent,token_order_mean_cosine,False,0.9999999999999571,0.0,0.0,2.0,1.0,False
+K3_order_dropout_robustness,Permutation invariance and token-dropout robustness,K,chemistry-only encoded sample latent,token_order_min_cosine,False,0.9999999999999295,0.0,0.0,2.0,1.0,False
+K4_checkpoint_sensitivity_unavailable,Checkpoint sensitivity audit,K,all representation levels,available,False,0.0,0.0,0.0,2.0,1.0,False
+K4_checkpoint_sensitivity_unavailable,Checkpoint sensitivity audit,K,all representation levels,primary::available,True,0.0,0.0,0.0,2.0,1.0,False
+K5_umap_parameter_unavailable,UMAP parameter sensitivity audit,K,low-dimensional visualization,available,False,0.0,0.0,0.0,2.0,1.0,False
+K5_umap_parameter_unavailable,UMAP parameter sensitivity audit,K,low-dimensional visualization,primary::available,True,0.0,0.0,0.0,2.0,1.0,False
+X1_context_raw_control,Automatic follow-up: C1 versus raw context under publication grouping,X,contextual token,contextual_minus_raw,False,0.10043786389024412,0.44625699947094655,4.443115197656977,64.0,0.3333333333333333,True
+X1_context_raw_control,Automatic follow-up: C1 versus raw context under publication grouping,X,contextual token,fields,False,6.0,0.0,0.0,2.0,1.0,False
+X1_context_raw_control,Automatic follow-up: C1 versus raw context under publication grouping,X,contextual token,mean_grouped_contextual_score,False,0.9400944393638415,0.44625699947094655,0.4746937975432841,32.0,0.4444444444444444,True
+X1_context_raw_control,Automatic follow-up: C1 versus raw context under publication grouping,X,contextual token,mean_grouped_raw_context_score,False,0.8396565754735974,0.0,0.0,2.0,1.0,False
+X1_context_raw_control,Automatic follow-up: C1 versus raw context under publication grouping,X,contextual token,primary::grouped_background_balanced_accuracy,True,0.9400944393638416,0.44625699947094655,0.47469379754328406,32.0,0.4444444444444444,True
+X2_role_raw_control,Automatic follow-up: contextual role proxies versus raw chemistry,X,contextual token,contextual_minus_raw,False,-0.02479259095387143,0.21771262896639265,8.781358486148712,64.0,0.1111111111111111,True
+X2_role_raw_control,Automatic follow-up: contextual role proxies versus raw chemistry,X,contextual token,mean_contextual_grouped_score,False,0.8285870915597516,0.21771262896639265,0.2627516542124321,32.0,0.4444444444444444,True
+X2_role_raw_control,Automatic follow-up: contextual role proxies versus raw chemistry,X,contextual token,mean_raw_grouped_score,False,0.8533796825136231,0.0,0.0,2.0,1.0,False
+X2_role_raw_control,Automatic follow-up: contextual role proxies versus raw chemistry,X,contextual token,primary::grouped_role_proxy_balanced_accuracy,True,0.8285870915597516,0.21771262896639265,0.2627516542124321,32.0,0.4444444444444444,True
+X2_role_raw_control,Automatic follow-up: contextual role proxies versus raw chemistry,X,contextual token,proxies,False,7.0,0.0,0.0,2.0,1.0,False
+X3_cross_space_relation_followup,Automatic follow-up: volcanic–plutonic relation structure across spaces,X,label relations and chemistry class-centroid relations,label_relation_cohesion,False,0.6518841192322481,0.2986266541748205,0.45809775904117117,256.0,0.1111111111111111,True
+X3_cross_space_relation_followup,Automatic follow-up: volcanic–plutonic relation structure across spaces,X,label relations and chemistry class-centroid relations,pairs,False,7.0,0.0,0.0,2.0,1.0,False
+X3_cross_space_relation_followup,Automatic follow-up: volcanic–plutonic relation structure across spaces,X,label relations and chemistry class-centroid relations,permutation_p,False,0.2,0.795,3.975,256.0,0.1111111111111111,True
+X3_cross_space_relation_followup,Automatic follow-up: volcanic–plutonic relation structure across spaces,X,label relations and chemistry class-centroid relations,primary::cross_space_relation_structure_spearman,True,0.3207792207792208,0.4337662337662337,1.3522267206477732,128.0,0.2222222222222222,True
+X3_cross_space_relation_followup,Automatic follow-up: volcanic–plutonic relation structure across spaces,X,label relations and chemistry class-centroid relations,relation_similarity_matrix_spearman,False,0.3207792207792208,0.4337662337662338,1.3522267206477734,128.0,0.2222222222222222,True
+X3_cross_space_relation_followup,Automatic follow-up: volcanic–plutonic relation structure across spaces,X,label relations and chemistry class-centroid relations,sample_relation_cohesion,False,0.3852722954772572,0.3024799297885882,0.7851068798338854,32.0,0.4444444444444444,True
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",mask_only_source_purity_mean,False,0.9400796296296297,0.0,0.0,2.0,1.0,False
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",net_trained_geology_minus_source_gain,False,0.31548518518518526,0.2546370370370366,0.807128350218944,16.0,0.5555555555555556,True
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",primary::net_geology_over_source_gain_vs_random,True,0.3156166666666667,0.25729629629629625,0.8152177101852338,16.0,0.5555555555555556,True
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",random_rock_type_purity_mean,False,0.10863518518518518,0.05354074074074072,0.49284898487973666,5.0,0.7777777777777778,True
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",random_source_purity_mean,False,0.9585925925925926,0.008833333333333249,0.009214898384977889,2.0,1.0,True
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",sample_sizes[0],False,1000.0,0.0,0.0,2.0,1.0,False
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",sample_sizes[1],False,2000.0,0.0,0.0,2.0,1.0,False
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",sample_sizes[2],False,3000.0,0.0,0.0,2.0,1.0,False
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",seeds,False,3.0,0.0,0.0,2.0,1.0,False
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",trained_rock_type_purity_mean,False,0.4242518518518519,0.3101925925925925,0.7311520061458949,16.0,0.5555555555555556,True
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,"raw mask, random encoder, trained encoder",trained_source_purity_mean,False,0.958724074074074,0.013837037037037314,0.014432762680337389,2.0,1.0,True

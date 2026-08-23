@@ -1,0 +1,44 @@
+﻿experiment_id,experiment_name,family,varying_scalar_metrics,low_rank_preserved_metric_fraction,median_within_full_tolerance_fraction,max_normalized_metric_range
+H3_cross_space_relations,Cross-space relation preservation,H,4,0.25,0.0,46.904710399315164
+D4_geographic_neighbors,Geographic proximity in latent neighborhoods,D,3,0.6666666666666666,0.5555555555555556,34.81203193006813
+A1_periodic_properties,Periodic and chemical property readability,A,6,1.0,0.4722222222222222,10.896502746966336
+X2_role_raw_control,Automatic follow-up: contextual role proxies versus raw chemistry,X,3,0.6666666666666666,0.4444444444444444,8.781358486148712
+G4_magmatic_sequences,Magmatic evolution label sequences,G,3,0.6666666666666666,0.4444444444444444,6.999999999999998
+D1_rock_continuity,Rock classes and continuous transitions,D,6,0.8333333333333334,0.3402777777777778,6.615161199030565
+G2_volcanic_plutonic,Volcanic–plutonic relation vectors,G,5,1.0,0.5555555555555556,6.0518574371509315
+B3_numeric_scale_consistency,Cross-field numeric encoding consistency,B,6,0.3333333333333333,0.3333333333333333,5.363999159132706
+X1_context_raw_control,Automatic follow-up: C1 versus raw context under publication grouping,X,3,0.6666666666666666,0.4444444444444444,4.443115197656977
+E6_hydrothermal,Hydrothermal alteration proxy paths,E,3,1.0,1.0,4.319786258229395
+X3_cross_space_relation_followup,Automatic follow-up: volcanic–plutonic relation structure across spaces,X,5,0.2,0.2222222222222222,3.975
+A2_geochemical_affinity,Geochemical affinity and expected element neighbors,A,5,0.8,0.7777777777777778,3.3921648578041115
+G5_other_geological_relations,Alkaline–subalkaline relation directions,G,3,1.0,0.4444444444444444,2.279588513513128
+E1_two_endmember_mixing,Linear and closed two-endmember mixing,E,4,1.0,0.6666666666666666,2.2198673827033484
+E7_metamorphic,Metamorphic inheritance within matched rock type,E,1,1.0,0.1111111111111111,1.5888346341390525
+F1_lithology_perturbation,Compositionally closed rhyolite→basalt perturbation,F,2,0.0,0.3333333333333333,1.1038098040797932
+D5_external_isotopes_age,External isotope and age readability,D,2,1.0,0.1111111111111111,1.0453711791027214
+C3_contextual_neighbors,Contextual token neighborhood controls,C,8,0.25,0.3333333333333333,1.038418018212188
+A3_ree_sequence,Available REE sequence structure,A,3,1.0,0.4444444444444444,1.0
+C2_element_role_proxies,Contextual element-role proxy branches,C,2,0.0,0.2222222222222222,0.9839346911198609
+I4_label_residual_norms,Label-aligned residual mineral variation,I,2,0.0,0.1111111111111111,0.9410829379801529
+C1_same_value_context,Same value in different rock backgrounds,C,4,1.0,0.4444444444444444,0.9189174504737342
+D3_global_axes,Global linear and nonlinear latent directions,D,2,1.0,0.2222222222222222,0.8929888299229549
+F2_single_element_jacobian,Single-element finite-difference responses,F,3,0.0,0.2222222222222222,0.8359374001204659
+X4_random_missingness_followup,Automatic follow-up: random encoder and missingness/source structure,X,6,1.0,0.6666666666666667,0.8152177101852338
+K1_representation_baselines,"Traditional, random, projected, contextual, and pooling baselines",K,3,1.0,0.5555555555555556,0.764495035117462
+H2_centroid_label_alignment,Low-capacity label-to-centroid alignment,H,4,0.75,0.2222222222222222,0.7500000000000004
+E3_magmatic_differentiation,Natural magmatic differentiation sequences,E,3,0.3333333333333333,0.0,0.7058823529411764
+J1_beyond_traditional_indicators,Conditional value beyond traditional indicators,J,3,1.0,0.1111111111111111,0.6758720477219435
+I3_ideal_norm_retrieval,Idealized normative mixture retrieval,I,2,1.0,0.5555555555555556,0.6590588898281207
+B2_absolute_relative,Absolute versus relative two-token changes,B,3,0.3333333333333333,0.3333333333333333,0.6084811107957075
+D2_local_geological_neighbors,Local-neighborhood geology versus source,D,4,1.0,0.6111111111111112,0.5766072304923933
+H1_sample_label_retrieval,Direct sample-to-rock-label retrieval,H,4,1.0,0.9444444444444444,0.5735294117647057
+I1_normative_readability,CIPW-like normative mineral readability,I,2,1.0,0.2222222222222222,0.5288598663110518
+F3_combined_interventions,Combined geochemical intervention additivity,F,3,0.6666666666666666,1.0,0.47238536217878496
+E2_multiendmember_simplex,Three-endmember mixture topology,E,2,1.0,0.5555555555555556,0.46491589990136417
+J2_grouped_increment,Publication-grouped conditional incremental probes,J,2,0.0,0.0,0.42883379396281146
+E5_weathering_sediment,Weathering and K-metasomatism proxies,E,3,1.0,1.0,0.291744890709181
+I2_normative_assemblages,Normative assemblage neighborhood relation,I,2,1.0,0.7777777777777778,0.28982701397968424
+E4_partial_melting,Simplified batch-melting paths,E,3,1.0,0.8888888888888888,0.2349505594087016
+B1_numeric_trajectories,Single-field numeric MLP trajectories,B,2,1.0,0.6666666666666667,0.18230702653136016
+K2_input_mode_stability,Label-input mode and pooling stability,K,3,1.0,1.0,0.05356634680843215
+G1_label_neighbors,Pure-label neighborhoods,G,3,1.0,1.0,0.04986149584487533

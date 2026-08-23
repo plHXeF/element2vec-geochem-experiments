@@ -1,0 +1,13 @@
+﻿representation,cv_scheme,model,accuracy,balanced_accuracy,macro_f1,weighted_f1,n_samples,note
+raw_robust_z_14,stratified_kfold,xgboost,0.9607868346618668,0.9212604987994292,0.931277096436641,0.9605017920349597,7778,
+raw_robust_z_14,group_kfold,xgboost,0.8739436619718309,0.6512617257882988,0.36240843343789364,0.8599088612570026,4260,3518 samples not predicted because folds were skipped; fold 1 skipped: training fold lacks at least one class; fold 5 skipped: training fold lacks at least one class; group_column=citation
+log_robust_z_14,stratified_kfold,xgboost,0.9607868346618668,0.9212604987994292,0.931277096436641,0.9605017920349597,7778,
+log_robust_z_14,group_kfold,xgboost,0.8739436619718309,0.6512617257882988,0.36240843343789364,0.8599088612570026,4260,3518 samples not predicted because folds were skipped; fold 1 skipped: training fold lacks at least one class; fold 5 skipped: training fold lacks at least one class; group_column=citation
+rank_uniform_z_14,stratified_kfold,xgboost,0.9609154024170738,0.9209973663390715,0.9309978076970208,0.9606391970611695,7778,
+rank_uniform_z_14,group_kfold,xgboost,0.8732394366197183,0.6491249736515466,0.3611263415054104,0.8588883012095101,4260,3518 samples not predicted because folds were skipped; fold 1 skipped: training fold lacks at least one class; fold 5 skipped: training fold lacks at least one class; group_column=citation
+geo_ratio_12,stratified_kfold,xgboost,0.9213165338133196,0.8152966291361695,0.845983419057058,0.919725100574056,7778,
+geo_ratio_12,group_kfold,xgboost,0.7974178403755868,0.44343721267972946,0.23816005001082965,0.7571482579824369,4260,3518 samples not predicted because folds were skipped; fold 1 skipped: training fold lacks at least one class; fold 5 skipped: training fold lacks at least one class; group_column=citation
+geo_balance_12,stratified_kfold,xgboost,0.8864746721522242,0.7476299855705791,0.7930422388644799,0.8800330178918706,7778,
+geo_balance_12,group_kfold,xgboost,0.7518779342723004,0.3849756954521768,0.20293340456521977,0.705210125782423,4260,3518 samples not predicted because folds were skipped; fold 1 skipped: training fold lacks at least one class; fold 5 skipped: training fold lacks at least one class; group_column=citation
+geo_info_12,stratified_kfold,xgboost,0.8400617125224994,0.6957989910088442,0.7356695268426576,0.8346822723939917,7778,
+geo_info_12,group_kfold,xgboost,0.7518779342723004,0.4201605040028986,0.22547599575814373,0.7234625652702191,4260,3518 samples not predicted because folds were skipped; fold 1 skipped: training fold lacks at least one class; fold 5 skipped: training fold lacks at least one class; group_column=citation

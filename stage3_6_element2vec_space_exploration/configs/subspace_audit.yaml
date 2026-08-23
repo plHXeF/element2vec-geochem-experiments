@@ -1,0 +1,64 @@
+base_config: stage3_6_element2vec_space_exploration/configs/exploration.yaml
+
+subspace_audit:
+  output_root: stage3_6_element2vec_space_exploration/subspace_audit
+  seed: 42
+  numerical_dtype: float32
+  main_spaces: [FULL, PCA64, PCA32, PCA3, PCA2]
+  pca_dimensions: [64, 32, 3, 2]
+  random_projection_dimensions: [64, 32, 3, 2]
+  random_projection_seeds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  whitening_dimensions: [64, 32]
+  drop_pc_counts: [1, 2, 5, 10]
+  pca_fit_samples: 8000
+  token_fit_samples: 20000
+  evaluation_samples: 4000
+  bootstrap_repeats: 100
+  basis_bootstrap_repeats: 30
+  neighbor_k: 15
+  replay_existing_main_results: true
+  random_projection_experiment_ids:
+    - A1_periodic_properties
+    - A2_geochemical_affinity
+    - A3_ree_sequence
+    - B1_numeric_trajectories
+    - B2_absolute_relative
+    - B3_numeric_scale_consistency
+    - C1_same_value_context
+    - C2_element_role_proxies
+    - C3_contextual_neighbors
+    - D1_rock_continuity
+    - D2_local_geological_neighbors
+    - D3_global_axes
+    - D4_geographic_neighbors
+    - D5_external_isotopes_age
+    - E1_two_endmember_mixing
+    - E2_multiendmember_simplex
+    - E3_magmatic_differentiation
+    - E4_partial_melting
+    - E5_weathering_sediment
+    - E6_hydrothermal
+    - E7_metamorphic
+    - F1_lithology_perturbation
+    - F2_single_element_jacobian
+    - F3_combined_interventions
+    - G1_label_neighbors
+    - G2_volcanic_plutonic
+    - G4_magmatic_sequences
+    - G5_other_geological_relations
+    - H1_sample_label_retrieval
+    - H2_centroid_label_alignment
+    - H3_cross_space_relations
+    - I1_normative_readability
+    - I2_normative_assemblages
+    - I3_ideal_norm_retrieval
+    - I4_label_residual_norms
+    - J1_beyond_traditional_indicators
+    - J2_grouped_increment
+    - K1_representation_baselines
+    - K2_input_mode_stability
+    - K3_order_dropout_robustness
+    - X1_context_raw_control
+    - X2_role_raw_control
+    - X3_cross_space_relation_followup
+    - X4_random_missingness_followup

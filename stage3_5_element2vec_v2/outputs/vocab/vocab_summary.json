@@ -1,0 +1,11 @@
+{
+  "view_name": "v_high_quality_dataset",
+  "num_samples": 270241,
+  "num_numeric_tags": 34,
+  "num_pure_label_tokens": 96,
+  "pure_label_class_counts": {
+    "rock_group": 3,
+    "rock_origin": 9,
+    "rock_type": 81
+  }
+}

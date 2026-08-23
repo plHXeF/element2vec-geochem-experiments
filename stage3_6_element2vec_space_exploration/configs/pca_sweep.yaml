@@ -1,0 +1,23 @@
+base_config: stage3_6_element2vec_space_exploration/configs/exploration.yaml
+
+pca_sweep:
+  output_root: stage3_6_element2vec_space_exploration/pca_sweep
+  dimensions: [256, 128, 64, 32, 16, 8, 5, 3, 2]
+  max_fit_samples: 12000
+  max_components: 256
+  randomized_iterated_power: 3
+  tolerance_absolute: 0.02
+  tolerance_relative: 0.10
+  low_rank_ceiling: 32
+  lower_is_stronger_experiments:
+    - D4_geographic_neighbors
+  directionless_primary_metrics:
+    - B2_absolute_relative
+    - E7_metamorphic
+  invariant_experiments:
+    - B4_detection_limit_unavailable
+    - D3b_nonlinear_axis_failure
+    - G3_protolith_metamorphic
+    - I0_strict_cipw_unavailable
+    - K4_checkpoint_sensitivity_unavailable
+    - K5_umap_parameter_unavailable

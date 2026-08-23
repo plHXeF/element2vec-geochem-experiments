@@ -1,0 +1,21 @@
+﻿check,ok,actual,expected,note
+task prob sum ≈ 1.0,True,1.0,1.0,实际值: 1.000
+numeric_value 占比 45%,True,0.45,0.45,
+numeric_tag 占比 15%,True,0.15,0.15,
+pure_label 占比 40%,True,0.4,0.4,
+field prob sum ≈ 1.0,True,,,实际: 1.000
+rock_type favored 60%,True,,,最难的任务 → 最高权重
+rock_origin 25%,True,,,
+rock_group 15%,True,,,最简单的 (3类) → 最低权重
+每个样本每 epoch 仅 1 个 mask task,True,,,稀疏训练信号，但在 270K 样本 × 50 epoch 下仍充分
+总训练信号数 = 13.5M,True,,,约 45% 为 value 回归
+Dataset 支持 mask_pure_labels 模式,True,,,所有纯标签替换为 [MASK]
+使用 field-level [MASK] token,True,,,每个 field 有独立 [MASK]
+extract_embeddings 传入 mask_pure_labels=True,True,,,提取时防泄漏
+提取时 model.eval() 关闭 dropout,True,,,确保确定性输出
+token input 包含 mask_value_flags,True,,,告诉模型 value 是否被 mask
+token input 包含 mask_tag_flags,True,,,告诉模型 tag 是否被 mask
+value mask 时设置 mask_value=1,True,,,正确
+tag mask 时设置 mask_tag=1,True,,,正确
+[MASK] index = 34 (last),True,,,35 tags total (34 real + 1 mask)
+"nn.Embedding(n_tags + 1, ...) → 35 rows",True,,,36 行 = 35 tags + 1 [MASK]

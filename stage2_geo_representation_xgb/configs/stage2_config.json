@@ -1,0 +1,43 @@
+{
+  "random_state": 42,
+  "target_column": "type",
+  "class_min_count": 30,
+  "selected_elements": [
+    "As",
+    "Ni",
+    "Cu",
+    "Pb",
+    "Co",
+    "Au",
+    "Ag",
+    "Bi",
+    "Sb",
+    "Zn",
+    "Se",
+    "Te",
+    "Tl",
+    "Mn"
+  ],
+  "umap": {
+    "n_components": 3,
+    "n_neighbors": 30,
+    "min_dist": 0.1
+  },
+  "knn": [15, 30],
+  "pca_max_components": 12,
+  "classification": {
+    "n_splits": 5,
+    "xgboost_n_estimators": 150,
+    "xgboost_max_depth": 3,
+    "xgboost_learning_rate": 0.05,
+    "run_group_cv_if_available": true,
+    "group_column_priority": [
+      "source",
+      "paper",
+      "citation",
+      "deposit",
+      "region"
+    ],
+    "permutation_repeats": 5
+  }
+}

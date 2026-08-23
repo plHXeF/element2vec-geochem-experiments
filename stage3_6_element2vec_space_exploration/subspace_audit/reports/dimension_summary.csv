@@ -1,0 +1,25 @@
+projection_method,status,count
+FULL,Direct subspace diagnostic,21
+FULL,Preserved under compression,2
+FULL,Reference FULL,48
+Not applicable,Not applicable,27
+PCA2,Direct subspace diagnostic,21
+PCA2,High-dimensional dependence,24
+PCA2,Preserved under compression,7
+PCA2,Projection artifact suspected,2
+PCA2,Projection-sensitive,11
+PCA3,Direct subspace diagnostic,21
+PCA3,High-dimensional dependence,22
+PCA3,Preserved under compression,10
+PCA3,Projection artifact suspected,2
+PCA3,Projection-sensitive,10
+PCA32,Direct subspace diagnostic,21
+PCA32,High-dimensional dependence,10
+PCA32,Low-rank semantic recovery,1
+PCA32,Preserved under compression,24
+PCA32,Projection-sensitive,9
+PCA64,Direct subspace diagnostic,21
+PCA64,High-dimensional dependence,8
+PCA64,Low-rank semantic recovery,1
+PCA64,Preserved under compression,25
+PCA64,Projection-sensitive,7

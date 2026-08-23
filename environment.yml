@@ -1,0 +1,22 @@
+name: element2vec-geochem
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - numpy>=1.26,<3
+  - pandas>=2.1,<4
+  - scipy>=1.11,<2
+  - scikit-learn>=1.4,<2
+  - matplotlib>=3.8,<4
+  - seaborn>=0.13,<1
+  - pyyaml>=6,<7
+  - openpyxl>=3.1,<4
+  - pillow>=10,<13
+  - pip:
+      - torch>=2.2,<3
+      - xgboost>=2,<4
+      - umap-learn>=0.5.5,<1
+      - plotly>=5.20,<7
+      - shap>=0.45,<1
+      - hdbscan>=0.8.33,<1

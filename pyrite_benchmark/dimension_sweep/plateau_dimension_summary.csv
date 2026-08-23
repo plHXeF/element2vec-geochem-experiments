@@ -1,0 +1,13 @@
+﻿representation,method,plateau_dim,plateau_metric,max_metric,max_metric_dim,notes
+raw_robust_z,pca,,,0.7426587811776806,10,no plateau found
+raw_robust_z,umap,3.0,0.7078426330676266,0.7136624667866632,11,first 3 consecutive gains < 0.005
+log_robust_z,pca,9.0,0.8939058884031885,0.9041484529013457,12,first 3 consecutive gains < 0.005
+log_robust_z,umap,3.0,0.8958858318333762,0.8997257221222251,12,first 3 consecutive gains < 0.005
+winsor_log_robust_z,pca,,,0.9035398988600326,12,no plateau found
+winsor_log_robust_z,umap,3.0,0.8974115025284992,0.9013542470215137,7,first 3 consecutive gains < 0.005
+rank_uniform_z,pca,,,0.914245307276935,12,no plateau found
+rank_uniform_z,umap,3.0,0.9076540670266564,0.911193965886689,8,first 3 consecutive gains < 0.005
+observed_mask_z,pca,1.0,0.6169966572383646,0.6169966572383646,1,first 3 consecutive gains < 0.005
+observed_mask_z,umap,1.0,0.6625096425816406,0.6648324333590468,2,first 3 consecutive gains < 0.005
+log_plus_mask,pca,8.0,0.8594240164566727,0.9290391703094197,20,first 3 consecutive gains < 0.005
+log_plus_mask,umap,3.0,0.9249507156938374,0.9307276934944716,9,first 3 consecutive gains < 0.005

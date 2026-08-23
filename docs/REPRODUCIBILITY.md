@@ -1,0 +1,82 @@
+# Reproducibility and continuation guide
+
+## Reproduction levels
+
+The repository supports three distinct levels. State which one was used in any report.
+
+1. **Artifact inspection:** clone, download checkpoints, and inspect existing aggregate reports. No dataset is needed.
+2. **Representation replay:** supply the private database/workbook, use the released checkpoint, regenerate caches/latents, and rerun evaluation.
+3. **Training replay:** supply data and retrain from initialization. This is the most hardware- and software-sensitive level.
+
+## Baseline environment
+
+Create the environment from `environment.yml`. The released V2 training was performed with PyTorch on Apple hardware using the available MPS backend. Exact floating-point identity is not expected across MPS, CUDA, and CPU. The project fixes pseudo-random seeds where practical, but low-level kernels may remain nondeterministic.
+
+Record at minimum:
+
+```bash
+python --version
+python -m pip freeze
+python -c "import torch; print(torch.__version__, torch.backends.mps.is_available(), torch.cuda.is_available())"
+git rev-parse HEAD
+```
+
+Also record the private input hash and SQLite view row count without adding either to Git if the hash itself is considered sensitive.
+
+## V2 training audit
+
+Before a long run:
+
+```bash
+python -m stage3_5_element2vec_v2.analysis.scripts.p1a_verify_architecture
+python -m stage3_5_element2vec_v2.analysis.scripts.p1b_verify_masking
+python -m stage3_5_element2vec_v2.analysis.scripts.p1c_verify_data_pipeline
+```
+
+Then run the two-step smoke test from the root README. Long training should be started manually and monitored. Check:
+
+- training and fixed-probe losses;
+- task balance and per-task losses;
+- finite gradients and gradient clipping;
+- device memory after probes and checkpoints;
+- checkpoint hashes and ability to reload on CPU.
+
+## Stage 3.6 replay order
+
+The normal dependency order is:
+
+```text
+audit_project -> extract_cache -> run_experiments -> build_reports -> verify_outputs
+                                      |
+                                      +-> run_pca_sweep -> build/verify PCA report
+                                      +-> run_subspace_replay -> build/verify subspace report
+```
+
+Caches, fitting pools, projection bases, and sample-level outputs are intentionally absent from the public repository. They are reproducible local artifacts and must remain ignored.
+
+## Frozen subspace protocol
+
+- Fit PCA only on the declared reference/fitting pool.
+- Transform evaluation samples; do not use test labels to fit or select PCA.
+- Use the same maximum-rank PCA basis and truncate it for nested dimensions where the implementation specifies this.
+- Required primary spaces: FULL, PCA64, PCA32, PCA3, PCA2 when native rank permits.
+- Use ten fixed random orthogonal projections per target dimension for the main random baseline.
+- Apply L2 normalization only where the original cosine experiment used it.
+- Do not manufacture unavailable dimensions by zero padding or repeated coordinates.
+- For cross-space experiments, use one joint basis or a training-only alignment map with held-out validation.
+
+## Historical outputs versus regenerated outputs
+
+Published CSV/Markdown/figures are a frozen snapshot. A fresh run may differ because of package versions, data revisions, nondeterministic kernels, or a changed research view. Write regenerated outputs to the stage's standard ignored directories, compare aggregate metrics, and commit only a deliberate new snapshot after reviewing data exposure.
+
+## Verification before publication
+
+```bash
+python -m compileall -q pyrite_benchmark stage2_geo_representation_xgb \
+  stage3_element_token_model stage3_5_element2vec_v2 \
+  stage3_6_element2vec_space_exploration
+python scripts/doctor.py
+python scripts/verify_public_tree.py --tracked
+```
+
+The project currently has no formal unit-test suite or CI. Stage-specific verification scripts and public-tree auditing are the minimum release gate.

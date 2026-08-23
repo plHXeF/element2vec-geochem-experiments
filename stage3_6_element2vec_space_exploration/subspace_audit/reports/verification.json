@@ -1,0 +1,133 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "check": "audit/subspace_representation_audit.md",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/audit/subspace_representation_audit.md"
+    },
+    {
+      "check": "audit/subspace_available_dimensions.json",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/audit/subspace_available_dimensions.json"
+    },
+    {
+      "check": "audit/subspace_experiment_compatibility.csv",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/audit/subspace_experiment_compatibility.csv"
+    },
+    {
+      "check": "report:subspace_exploration_report.md",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/reports/subspace_exploration_report.md"
+    },
+    {
+      "check": "report:experiment_dimension_matrix.csv",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/reports/experiment_dimension_matrix.csv"
+    },
+    {
+      "check": "report:dimension_summary.csv",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/reports/dimension_summary.csv"
+    },
+    {
+      "check": "report:low_rank_recoveries.md",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/reports/low_rank_recoveries.md"
+    },
+    {
+      "check": "report:visualization_only_results.md",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/reports/visualization_only_results.md"
+    },
+    {
+      "check": "report:confounded_results.md",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/reports/confounded_results.md"
+    },
+    {
+      "check": "report:negative_results.md",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/reports/negative_results.md"
+    },
+    {
+      "check": "report:pc_semantic_attribution.csv",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/reports/pc_semantic_attribution.csv"
+    },
+    {
+      "check": "report:figure_index.md",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/reports/figure_index.md"
+    },
+    {
+      "check": "report:reproducibility.md",
+      "passed": true,
+      "detail": "stage3_6_element2vec_space_exploration/subspace_audit/reports/reproducibility.md"
+    },
+    {
+      "check": "compatibility_50",
+      "passed": true,
+      "detail": "rows=50"
+    },
+    {
+      "check": "matrix_columns",
+      "passed": true,
+      "detail": "missing=[]"
+    },
+    {
+      "check": "matrix_experiment_coverage",
+      "passed": true,
+      "detail": "experiments=50"
+    },
+    {
+      "check": "explicit_not_applicable",
+      "passed": true,
+      "detail": "rows=27"
+    },
+    {
+      "check": "replay_no_technical_failure",
+      "passed": true,
+      "detail": "failed=0"
+    },
+    {
+      "check": "rp64_ten_seeds",
+      "passed": true,
+      "detail": "seeds=10, rows=440"
+    },
+    {
+      "check": "rp32_ten_seeds",
+      "passed": true,
+      "detail": "seeds=10, rows=440"
+    },
+    {
+      "check": "rp3_ten_seeds",
+      "passed": true,
+      "detail": "seeds=10, rows=440"
+    },
+    {
+      "check": "rp2_ten_seeds",
+      "passed": true,
+      "detail": "seeds=10, rows=440"
+    },
+    {
+      "check": "no_rank_padding_numeric",
+      "passed": true,
+      "detail": "PCA64={'applicable': False, 'reason': 'not_applicable_fitting_rank', 'explained_variance': nan}, PCA32={'applicable': True, 'reason': 'applicable', 'explained_variance': 0.9650868307799101}"
+    },
+    {
+      "check": "figure_integrity",
+      "passed": true,
+      "detail": "indexed=74, checked=74, broken=0"
+    },
+    {
+      "check": "report_sections",
+      "passed": true,
+      "detail": "sections=['## 1.', '## 2.', '## 3.', '## 4.', '## 5.', '## 6.', '## 7.', '## 8.', '## 9.', '## 10.', '## 11.', '## 12.']"
+    }
+  ],
+  "matrix_rows": 355,
+  "registry_rows": 2041,
+  "figure_rows": 74
+}

@@ -1,0 +1,79 @@
+﻿representation,feature,formula,positive_group,negative_group,geologic_note
+raw_robust_z_14,As,robust_z(raw As),As,,baseline concentration feature
+raw_robust_z_14,Ni,robust_z(raw Ni),Ni,,baseline concentration feature
+raw_robust_z_14,Cu,robust_z(raw Cu),Cu,,baseline concentration feature
+raw_robust_z_14,Pb,robust_z(raw Pb),Pb,,baseline concentration feature
+raw_robust_z_14,Co,robust_z(raw Co),Co,,baseline concentration feature
+raw_robust_z_14,Au,robust_z(raw Au),Au,,baseline concentration feature
+raw_robust_z_14,Ag,robust_z(raw Ag),Ag,,baseline concentration feature
+raw_robust_z_14,Bi,robust_z(raw Bi),Bi,,baseline concentration feature
+raw_robust_z_14,Sb,robust_z(raw Sb),Sb,,baseline concentration feature
+raw_robust_z_14,Zn,robust_z(raw Zn),Zn,,baseline concentration feature
+raw_robust_z_14,Se,robust_z(raw Se),Se,,baseline concentration feature
+raw_robust_z_14,Te,robust_z(raw Te),Te,,baseline concentration feature
+raw_robust_z_14,Tl,robust_z(raw Tl),Tl,,baseline concentration feature
+raw_robust_z_14,Mn,robust_z(raw Mn),Mn,,baseline concentration feature
+log_robust_z_14,As,robust_z(log10(As + eps)),As,,log concentration baseline
+log_robust_z_14,Ni,robust_z(log10(Ni + eps)),Ni,,log concentration baseline
+log_robust_z_14,Cu,robust_z(log10(Cu + eps)),Cu,,log concentration baseline
+log_robust_z_14,Pb,robust_z(log10(Pb + eps)),Pb,,log concentration baseline
+log_robust_z_14,Co,robust_z(log10(Co + eps)),Co,,log concentration baseline
+log_robust_z_14,Au,robust_z(log10(Au + eps)),Au,,log concentration baseline
+log_robust_z_14,Ag,robust_z(log10(Ag + eps)),Ag,,log concentration baseline
+log_robust_z_14,Bi,robust_z(log10(Bi + eps)),Bi,,log concentration baseline
+log_robust_z_14,Sb,robust_z(log10(Sb + eps)),Sb,,log concentration baseline
+log_robust_z_14,Zn,robust_z(log10(Zn + eps)),Zn,,log concentration baseline
+log_robust_z_14,Se,robust_z(log10(Se + eps)),Se,,log concentration baseline
+log_robust_z_14,Te,robust_z(log10(Te + eps)),Te,,log concentration baseline
+log_robust_z_14,Tl,robust_z(log10(Tl + eps)),Tl,,log concentration baseline
+log_robust_z_14,Mn,robust_z(log10(Mn + eps)),Mn,,log concentration baseline
+rank_uniform_z_14,As,standard_z(percentile_rank(As)),As,,rank-normalized baseline
+rank_uniform_z_14,Ni,standard_z(percentile_rank(Ni)),Ni,,rank-normalized baseline
+rank_uniform_z_14,Cu,standard_z(percentile_rank(Cu)),Cu,,rank-normalized baseline
+rank_uniform_z_14,Pb,standard_z(percentile_rank(Pb)),Pb,,rank-normalized baseline
+rank_uniform_z_14,Co,standard_z(percentile_rank(Co)),Co,,rank-normalized baseline
+rank_uniform_z_14,Au,standard_z(percentile_rank(Au)),Au,,rank-normalized baseline
+rank_uniform_z_14,Ag,standard_z(percentile_rank(Ag)),Ag,,rank-normalized baseline
+rank_uniform_z_14,Bi,standard_z(percentile_rank(Bi)),Bi,,rank-normalized baseline
+rank_uniform_z_14,Sb,standard_z(percentile_rank(Sb)),Sb,,rank-normalized baseline
+rank_uniform_z_14,Zn,standard_z(percentile_rank(Zn)),Zn,,rank-normalized baseline
+rank_uniform_z_14,Se,standard_z(percentile_rank(Se)),Se,,rank-normalized baseline
+rank_uniform_z_14,Te,standard_z(percentile_rank(Te)),Te,,rank-normalized baseline
+rank_uniform_z_14,Tl,standard_z(percentile_rank(Tl)),Tl,,rank-normalized baseline
+rank_uniform_z_14,Mn,standard_z(percentile_rank(Mn)),Mn,,rank-normalized baseline
+geo_ratio_12,log_Co_Ni,log10(Co + eps) - log10(Ni + eps),Co,Ni,log element ratio
+geo_ratio_12,log_Au_As,log10(Au + eps) - log10(As + eps),Au,As,log element ratio
+geo_ratio_12,log_As_Se,log10(As + eps) - log10(Se + eps),As,Se,log element ratio
+geo_ratio_12,log_Se_Te,log10(Se + eps) - log10(Te + eps),Se,Te,log element ratio
+geo_ratio_12,log_Bi_Te,log10(Bi + eps) - log10(Te + eps),Bi,Te,log element ratio
+geo_ratio_12,log_Sb_Tl,log10(Sb + eps) - log10(Tl + eps),Sb,Tl,log element ratio
+geo_ratio_12,log_Cu_Zn,log10(Cu + eps) - log10(Zn + eps),Cu,Zn,log element ratio
+geo_ratio_12,log_Pb_Zn,log10(Pb + eps) - log10(Zn + eps),Pb,Zn,log element ratio
+geo_ratio_12,log_Ag_Au,log10(Ag + eps) - log10(Au + eps),Ag,Au,log element ratio
+geo_ratio_12,log_Cu_Pb,log10(Cu + eps) - log10(Pb + eps),Cu,Pb,log element ratio
+geo_ratio_12,log_As_Sb,log10(As + eps) - log10(Sb + eps),As,Sb,log element ratio
+geo_ratio_12,log_baseMetal_goldPathfinder,"log10(sum(Cu,Pb,Zn,Ag) + eps) - log10(sum(Au,As,Sb,Tl) + eps)","Cu,Pb,Zn,Ag","Au,As,Sb,Tl",base metal suite relative to gold/pathfinder suite
+geo_balance_12,highT_vs_gold,"mean(log10(Co,Ni,Se)) - mean(log10(Au,As,Sb,Tl))","Co,Ni,Se","Au,As,Sb,Tl",high-temperature lattice-compatible suite against Au pathfinders
+geo_balance_12,baseMetal_vs_gold,"mean(log10(Cu,Pb,Zn,Ag)) - mean(log10(Au,As,Sb,Tl))","Cu,Pb,Zn,Ag","Au,As,Sb,Tl",base metals against Au pathfinders
+geo_balance_12,semimetal_vs_lattice,"mean(log10(As,Sb,Bi,Te)) - mean(log10(Co,Ni))","As,Sb,Bi,Te","Co,Ni",semimetal/telluride suite against Co-Ni lattice proxy
+geo_balance_12,lateLowT_vs_highT,"mean(log10(Sb,Tl,Te)) - mean(log10(Co,Ni,Se))","Sb,Tl,Te","Co,Ni,Se",late low-temperature suite against high-temperature suite
+geo_balance_12,AuAs_vs_other_semimetal,"mean(log10(Au,As)) - mean(log10(Sb,Tl,Bi,Te))","Au,As","Sb,Tl,Bi,Te",Au-As enrichment against other semimetals
+geo_balance_12,telluride_vs_baseMetal,"mean(log10(Te,Bi)) - mean(log10(Cu,Pb,Zn,Ag))","Te,Bi","Cu,Pb,Zn,Ag",telluride-related enrichment against base metals
+geo_balance_12,CuAsBi_vs_CoNiSe,"mean(log10(Cu,As,Bi)) - mean(log10(Co,Ni,Se))","Cu,As,Bi","Co,Ni,Se",Cu-As-Bi overprint against Co-Ni-Se
+geo_balance_12,PbZnAg_vs_AuAs,"mean(log10(Pb,Zn,Ag)) - mean(log10(Au,As))","Pb,Zn,Ag","Au,As",Pb-Zn-Ag suite against Au-As
+geo_balance_12,AsSbTl_vs_CoNi,"mean(log10(As,Sb,Tl)) - mean(log10(Co,Ni))","As,Sb,Tl","Co,Ni",As-Sb-Tl pathfinders against Co-Ni
+geo_balance_12,SeTeBi_vs_AsSbTl,"mean(log10(Se,Te,Bi)) - mean(log10(As,Sb,Tl))","Se,Te,Bi","As,Sb,Tl",Se-Te-Bi against As-Sb-Tl
+geo_balance_12,pyrite_overprint_balance,"mean(log10(As,Sb,Tl)) - mean(log10(Co,Ni,Se))","As,Sb,Tl","Co,Ni,Se",overprint-sensitive pathfinders against high-temperature lattice suite
+geo_balance_12,Au_enrichment_balance,"mean(log10(Au)) - mean(log10(As,Sb,Tl,Te,Bi))",Au,"As,Sb,Tl,Te,Bi",Au relative enrichment against associated pathfinders
+geo_info_12,enrichment_entropy,-sum(p_i * ln(p_i)),,,concentration of positive element anomaly distribution
+geo_info_12,normalized_entropy,enrichment_entropy / ln(D),,,entropy scaled to 0-1
+geo_info_12,effective_elements,exp(enrichment_entropy),,,effective number of enriched elements
+geo_info_12,top1_share,max(p_i),,,dominance of the strongest enriched element
+geo_info_12,top3_share,sum(top 3 p_i),,,dominance of top three enriched elements
+geo_info_12,gold_pathfinder_info_share,"sum p_i over Au,As,Sb,Tl",,,Au pathfinder anomaly share
+geo_info_12,highT_lattice_info_share,"sum p_i over Co,Ni,Se",,,high-temperature lattice proxy anomaly share
+geo_info_12,base_metal_info_share,"sum p_i over Cu,Pb,Zn,Ag",,,base metal anomaly share
+geo_info_12,semimetal_telluride_info_share,"sum p_i over As,Sb,Bi,Te,Se",,,semimetal/telluride anomaly share
+geo_info_12,rarity_mean,mean(-ln(empirical_tail_prob_i)),,,average empirical rarity
+geo_info_12,rarity_max,max(-ln(empirical_tail_prob_i)),,,single-element maximum rarity
+geo_info_12,rarity_top3_mean,mean(top 3 rarity_i),,,top-three rarity intensity

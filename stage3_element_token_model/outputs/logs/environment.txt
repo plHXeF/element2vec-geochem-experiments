@@ -1,0 +1,4 @@
+stage_dir=E:\Geochem\stage3_element_token_model
+workspace_dir=E:\Geochem
+python=C:\Users\17599\.conda\envs\datasafe\python.exe
+torch_device=cuda

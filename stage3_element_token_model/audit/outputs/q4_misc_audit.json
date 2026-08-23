@@ -1,0 +1,105 @@
+{
+  "4a_train_val_split": {
+    "has_validation": false,
+    "uses_full_data": true,
+    "note": "全量数据训练，无验证集。training loss 和 masked_type_acc 均为 in-sample 指标"
+  },
+  "4b_embedding_scale": {
+    "element_embedding_std": 0.963304877281189,
+    "element_embedding_mean": 0.0401240773499012,
+    "deposit_embedding_std": 1.0029065608978271,
+    "log_robust_measured_std": 0.7740248441696167,
+    "log_robust_measured_range": [
+      -11.22635269165039,
+      3.823185920715332
+    ],
+    "embedding_vec_norm_approx": 5.44927528860483,
+    "scale_ratio": 7.040181370078451
+  },
+  "4c_iqr_zero": {
+    "input": [
+      [
+        5.0,
+        10.0
+      ],
+      [
+        5.0,
+        10.0
+      ],
+      [
+        5.0,
+        10.0
+      ],
+      [
+        5.0,
+        10.0
+      ],
+      [
+        5.0,
+        NaN
+      ]
+    ],
+    "median": [
+      5.0,
+      10.0
+    ],
+    "iqr_original_zero": [
+      "non-zero",
+      1.0
+    ],
+    "iqr_replaced_to_1": [
+      1.0
+    ],
+    "scaled_output": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "4e_deterministic": {
+    "issues": [
+      "set_seed ✓",
+      "cudnn deterministic ✗ 未设置 — GPU上可能不可复现",
+      "use_deterministic_algorithms ✗ 未设置"
+    ]
+  },
+  "4f_nan_fill": {
+    "all_missing_are_zero": true,
+    "train_mask_sets_x_to_0": true,
+    "train_mask_sets_v_to_0": true,
+    "consistent": true
+  },
+  "4g_pooling": {
+    "mean_element_excludes_deposit": true,
+    "deposit_uses_only_deposit_token": true,
+    "mean_all_includes_deposit": true
+  },
+  "4h_previous_baseline": {
+    "paths": {
+      "stage2_geo_representation_xgb/outputs/representations/log_robust_z_14.csv": true,
+      "stage2_geo_representation_xgb/outputs/representations/rank_uniform_z_14.csv": true
+    }
+  },
+  "4j_token_extraction": {
+    "deposit_forced_to_mask": true,
+    "loader_discards_label": true,
+    "correct": true
+  }
+}

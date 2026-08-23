@@ -1,0 +1,114 @@
+# OS, editors, Python, environments
+.DS_Store
+Thumbs.db
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+.conda/
+env/
+.env
+.env.*
+!.env.example
+
+# Credentials and local configuration
+*.pem
+*.key
+credentials*
+secrets*
+
+# Raw/private datasets
+*.db
+*.sqlite
+*.sqlite3
+*.xlsx
+*.xls
+*.parquet
+*.feather
+pyrite_benchmark/data/raw/*
+!pyrite_benchmark/data/raw/README.md
+pyrite_benchmark/data/processed/*
+!pyrite_benchmark/data/processed/README.md
+
+# Generated sample-level Stage 1/2 outputs
+pyrite_benchmark/results/**/embeddings/
+pyrite_benchmark/results/**/representation_clusters.csv
+stage2_geo_representation_xgb/outputs/representations/*.csv
+!stage2_geo_representation_xgb/outputs/representations/feature_definitions.csv
+!stage2_geo_representation_xgb/outputs/representations/representation_qc.csv
+!stage2_geo_representation_xgb/outputs/representations/eps_by_element.csv
+stage2_geo_representation_xgb/outputs/umap3d/
+
+# Generated sample-level Stage 3 outputs
+stage3_element_token_model/outputs/preprocessed/
+stage3_element_token_model/outputs/latents/
+stage3_element_token_model/outputs/spaces/
+stage3_element_token_model/outputs/embeddings/sample_*
+stage3_element_token_model/outputs/raw_embedding_benchmark/embeddings/sample_*
+stage3_element_token_model/outputs/raw_embedding_benchmark/figures/*coordinates.csv
+stage3_element_token_model/outputs/**/*.html
+
+# Accidental flattened copies from release staging
+stage3_element_token_model/checkpoints/
+stage3_element_token_model/logs/
+stage3_element_token_model/metrics/
+stage3_element_token_model/pca_dim_sweep/
+stage3_element_token_model/raw_embedding_benchmark/
+stage3_element_token_model/report_fig/
+stage3_element_token_model/stage3_report.md
+
+# V2 model files are distributed as GitHub Release assets
+stage3_5_element2vec_v2/outputs/checkpoints/*.pt
+stage3_5_element2vec_v2/outputs/latents/
+stage3_5_element2vec_v2/outputs/benchmarks/
+
+# Stage 3.6 private/sample-level recomputation artifacts
+stage3_6_element2vec_space_exploration/cache/
+stage3_6_element2vec_space_exploration/results/
+stage3_6_element2vec_space_exploration/pca_sweep/basis/
+stage3_6_element2vec_space_exploration/pca_sweep/results/
+stage3_6_element2vec_space_exploration/pca_sweep/projections/
+stage3_6_element2vec_space_exploration/subspace_audit/projections/
+stage3_6_element2vec_space_exploration/subspace_audit/results/*
+!stage3_6_element2vec_space_exploration/subspace_audit/results/experiment_registry.csv
+
+# Accidental flattened copies from release staging
+stage3_6_element2vec_space_exploration/explained_variance/
+stage3_6_element2vec_space_exploration/figures/
+stage3_6_element2vec_space_exploration/shared_controls/
+stage3_6_element2vec_space_exploration/run_manifest.csv
+stage3_6_element2vec_space_exploration/audit/representation_dimension_table.csv
+stage3_6_element2vec_space_exploration/audit/subspace_*
+stage3_6_element2vec_space_exploration/reports/all_scalar_metrics_long.csv
+stage3_6_element2vec_space_exploration/reports/confounded_results.md
+stage3_6_element2vec_space_exploration/reports/coverage_audit.json
+stage3_6_element2vec_space_exploration/reports/dimension_summary.csv
+stage3_6_element2vec_space_exploration/reports/experiment_all_metric_summary.csv
+stage3_6_element2vec_space_exploration/reports/experiment_dimension_analysis.csv
+stage3_6_element2vec_space_exploration/reports/experiment_dimension_matrix.csv
+stage3_6_element2vec_space_exploration/reports/experiment_dimension_metrics.csv
+stage3_6_element2vec_space_exploration/reports/family_dimension_summary.csv
+stage3_6_element2vec_space_exploration/reports/low_rank_recoveries.md
+stage3_6_element2vec_space_exploration/reports/pc_semantic_attribution.csv
+stage3_6_element2vec_space_exploration/reports/pca_dimension_sweep_report.md
+stage3_6_element2vec_space_exploration/reports/scalar_metric_dimension_analysis.csv
+stage3_6_element2vec_space_exploration/reports/subspace_exploration_report.md
+stage3_6_element2vec_space_exploration/reports/verification.json
+stage3_6_element2vec_space_exploration/reports/visualization_only_results.md
+stage3_6_element2vec_space_exploration/reports/figures/experiments/
+stage3_6_element2vec_space_exploration/reports/figures/dimension_preservation_summary.png
+stage3_6_element2vec_space_exploration/reports/figures/family_preservation_heatmap.png
+
+# General generated/temporary files
+# PNG copies are retained for publication; vector plots can expose every
+# sample-level point and add substantial repository weight.
+*.svg
+*.tmp
+*.bak
+*.log
+dist/
+build/

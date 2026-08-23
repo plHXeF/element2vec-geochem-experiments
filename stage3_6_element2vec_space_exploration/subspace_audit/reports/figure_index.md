@@ -1,0 +1,74 @@
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/A1_periodic_properties.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/A2_geochemical_affinity.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/A3_ree_sequence.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/B1_numeric_trajectories.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/B2_absolute_relative.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/B3_numeric_scale_consistency.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/C1_same_value_context.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/C2_element_role_proxies.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/C3_contextual_neighbors.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/D1_rock_continuity.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/D2_local_geological_neighbors.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/D3_global_axes.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/D4_geographic_neighbors.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/D5_external_isotopes_age.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/E1_two_endmember_mixing.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/E2_multiendmember_simplex.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/E3_magmatic_differentiation.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/E4_partial_melting.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/E5_weathering_sediment.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/E6_hydrothermal.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/E7_metamorphic.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/F1_lithology_perturbation.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/F2_single_element_jacobian.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/F3_combined_interventions.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/G1_label_neighbors.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/G2_volcanic_plutonic.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/G4_magmatic_sequences.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/G5_other_geological_relations.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/H1_sample_label_retrieval.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/H2_centroid_label_alignment.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/H3_cross_space_relations.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/I1_normative_readability.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/I2_normative_assemblages.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/I3_ideal_norm_retrieval.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/I4_label_residual_norms.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/J1_beyond_traditional_indicators.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/J2_grouped_increment.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/K1_representation_baselines.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/K2_input_mode_stability.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/K3_order_dropout_robustness.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/X1_context_raw_control.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/X2_role_raw_control.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/X3_cross_space_relation_followup.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/X4_random_missingness_followup.png` — FULL/PCA vs 10-seed random projection
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/dimension_curves/sample_signal_dimension_curve.png` — dimension_curves
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/pc_attribution/contextual_mean_pc_attribution.png` — pc_attribution
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/pca2/sample_rock_group.png` — pca2
+- `stage3_6_element2vec_space_exploration/subspace_audit/figures/pca3/sample_rock_group.png` — pca3
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/A/A1_periodic_properties__PCA2/figures/numeric_embedding_pca.png` — paired replay PCA2
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/A/A1_periodic_properties__PCA3/figures/numeric_embedding_pca.png` — paired replay PCA3
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/A/A1_periodic_properties__PCA32/figures/numeric_embedding_pca.png` — paired replay PCA32
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/A/A2_geochemical_affinity__PCA2/figures/numeric_embedding_cosine.png` — paired replay PCA2
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/A/A2_geochemical_affinity__PCA3/figures/numeric_embedding_cosine.png` — paired replay PCA3
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/A/A2_geochemical_affinity__PCA32/figures/numeric_embedding_cosine.png` — paired replay PCA32
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/B/B1_numeric_trajectories__PCA2/figures/representative_numeric_trajectories.png` — paired replay PCA2
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/B/B1_numeric_trajectories__PCA3/figures/representative_numeric_trajectories.png` — paired replay PCA3
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/B/B1_numeric_trajectories__PCA32/figures/representative_numeric_trajectories.png` — paired replay PCA32
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/B/B1_numeric_trajectories__PCA64/figures/representative_numeric_trajectories.png` — paired replay PCA64
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D1_rock_continuity__PCA2/figures/encoded_pca_rock_group.png` — paired replay PCA2
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D1_rock_continuity__PCA2/figures/encoded_pca_sio2.png` — paired replay PCA2
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D1_rock_continuity__PCA3/figures/encoded_pca_rock_group.png` — paired replay PCA3
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D1_rock_continuity__PCA3/figures/encoded_pca_sio2.png` — paired replay PCA3
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D1_rock_continuity__PCA32/figures/encoded_pca_rock_group.png` — paired replay PCA32
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D1_rock_continuity__PCA32/figures/encoded_pca_sio2.png` — paired replay PCA32
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D1_rock_continuity__PCA64/figures/encoded_pca_rock_group.png` — paired replay PCA64
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D1_rock_continuity__PCA64/figures/encoded_pca_sio2.png` — paired replay PCA64
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D3_global_axes__PCA2/figures/encoded_pca_geochemical_correlations.png` — paired replay PCA2
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D3_global_axes__PCA3/figures/encoded_pca_geochemical_correlations.png` — paired replay PCA3
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D3_global_axes__PCA32/figures/encoded_pca_geochemical_correlations.png` — paired replay PCA32
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/D/D3_global_axes__PCA64/figures/encoded_pca_geochemical_correlations.png` — paired replay PCA64
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/H/H3_cross_space_relations__PCA2/figures/rock_type_label_cosine.png` — paired replay PCA2
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/H/H3_cross_space_relations__PCA3/figures/rock_type_label_cosine.png` — paired replay PCA3
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/H/H3_cross_space_relations__PCA32/figures/rock_type_label_cosine.png` — paired replay PCA32
+- `stage3_6_element2vec_space_exploration/subspace_audit/results/H/H3_cross_space_relations__PCA64/figures/rock_type_label_cosine.png` — paired replay PCA64

@@ -1,0 +1,146 @@
+project:
+  name: Element2Vec V2
+  root_dir: stage3_5_element2vec_v2
+  outputs_dir: stage3_5_element2vec_v2/outputs
+
+data:
+  sqlite_path: legacy_whole_rock_geochem/geochem.db
+  view_name: v_high_quality_dataset
+  sample_id_column: sample_id
+  max_samples: null
+  min_numeric_tokens: 1
+  shuffle_tokens: true
+  random_order_each_epoch: true
+  pure_label_fields:
+    - rock_group
+    - rock_origin
+    - rock_type
+  primary_label: rock_type
+  auxiliary_labels:
+    - rock_origin
+    - rock_group
+  numeric_fields:
+    - {name: SiO2, db_column: sio2, unit: wt_pct, log_transform: false}
+    - {name: TiO2, db_column: tio2, unit: wt_pct, log_transform: false}
+    - {name: Al2O3, db_column: al2o3, unit: wt_pct, log_transform: false}
+    - {name: Fe2O3, db_column: fe2o3, unit: wt_pct, log_transform: false}
+    - {name: FeO, db_column: feo, unit: wt_pct, log_transform: false}
+    - {name: MgO, db_column: mgo, unit: wt_pct, log_transform: false}
+    - {name: CaO, db_column: cao, unit: wt_pct, log_transform: false}
+    - {name: Na2O, db_column: na2o, unit: wt_pct, log_transform: false}
+    - {name: K2O, db_column: k2o, unit: wt_pct, log_transform: false}
+    - {name: P2O5, db_column: p2o5, unit: wt_pct, log_transform: false}
+    - {name: MnO, db_column: mno, unit: wt_pct, log_transform: false}
+    - {name: LOI, db_column: loi, unit: wt_pct, log_transform: false}
+    - {name: CO2, db_column: co2, unit: wt_pct, log_transform: false}
+    - {name: Rb_ppm, db_column: rb_ppm, unit: ppm, log_transform: true}
+    - {name: Sr_ppm, db_column: sr_ppm, unit: ppm, log_transform: true}
+    - {name: Ba_ppm, db_column: ba_ppm, unit: ppm, log_transform: true}
+    - {name: Zr_ppm, db_column: zr_ppm, unit: ppm, log_transform: true}
+    - {name: Nb_ppm, db_column: nb_ppm, unit: ppm, log_transform: true}
+    - {name: Y_ppm, db_column: y_ppm, unit: ppm, log_transform: true}
+    - {name: V_ppm, db_column: v_ppm, unit: ppm, log_transform: true}
+    - {name: Cr_ppm, db_column: cr_ppm, unit: ppm, log_transform: true}
+    - {name: Ni_ppm, db_column: ni_ppm, unit: ppm, log_transform: true}
+    - {name: Cu_ppm, db_column: cu_ppm, unit: ppm, log_transform: true}
+    - {name: Zn_ppm, db_column: zn_ppm, unit: ppm, log_transform: true}
+    - {name: La_ppm, db_column: la_ppm, unit: ppm, log_transform: true}
+    - {name: Ce_ppm, db_column: ce_ppm, unit: ppm, log_transform: true}
+    - {name: Nd_ppm, db_column: nd_ppm, unit: ppm, log_transform: true}
+    - {name: Th_ppm, db_column: th_ppm, unit: ppm, log_transform: true}
+    - {name: U_ppm, db_column: u_ppm, unit: ppm, log_transform: true}
+    - {name: Pb_ppm, db_column: pb_ppm, unit: ppm, log_transform: true}
+    - {name: Sc_ppm, db_column: sc_ppm, unit: ppm, log_transform: true}
+    - {name: Co_ppm, db_column: co_ppm, unit: ppm, log_transform: true}
+    - {name: Ga_ppm, db_column: ga_ppm, unit: ppm, log_transform: true}
+    - {name: Yb_ppm, db_column: yb_ppm, unit: ppm, log_transform: true}
+  value_transform:
+    eps: 1.0e-9
+    min_iqr: 1.0e-6
+    clip_z: 12.0
+
+tokenization:
+  label_embedding_dim: 509
+  token_input_dim: 512
+  cls_mode: direct_768
+
+model:
+  d_model: 768
+  token_projector:
+    input_dim: 512
+    hidden_dim: 768
+    output_dim: 768
+    dropout: 0.1
+  transformer:
+    d_model: 768
+    num_layers: 12
+    num_heads: 12
+    ffn_dim: 3072
+    dropout: 0.1
+    activation: gelu
+    norm: pre_ln
+    use_positional_embedding: false
+
+masking:
+  one_mask_per_sample: true
+  task_balanced_batch: true
+  task_probs:
+    numeric_value: 0.45
+    numeric_tag: 0.15
+    pure_label: 0.40
+  pure_label_probs:
+    rock_type: 0.60
+    rock_origin: 0.25
+    rock_group: 0.15
+
+training:
+  epochs: 50
+  max_steps: null
+  batch_size: 512
+  gradient_accumulation_steps: 2
+  num_workers: 0
+  optimizer: AdamW
+  learning_rate: 0.00025
+  min_lr: 0.000003
+  weight_decay: 0.01
+  warmup_steps: 500
+  scheduler: cosine_with_min_lr
+  gradient_clip: 1.0
+  mixed_precision: false
+  seed: 42
+  save_every: epoch
+  device: auto
+  loss_weights:
+    numeric_value: 1.0
+    numeric_tag: 1.0
+    rock_group: 1.0
+    rock_origin: 1.0
+    rock_type: 1.0
+
+probe:
+  enabled: true
+  type: fixed_train_probe
+  size: 8192
+  fixed_samples: true
+  fixed_masks: true
+  eval_every_steps: 500
+  batch_size: 512
+
+logging:
+  log_every_steps: 20
+  ema_window: 500
+
+memory:
+  log_memory: true
+  empty_cache_after_probe: true
+  empty_cache_after_checkpoint: true
+  empty_cache_every_steps: 0
+
+evaluation:
+  batch_size: 256
+  knn_k: [15, 30]
+  benchmark_max_samples: null
+  pca_components: 3
+  umap:
+    n_neighbors: 30
+    min_dist: 0.1

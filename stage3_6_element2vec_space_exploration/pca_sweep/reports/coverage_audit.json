@@ -1,0 +1,38 @@
+{
+  "expected_dimensions": [
+    256,
+    128,
+    64,
+    32,
+    16,
+    8,
+    5,
+    3,
+    2
+  ],
+  "completed_dimensions": [
+    256,
+    128,
+    64,
+    32,
+    16,
+    8,
+    5,
+    3,
+    2
+  ],
+  "expected_experiments_per_dimension": 50,
+  "rows_by_dimension": {
+    "2": 50,
+    "3": 50,
+    "5": 50,
+    "8": 50,
+    "16": 50,
+    "32": 50,
+    "64": 50,
+    "128": 50,
+    "256": 50
+  },
+  "total_rows": 450,
+  "coverage_ok": true
+}

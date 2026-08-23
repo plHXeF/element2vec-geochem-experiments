@@ -1,0 +1,25 @@
+[
+  {
+    "space_name": "sample_raw_element_token_flat_476",
+    "n_features": 476,
+    "xgb_accuracy_mean": 0.9638724902669059,
+    "xgb_accuracy_std": 0.0038127258521919714,
+    "xgb_macro_f1_mean": 0.9353234468431886,
+    "xgb_macro_f1_std": 0.010780356702221628,
+    "xgb_weighted_f1_mean": 0.9637131830562626,
+    "xgb_weighted_f1_std": 0.00387368499325644,
+    "knn15_accuracy_mean": 0.9502453318344507,
+    "knn15_accuracy_std": 0.004590100988188564,
+    "knn15_macro_f1_mean": 0.9149605794975606,
+    "knn15_macro_f1_std": 0.01377362121489652,
+    "knn15_weighted_f1_mean": 0.9499572576370221,
+    "knn15_weighted_f1_std": 0.004685229705107682,
+    "knn15_neighborhood_purity": 0.9375246421530814,
+    "kmeans_ari": 0.03641742762331844,
+    "kmeans_nmi": 0.28392165474307146,
+    "kmeans_homogeneity": 0.3256570588609912,
+    "kmeans_completeness": 0.2516684481790305,
+    "silhouette_score": 0.1416938751935959,
+    "notes": "ok"
+  }
+]

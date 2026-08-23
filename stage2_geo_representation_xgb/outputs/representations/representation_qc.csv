@@ -1,0 +1,7 @@
+﻿representation,n_features,raw_missing_rate,raw_inf_count,final_missing_rate,final_inf_count
+raw_robust_z_14,14,0.20261359879513646,0,0.0,0
+log_robust_z_14,14,0.20261359879513646,0,0.0,0
+rank_uniform_z_14,14,0.0,0,0.0,0
+geo_ratio_12,12,0.24470729407731207,0,0.0,0
+geo_balance_12,12,0.018374475014999572,0,0.0,0
+geo_info_12,12,0.0,0,0.0,0

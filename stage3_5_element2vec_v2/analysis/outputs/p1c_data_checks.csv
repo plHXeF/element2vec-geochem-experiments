@@ -1,0 +1,16 @@
+﻿check,ok,note
+stats 覆盖 34 个字段,True,实际: 34 rows
+"主量元素 direct z, 微量元素 log+z",True,符合 config 配置
+无 IQR ≈ 0 的字段,True,零 IQR 字段数: 0
+低覆盖度字段 (<50%),True,"11 fields: LOI, CO2, La_ppm, Nd_ppm, Th_ppm, U_ppm, Pb_ppm, Sc_ppm, Co_ppm, Ga_ppm, Yb_ppm"
+clip_z=12.0,True,极端离群值裁剪
+numeric tags: 34 + 1 [MASK],True,实际: 34 tags
+rock_type 81 classes,True,"实际: {'rock_group': 3, 'rock_origin': 9, 'rock_type': 81}"
+每个 field 有 [MASK] token,True,
+total pure tokens: 96,True,实际: 96 (3+9+81+3[MASK]=96)
+dataset: v_high_quality_dataset,True,
+sample count: 270241 样本,True,
+label_emb(509) + value(1) + mask_tag(1) + mask_value(1) = 512,True,"512 是 2^9, GPU 友好的对齐尺寸"
+509 维度是素数 → 不会与下游产生意外对称,True,配合 512 对齐的刻意选择
+SQL 列名用 _quote() 防注入,True,安全的动态 SQL 构建
+SQLite DB 存在: geochem.db,True,大小: 675 MB

@@ -1,0 +1,497 @@
+{
+  "static_trained_numeric": {
+    "native_dimension": 509,
+    "fitting_rows": 35,
+    "estimable_rank": 34,
+    "fitted_components": 34,
+    "upstream_or_final": "upstream",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": false,
+        "reason": "not_applicable_fitting_rank",
+        "explained_variance": NaN
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9650868307799101
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.12812746688723564
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.08689622208476067
+      }
+    }
+  },
+  "static_random_numeric": {
+    "native_dimension": 509,
+    "fitting_rows": 35,
+    "estimable_rank": 34,
+    "fitted_components": 34,
+    "upstream_or_final": "upstream",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": false,
+        "reason": "not_applicable_fitting_rank",
+        "explained_variance": NaN
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9651718623936176
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.12813924625515938
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.08698483556509018
+      }
+    }
+  },
+  "static_trained_pure": {
+    "native_dimension": 509,
+    "fitting_rows": 96,
+    "estimable_rank": 95,
+    "fitted_components": 64,
+    "upstream_or_final": "upstream",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.8253975822590292
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.510175115428865
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.061115968972444534
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.041235530748963356
+      }
+    }
+  },
+  "static_random_pure": {
+    "native_dimension": 509,
+    "fitting_rows": 96,
+    "estimable_rank": 95,
+    "fitted_components": 64,
+    "upstream_or_final": "upstream",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.825544738676399
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.5103172343224287
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.06120518036186695
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.041316818445920944
+      }
+    }
+  },
+  "mlp_projected_numeric_token": {
+    "native_dimension": 768,
+    "fitting_rows": 20000,
+    "estimable_rank": 116,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.999491680006031
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9692609338089824
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.3551161363720894
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.3152287229895592
+      }
+    }
+  },
+  "contextual_numeric_token": {
+    "native_dimension": 768,
+    "fitting_rows": 20000,
+    "estimable_rank": 768,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.8174406103789806
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.639756778255105
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.10645224153995514
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.07432888075709343
+      }
+    }
+  },
+  "sample_projected_mean_numeric": {
+    "native_dimension": 768,
+    "fitting_rows": 8000,
+    "estimable_rank": 118,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.999786743441291
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9945750916958787
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.8871691860258579
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.8417524099349976
+      }
+    }
+  },
+  "sample_contextual_mean_numeric": {
+    "native_dimension": 768,
+    "fitting_rows": 8000,
+    "estimable_rank": 768,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9118681052932516
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.808178978972137
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.26474884152412415
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.2070561870932579
+      }
+    }
+  },
+  "sample_cls": {
+    "native_dimension": 768,
+    "fitting_rows": 8000,
+    "estimable_rank": 768,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.866173499613069
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.7849810519255698
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.41512860730290413
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.3623216450214386
+      }
+    }
+  },
+  "random_sample_projected_mean_numeric": {
+    "native_dimension": 768,
+    "fitting_rows": 3000,
+    "estimable_rank": 82,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9999841344920242
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9981861262931488
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.6874347813427448
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.6294559463858604
+      }
+    }
+  },
+  "random_sample_contextual_mean_numeric": {
+    "native_dimension": 768,
+    "fitting_rows": 3000,
+    "estimable_rank": 407,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9986200805396948
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9949552827747539
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.711467482149601
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.6525965258479118
+      }
+    }
+  },
+  "random_sample_cls": {
+    "native_dimension": 768,
+    "fitting_rows": 3000,
+    "estimable_rank": 571,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9961897061002674
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9892888069152832
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.6944723315536976
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.6360835805535316
+      }
+    }
+  },
+  "pure_label_projected": {
+    "native_dimension": 768,
+    "fitting_rows": 96,
+    "estimable_rank": 95,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.983301104453858
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9194017611443996
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.42885415256023407
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.3354514464735985
+      }
+    }
+  },
+  "random_pure_label_projected": {
+    "native_dimension": 768,
+    "fitting_rows": 96,
+    "estimable_rank": 95,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.871438471134752
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.5895854784175754
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.08181475847959518
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.055788518860936165
+      }
+    }
+  },
+  "cross_joint_contextual_label": {
+    "native_dimension": 768,
+    "fitting_rows": 8096,
+    "estimable_rank": 768,
+    "fitted_components": 64,
+    "upstream_or_final": "model_output",
+    "spaces": {
+      "FULL": {
+        "applicable": true,
+        "reason": "native output"
+      },
+      "PCA64": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.9062852229690179
+      },
+      "PCA32": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.8004374783486128
+      },
+      "PCA3": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.26205868646502495
+      },
+      "PCA2": {
+        "applicable": true,
+        "reason": "applicable",
+        "explained_variance": 0.20501618832349777
+      }
+    }
+  }
+}
