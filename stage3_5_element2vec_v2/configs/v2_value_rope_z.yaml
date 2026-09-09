@@ -129,6 +129,7 @@ probe:
 
 logging:
   log_every_steps: 20
+  batch_log_every: 1
   ema_window: 500
 
 memory:

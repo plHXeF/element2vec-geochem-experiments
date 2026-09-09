@@ -21,3 +21,5 @@ Masked values use a zero rotary position and add one shared learned 768-dimensio
 ## Outputs and interpretation
 
 The model has 85,255,040 parameters. Outputs are local under `outputs/value_rope_z/` and are excluded from Git. The fixed probe remains a training-set diagnostic. No quality result should be recorded until the full run finishes and is compared with V2 using the same downstream controls. Stage 3.6 input-level analyses must describe `projected_tokens` as a compatibility alias for direct label embeddings.
+
+Training prints an explicit progress record for every micro-batch by default. The record includes epoch, batch index and total, completed optimizer steps, actual batch size, and the three mask-task counts. `logging.batch_log_every` or `--batch-log-every` controls its frequency.

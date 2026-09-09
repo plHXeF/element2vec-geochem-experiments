@@ -217,6 +217,8 @@ python -m stage3_5_element2vec_v2.src.training.train_v2 \
 
 The full state is written to `outputs/value_rope_z/checkpoints/full_model.pt`. All files under `outputs/value_rope_z/` and all newly generated model-weight suffixes are ignored by Git. Value-RoPE checkpoints store their architecture, frozen vocabularies, and value-transform records; extraction rejects mismatched inputs.
 
+The Value-RoPE config prints one explicit `[batch]` line per micro-batch. Each line reports the epoch, micro-batch position, completed optimizer steps, actual batch size, and numeric-value/numeric-tag/pure-label mask counts. Pass `--batch-log-every N` to print every N micro-batches, or `--batch-log-every 0` to disable these lines.
+
 Extract label-masked 768-dimensional CLS and mean-numeric latents after training:
 
 ```bash

@@ -153,6 +153,10 @@ def resolve_log_every(config: dict) -> int:
     return int(config["training"].get("log_every", 20))
 
 
+def resolve_batch_log_every(config: dict) -> int:
+    return max(int(config.get("logging", {}).get("batch_log_every", 0) or 0), 0)
+
+
 def make_task_plan(config: dict, batch_size: int, rng: random.Random) -> list[tuple[str, str | None]]:
     task_probs = get_task_probabilities(config)
     pure_probs = get_pure_label_probabilities(config)
@@ -306,8 +310,10 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
     probe_logger = CsvLogger(out / "logs" / "probe_log.csv")
     pure_fields = config["data"]["pure_label_fields"]
     log_every = resolve_log_every(config)
+    batch_log_every = resolve_batch_log_every(config)
     save_every = resolve_save_every(config, steps_per_epoch)
     grad_accum_steps = max(int(config["training"].get("gradient_accumulation_steps", 1)), 1)
+    micro_batches_per_epoch = math.ceil(len(dataset) / int(config["training"]["batch_size"]))
     ema = EmaTracker(int(config.get("logging", {}).get("ema_window", 500)))
     rng = random.Random(int(config["training"]["seed"]))
     probe_batches = build_fixed_probe_batches(dataset, config)
@@ -318,7 +324,8 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
     step = 0
     print(
         f"[train_v2] device={device} samples={len(dataset)} batch_size={config['training']['batch_size']} "
-        f"grad_accum={grad_accum_steps} steps_per_epoch={steps_per_epoch} target_epochs={target_epochs} max_steps={max_steps}"
+        f"grad_accum={grad_accum_steps} micro_batches_per_epoch={micro_batches_per_epoch} "
+        f"steps_per_epoch={steps_per_epoch} target_epochs={target_epochs} max_steps={max_steps}"
     )
     if probe_batches:
         probe_row = {"step": 0, "epoch": 0.0, **evaluate_probe(model, probe_batches, device, pure_fields, config)}
@@ -328,10 +335,28 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
         print(f"[probe] step=0 loss={probe_row.get('probe_total_loss', float('nan')):.4f}")
         if memory_cfg.get("empty_cache_after_probe", True):
             release_device_cache(device)
+    epoch_number = 0
     while step < max_steps:
+        epoch_number += 1
         accum_rows: list[dict] = []
         optimizer.zero_grad(set_to_none=True)
-        for raw_batch in iter_epoch_batches(dataset, config, rng):
+        for batch_number, raw_batch in enumerate(iter_epoch_batches(dataset, config, rng), start=1):
+            if batch_log_every and (
+                batch_number == 1
+                or batch_number == micro_batches_per_epoch
+                or batch_number % batch_log_every == 0
+            ):
+                counts = task_count_row(raw_batch)
+                target_epoch_text = str(target_epochs) if target_epochs is not None else "?"
+                print(
+                    f"[batch] epoch={epoch_number}/{target_epoch_text} "
+                    f"micro_batch={batch_number}/{micro_batches_per_epoch} "
+                    f"optimizer_step={step}/{max_steps} size={raw_batch['attention_mask'].shape[0]} "
+                    f"tasks(value/tag/label)="
+                    f"{counts['mask_numeric_value_count']}/"
+                    f"{counts['mask_numeric_tag_count']}/"
+                    f"{counts['mask_pure_label_count']}"
+                )
             batch = move_batch_to_device(raw_batch, device)
             model.train()
             outputs = model(batch)
@@ -435,6 +460,12 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=None)
     parser.add_argument("--probe-size", type=int, default=None)
     parser.add_argument("--probe-batch-size", type=int, default=None)
+    parser.add_argument(
+        "--batch-log-every",
+        type=int,
+        default=None,
+        help="Print explicit batch progress every N micro-batches; 0 disables it.",
+    )
     args = parser.parse_args()
     config = copy.deepcopy(load_config(args.config))
     if args.sqlite_path is not None:
@@ -449,6 +480,8 @@ def main() -> None:
         config.setdefault("probe", {})["size"] = args.probe_size
     if args.probe_batch_size is not None:
         config.setdefault("probe", {})["batch_size"] = args.probe_batch_size
+    if args.batch_log_every is not None:
+        config.setdefault("logging", {})["batch_log_every"] = args.batch_log_every
     train(config, max_steps_override=args.max_steps, max_samples=args.max_samples)
 
 
