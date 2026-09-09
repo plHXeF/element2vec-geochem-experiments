@@ -14,6 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 MAX_GIT_BYTES = 95 * 1024 * 1024
 
 FORBIDDEN_SUFFIXES = {".db", ".sqlite", ".sqlite3", ".xlsx", ".xls", ".parquet", ".feather"}
+MODEL_WEIGHT_SUFFIXES = {".pt", ".pth", ".ckpt", ".safetensors"}
+ALLOWED_TRACKED_MODEL_WEIGHTS = {
+    # Historical Stage 3 prototype included in the published baseline snapshot.
+    "stage3_element_token_model/outputs/checkpoints/token_transformer_last.pt",
+}
 FORBIDDEN_PARTS = {
     ".conda", ".venv", "__pycache__", "cache", "preprocessed", "latents", "spaces",
     "fitting_pools", "pca_models", "random_projection_models",
@@ -68,6 +73,8 @@ def main() -> int:
             failures.append(f"forbidden file: {rel}")
         if path.suffix.lower() in FORBIDDEN_SUFFIXES:
             failures.append(f"dataset-like suffix: {rel}")
+        if path.suffix.lower() in MODEL_WEIGHT_SUFFIXES and rel not in ALLOWED_TRACKED_MODEL_WEIGHTS:
+            failures.append(f"model weight must not be tracked: {rel}")
         if parts & FORBIDDEN_PARTS:
             failures.append(f"forbidden generated directory: {rel}")
         if any(rel.endswith(name) for name in SAMPLE_NAME_PATTERNS):

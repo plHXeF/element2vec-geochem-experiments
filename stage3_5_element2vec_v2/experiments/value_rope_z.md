@@ -1,0 +1,23 @@
+# Experiment: value_rope_z
+
+## Question
+
+Can Element2Vec use numeric concentration only through continuous Q/K rotary position while preserving the V2 label vocabulary, Transformer capacity, mask tasks, and optimization protocol?
+
+## Frozen comparison
+
+- Baseline commit: `5650034`.
+- Baseline experiment: completed Element2Vec V2 50-epoch run.
+- Dataset view: `v_high_quality_dataset`, historically 270,241 samples.
+- Vocabulary and value transforms: tracked V2 artifacts under `outputs/vocab/`.
+- Training: seed 42; micro-batch 512; accumulation 2; 50 epochs; 13,200 optimizer steps; AdamW at `2.5e-4`; 500-step warmup; cosine minimum `3e-6`.
+
+## Systematic change
+
+The 512-to-768 token projector is removed. Numeric-field and pure-label embeddings are direct 768-dimensional inputs. Visible robust-z values generate RoPE angles for Q and K in all 12 layers. The rotary dimension is the complete 64-dimensional attention head, with `base=10000` and `scale=1`. V does not receive a direct numeric signal.
+
+Masked values use a zero rotary position and add one shared learned 768-dimensional state to the field embedding. Pure labels, CLS, padding, and masked values have zero rotary position. Masked numeric tags retain their visible value position.
+
+## Outputs and interpretation
+
+The model has 85,255,040 parameters. Outputs are local under `outputs/value_rope_z/` and are excluded from Git. The fixed probe remains a training-set diagnostic. No quality result should be recorded until the full run finishes and is compared with V2 using the same downstream controls. Stage 3.6 input-level analyses must describe `projected_tokens` as a compatibility alias for direct label embeddings.

@@ -41,6 +41,21 @@ Then run the two-step smoke test from the root README. Long training should be s
 - device memory after probes and checkpoints;
 - checkpoint hashes and ability to reload on CPU.
 
+## Value-RoPE Z continuation experiment
+
+The Value-RoPE configuration is `stage3_5_element2vec_v2/configs/v2_value_rope_z.yaml`. It intentionally reads the frozen V2 vocabulary and robust-z statistics from `stage3_5_element2vec_v2/outputs/vocab/`; if any required file is missing, training fails instead of fitting replacement statistics.
+
+Before training, run:
+
+```bash
+python -m unittest discover -s stage3_5_element2vec_v2/tests -p 'test_*.py'
+python scripts/verify_public_tree.py --tracked
+```
+
+The formal run keeps the V2 seed, tasks, optimizer, learning-rate schedule, probe protocol, and 13,200-step budget. The checkpoint is a fresh initialization and is incompatible with the released MLP-fusion V2 checkpoint. Training and extraction accept explicit `--sqlite-path`, `--outputs-dir`, and `--device` overrides; training also accepts batch and probe-size overrides for isolated smoke tests.
+
+All Value-RoPE outputs are written below `stage3_5_element2vec_v2/outputs/value_rope_z/` and must remain untracked. The full checkpoint includes the model architecture, both frozen vocabularies, and value-transform records. Extraction validates these records before loading weights.
+
 ## Stage 3.6 replay order
 
 The normal dependency order is:

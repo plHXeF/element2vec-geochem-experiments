@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
 
-from ..utils.io import load_json, output_dir, resolve_path
+from ..utils.io import load_json, resolve_path, vocab_dir
 from .transforms import apply_value_transform
 
 
@@ -65,11 +65,11 @@ class VocabBundle:
 
 
 def load_vocab_bundle(config: dict) -> VocabBundle:
-    out = output_dir(config)
+    root = vocab_dir(config)
     return VocabBundle(
-        numeric_vocab=load_json(out / "vocab" / "numeric_tag_vocab.json"),
-        pure_vocab=load_json(out / "vocab" / "pure_label_vocab.json"),
-        transform_stats=pd.read_csv(out / "vocab" / "value_transform_stats.csv"),
+        numeric_vocab=load_json(root / "numeric_tag_vocab.json"),
+        pure_vocab=load_json(root / "pure_label_vocab.json"),
+        transform_stats=pd.read_csv(root / "value_transform_stats.csv"),
     )
 
 

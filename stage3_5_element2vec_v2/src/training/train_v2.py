@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import math
 import random
 import gc
@@ -23,7 +24,7 @@ from ..data.dataset import (
 from ..models.element2vec_v2 import build_model
 from ..training.losses import compute_losses
 from ..training.scheduler import build_warmup_cosine_scheduler
-from ..utils.io import ensure_output_dirs, load_config, output_dir
+from ..utils.io import ensure_output_dirs, load_config, output_dir, vocab_dir
 from ..utils.logging import CsvLogger
 from ..utils.seed import set_seed
 
@@ -99,7 +100,8 @@ def export_model_embeddings(model, vocab, out: Path, prefix: str) -> None:
 def save_checkpoints(model, optimizer, scheduler, config, vocab, step: int, out: Path) -> None:
     out_ckpt = out / "checkpoints"
     out_ckpt.mkdir(parents=True, exist_ok=True)
-    torch.save(model.token_projector.state_dict(), out_ckpt / "token_projector.pt")
+    if hasattr(model, "token_projector"):
+        torch.save(model.token_projector.state_dict(), out_ckpt / "token_projector.pt")
     torch.save(model.transformer_encoder.state_dict(), out_ckpt / "transformer_encoder.pt")
     torch.save(model.decoders.state_dict(), out_ckpt / "decoders.pt")
     torch.save(
@@ -111,14 +113,22 @@ def save_checkpoints(model, optimizer, scheduler, config, vocab, step: int, out:
             "config": config,
             "numeric_vocab": vocab.numeric_vocab,
             "pure_vocab": vocab.pure_vocab,
+            "value_transform_stats": vocab.transform_stats.to_dict(orient="records"),
         },
         out_ckpt / "full_model.pt",
     )
 
 
 def resolve_training_steps(config: dict, dataset_size: int, max_steps_override: int | None = None) -> tuple[int, int, int | None]:
-    batch_size = int(config["training"]["batch_size"]) * int(config["training"].get("gradient_accumulation_steps", 1))
-    steps_per_epoch = max(1, math.ceil(dataset_size / batch_size))
+    micro_batch_size = int(config["training"]["batch_size"])
+    grad_accum = max(int(config["training"].get("gradient_accumulation_steps", 1)), 1)
+    micro_batches_per_epoch = math.ceil(dataset_size / micro_batch_size)
+    steps_per_epoch = micro_batches_per_epoch // grad_accum
+    if steps_per_epoch < 1:
+        raise ValueError(
+            f"Dataset yields {micro_batches_per_epoch} micro-batch(es), fewer than "
+            f"gradient_accumulation_steps={grad_accum}; increase --max-samples or lower --batch-size."
+        )
     target_epochs = config["training"].get("epochs", config["training"].get("target_epochs"))
     if max_steps_override is not None:
         return int(max_steps_override), steps_per_epoch, int(target_epochs) if target_epochs else None
@@ -268,8 +278,12 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
     ensure_output_dirs(config)
     out = output_dir(config)
     set_seed(int(config["training"]["seed"]))
-    required = [out / "vocab" / "numeric_tag_vocab.json", out / "vocab" / "pure_label_vocab.json", out / "vocab" / "value_transform_stats.csv"]
+    vocab_root = vocab_dir(config)
+    required = [vocab_root / "numeric_tag_vocab.json", vocab_root / "pure_label_vocab.json", vocab_root / "value_transform_stats.csv"]
     if not all(p.exists() for p in required):
+        if config.get("data", {}).get("vocab_dir"):
+            missing = ", ".join(str(p) for p in required if not p.exists())
+            raise FileNotFoundError(f"Frozen vocabulary is incomplete; missing: {missing}")
         build_vocab(config)
     vocab = load_vocab_bundle(config)
     dataset = WholeRockTokenDataset(config, vocab, mode="train", max_samples=max_samples)
@@ -415,8 +429,27 @@ def main() -> None:
     parser.add_argument("--config", default="stage3_5_element2vec_v2/configs/v2_base.yaml")
     parser.add_argument("--max-steps", type=int, default=None)
     parser.add_argument("--max-samples", type=int, default=None)
+    parser.add_argument("--sqlite-path", default=None)
+    parser.add_argument("--outputs-dir", default=None)
+    parser.add_argument("--device", default=None)
+    parser.add_argument("--batch-size", type=int, default=None)
+    parser.add_argument("--probe-size", type=int, default=None)
+    parser.add_argument("--probe-batch-size", type=int, default=None)
     args = parser.parse_args()
-    train(load_config(args.config), max_steps_override=args.max_steps, max_samples=args.max_samples)
+    config = copy.deepcopy(load_config(args.config))
+    if args.sqlite_path is not None:
+        config["data"]["sqlite_path"] = args.sqlite_path
+    if args.outputs_dir is not None:
+        config["project"]["outputs_dir"] = args.outputs_dir
+    if args.device is not None:
+        config["training"]["device"] = args.device
+    if args.batch_size is not None:
+        config["training"]["batch_size"] = args.batch_size
+    if args.probe_size is not None:
+        config.setdefault("probe", {})["size"] = args.probe_size
+    if args.probe_batch_size is not None:
+        config.setdefault("probe", {})["batch_size"] = args.probe_batch_size
+    train(config, max_steps_override=args.max_steps, max_samples=args.max_samples)
 
 
 if __name__ == "__main__":

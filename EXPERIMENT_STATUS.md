@@ -55,6 +55,21 @@ Status: 50-epoch whole-rock training completed; final checkpoint published.
 
 The training objective includes numeric-value reconstruction, numeric-tag prediction, and rock group/origin/type prediction. Consequently, geological label structure can reflect supervision and cannot by itself demonstrate emergent geochemical semantics.
 
+## Stage 3.5 — Value-RoPE Z architecture experiment
+
+Status: implementation and local verification complete; full 50-epoch training not yet run.
+
+- Experiment ID and branch: `value_rope_z` / `experiment/value-rope-z`, based on commit `5650034`.
+- Frozen inputs: the same 34 numeric fields, 96 pure-label tokens, and V2 robust-z transform statistics.
+- Token input: direct 768D tag/label embedding with no input fusion MLP.
+- Numeric injection: standardized z rotates all 64 dimensions of every attention head's Q and K; V receives no direct numeric input.
+- Masked numeric values use position zero plus one shared learned 768D mask-state vector.
+- Backbone and training budget remain 12 layers, 12 heads, 3,072D FFN, batch 512 with accumulation 2, 50 epochs, and 13,200 optimizer steps.
+- Parameter count: 85,255,040, compared with 86,798,583 for the released V2 model.
+- Generated checkpoints and sample-level outputs are local-only and excluded from Git.
+
+The experiment is an architecture comparison, not yet evidence of improved representation quality. Stage 3.6 comparisons require a completed checkpoint and revised interpretation of the direct input-embedding level.
+
 ## Stage 3.6 — Breadth-first representation-space audit
 
 Status: 50 registered experiments completed or explicitly retained as unavailable/failed.
