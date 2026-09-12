@@ -1,5 +1,9 @@
 # Reproducibility and continuation guide
 
+## September 2026 paired value-RoPE audit
+
+The completed follow-up compares the final V2 and value-RoPE checkpoints, both seed-42 random architectures, and raw/missingness controls on the original Stage 3.6 samples. See [exact commands and data requirements](../stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPRODUCE.md) and the [aggregate report](../stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPORT.md). Sample-level outputs and checkpoints stay in the ignored value-RoPE output directory. New replay directories preserve the historical audit.
+
 ## Reproduction levels
 
 The repository supports three distinct levels. State which one was used in any report.

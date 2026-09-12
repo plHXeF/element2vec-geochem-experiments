@@ -1,0 +1,6 @@
+{
+  "similarity_at_2pi": 0.7354907456237254,
+  "maximum_similarity_gap_ge4": 0.7479487987348226,
+  "gap_at_max": 4.0,
+  "clipping_collisions": "z values beyond +12 or below -12 become identical at preprocessing; both models share this limitation"
+}

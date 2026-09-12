@@ -1,0 +1,3 @@
+model,all_positions_including_cls_relative_error,numeric_only_shift_relative_change
+rope,4.6541617848561145e-07,0.382983922958374
+random_rope,3.194799660377612e-07,0.023156769573688507

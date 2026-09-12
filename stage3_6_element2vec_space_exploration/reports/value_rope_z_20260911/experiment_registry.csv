@@ -1,0 +1,12 @@
+experiment_id,user_item,status,evidence,conclusion,limitation
+VR01,1,completed,derivatives_aggregate.csv;controlled_fine_steps_aggregate.csv,Small-step direction and local prediction improve,Large-step local prediction is mixed
+VR02,2,completed,controlled_backgrounds_aggregate.csv,Fixed-value responses remain background-dependent,Reporting panels and sources differ between natural backgrounds
+VR03,3,completed,shifts_aggregate.csv;raw_ratio_shifts_aggregate.csv;translation_anchor_control.csv,Common-z sensitivity is suppressed but common trace scaling remains visible,Relative z is not a physical concentration ratio
+VR04,4,completed,joints_aggregate.csv;linear_range_aggregate.csv,Joint additivity improves but local linear range remains small,Finite grid and thresholds bound the conclusion
+VR05,5,completed,paths_aggregate.csv;original_differentiation_centroids_aggregate.csv,Process uniformity and tangent smoothness give mixed results,Proxy paths share endpoints and lack petrological calibration
+VR06,6,completed,paths_aggregate.csv;rotary_frequency_energy.csv,Attention distorts constant-speed rotation and training emphasizes high frequencies,Q/K are queried tokens while later layers use numeric mean
+VR07,7,completed,collisions_aggregate.csv;support_collisions_aggregate.csv;phase_kernel.json,Four wide SiO2 paths show near-collisions outside observed support,Finite grids do not prove absence elsewhere
+VR08,8,completed,context_aggregate.csv,Strong contextual readability remains with element-specific losses,Backgrounds are defined by SiO2 and pretraining saw the data
+VR09,9,completed,quality_modes.csv;quality_paired_bootstrap.csv;dropout_knn.csv,Rock neighborhoods worsen while nuisance clustering increases,Pretraining-contaminated representation diagnostics
+VR10,10,completed,paired_bootstrap.csv;quality_paired_bootstrap.csv;REPRODUCE.md,Original sample pools and model inputs are paired,Only one training seed is available
+VR11,11,completed,quality.csv;paths_aggregate.csv;controlled_backgrounds_aggregate.csv,Random models are smoother but semantically weaker,One random initialization per architecture

@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "models": {
+    "v2": {
+      "finite": true,
+      "shape_check": true,
+      "device_agreement": true
+    },
+    "rope": {
+      "finite": true,
+      "shape_check": true,
+      "device_agreement": true
+    },
+    "random_rope": {
+      "finite": true,
+      "shape_check": true,
+      "device_agreement": true
+    },
+    "random_v2": {
+      "finite": true,
+      "shape_check": true,
+      "device_agreement": true
+    }
+  },
+  "global_samples": 12000,
+  "fit_samples": 8000,
+  "evaluation_samples": 4000,
+  "primary_stimuli": 26277,
+  "controlled_stimuli": 6349,
+  "quality_modes_rows": 540,
+  "constant_rope_input_checked": true,
+  "translation_anchor_checked": true,
+  "input_fingerprints_checked": true
+}

@@ -2,6 +2,14 @@
 
 Snapshot date: 2026-08-24
 
+## Value RoPE Z follow-up — completed 2026-09-12
+
+The 50-epoch `experiment/value-rope-z` run completed at step 13,200. The September 11–12 paired audit uses the original 12,000 samples and 8,000/4,000 projection pools, both trained models, and seed-42 random RoPE/MLP controls.
+
+Final fixed training-probe loss improves from 0.35137 to 0.30026. Small-step tangent stability and joint-intervention additivity improve, but chemistry-only rock-neighbor purity falls from 46.98% to 38.35%, while reference/source purity increases. Label-masked and CLS controls confirm the regression. Random models are smoother than trained models. Common-z suppression is not concentration-ratio invariance; wide out-of-support SiO2 sweeps show near-collisions.
+
+Retain this model as an architectural comparison, not a replacement for V2. See the [complete paired report](stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPORT.md), [11-item registry](stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/experiment_registry.csv), and [reproduction commands](stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPRODUCE.md). Checkpoints, sample-level outputs and fitted bases remain private and ignored.
+
 ## Overall status
 
 The repository is a publishable research snapshot, not a finished scientific claim or production package. Code, configurations, aggregate evidence, vocabularies, final static embeddings, training logs, and checkpoints are preserved. Private datasets and sample-level derived data are excluded.

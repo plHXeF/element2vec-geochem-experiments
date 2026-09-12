@@ -1,0 +1,7 @@
+task,model,n,mae,rmse,abs_error_p95,abs_error_p99,both_correct,rope_only_correct,v2_only_correct,both_wrong
+numeric_value,v2,3726,0.23245866553888167,0.5093583282153731,0.7296241670846937,1.6772295236587524,,,,
+numeric_value,rope,3726,0.22996400841665507,0.5160579402101059,0.7230486087501048,1.576132945716381,,,,
+element,paired,1246,,,,,1153.0,25.0,21.0,47.0
+rock_group,paired,617,,,,,617.0,0.0,0.0,0.0
+rock_origin,paired,777,,,,,771.0,2.0,0.0,4.0
+rock_type,paired,1826,,,,,1789.0,21.0,5.0,11.0

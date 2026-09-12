@@ -23,3 +23,9 @@ Masked values use a zero rotary position and add one shared learned 768-dimensio
 The model has 85,255,040 parameters. Outputs are local under `outputs/value_rope_z/` and are excluded from Git. The fixed probe remains a training-set diagnostic. No quality result should be recorded until the full run finishes and is compared with V2 using the same downstream controls. Stage 3.6 input-level analyses must describe `projected_tokens` as a compatibility alias for direct label embeddings.
 
 Training prints an explicit progress record for every micro-batch by default. The record includes epoch, batch index and total, completed optimizer steps, actual batch size, and the three mask-task counts. `logging.batch_log_every` or `--batch-log-every` controls its frequency.
+
+## Completed training and paired audit
+
+Training completed at 13,200 steps / 50 epochs. The September 11–12 audit confirms the budget, vocabulary and transformation statistics, and evaluates four models on identical inputs with MPS/CPU consistency checks. Final training-probe total loss is 0.30026 versus V2's 0.35137; local tangent stability improves, while rock-neighbor purity and source confounding worsen. This model is retained as a comparison rather than promoted as a better overall latent representation.
+
+See the [analysis report](../../stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPORT.md) and [reproduction instructions](../../stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPRODUCE.md). The private audit directory is `outputs/value_rope_z/audit/`; published outputs contain only aggregates.
