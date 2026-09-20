@@ -147,6 +147,25 @@ Direction-energy analysis further shows that confounding is more top-heavy than 
 8. The project has scripts but no formal test suite or CI yet.
 9. Exact environment reproduction across macOS/MPS, Linux/CUDA, and CPU remains unverified.
 
+## RoPE_geo + 15% numeric mask (2026-09-12)
+
+Independent implementation on experiment/value-rope-z; user-launched training completed
+13,200 steps and paired analysis completed 2026-09-13. Only numeric coordinates and numeric-task mask density change;
+the 85,255,040-parameter RoPE backbone and prior training budget remain fixed.
+The original RoPE-z reports and conclusions are preserved.
+
+- [Experiment, formulas and commands](stage3_5_element2vec_v2/experiments/rope_geo_mask15/README.md)
+- [Independent report and current verification](stage3_5_element2vec_v2/experiments/rope_geo_mask15/REPORT.md)
+- [Paired evaluation protocol](stage3_5_element2vec_v2/experiments/rope_geo_mask15/PAIRED_PROTOCOL.md)
+
+Original 12,000 paired IDs and 8,000/4,000 analysis pools are frozen locally.
+The new combination improves several small-step geometric metrics but fails the
+global-representation goal: chemistry-only FULL k=15 rock purity is 0.3065
+(V2 0.4698; RoPE-z 0.3835), and source purity increases to 0.6293
+(RoPE-z 0.6063). Random controls show why smoothness alone is insufficient.
+There is no held-out pretraining validation. Private outputs are Git-ignored;
+only new aggregate tables and figures accompany the independent report.
+
 ## Recommended next experiments
 
 1. Retrain with publication/locality/suite-aware partitions and evaluate strictly outside the pretraining fold.

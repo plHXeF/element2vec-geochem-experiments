@@ -1,0 +1,43 @@
+{
+  "models": [
+    "v2",
+    "rope",
+    "geo",
+    "random_v2",
+    "random_rope",
+    "random_geo"
+  ],
+  "training_steps": 13200,
+  "paired_samples": 12000,
+  "fit_samples": 8000,
+  "evaluation_samples": 4000,
+  "chemistry_only": true,
+  "quality_random_projection_seeds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "main_geometry_spaces": [
+    "FULL",
+    "PCA64",
+    "PCA32",
+    "PCA3",
+    "PCA2"
+  ],
+  "cpu_mps_fine_tangent_min": 0.999999355577771,
+  "private_sample_artifacts_published": false,
+  "independent_validation": false,
+  "date": "2026-09-13",
+  "all_new_latent_outputs_finite": true,
+  "baseline_checkpoint_and_cache_subset_replay_passed": true,
+  "stage3_5_tests_passed": 25,
+  "stage3_6_tests_passed": 10,
+  "old_reports_unchanged": true
+}

@@ -2,19 +2,32 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 
 from ..data.collate import collate_token_batch
+from ..data.geochemical_coordinates import coordinate_spec, coordinate_fingerprint, GEO_VERSION
 from ..data.dataset import WholeRockTokenDataset, load_vocab_bundle
 from ..models.element2vec_v2 import build_model
 from ..training.train_v2 import choose_device, move_batch_to_device
-from ..utils.io import ensure_output_dirs, load_config, output_dir
+from ..utils.io import ensure_output_dirs, load_config, output_dir, save_json
 
 
 def validate_checkpoint_compatibility(config: dict, checkpoint: dict, vocab) -> None:
+    saved_config = checkpoint.get("config", {})
+    requested_coordinate = config.get("data", {}).get("value_transform", {}).get("name", "v2_robust_z")
+    saved_coordinate = saved_config.get("data", {}).get("value_transform", {}).get("name", "v2_robust_z")
+    if requested_coordinate != saved_coordinate:
+        raise ValueError("Checkpoint coordinate version does not match the requested coordinate")
+    if requested_coordinate == GEO_VERSION:
+        expected = coordinate_fingerprint(config)
+        if checkpoint.get("coordinate_fingerprint") != expected or coordinate_fingerprint(saved_config) != expected:
+            raise ValueError("Checkpoint coordinate reference values, scales or closure rules do not match")
+        if checkpoint.get("coordinate_spec") != coordinate_spec(config):
+            raise ValueError("Checkpoint is missing or has inconsistent coordinate metadata")
     requested_architecture = str(config["model"].get("architecture", "mlp_fusion"))
     saved_architecture = str(checkpoint.get("config", {}).get("model", {}).get("architecture", "mlp_fusion"))
     if requested_architecture != saved_architecture:
@@ -47,7 +60,15 @@ def _latent_rows(sample_ids, labels, latents, prefix: str) -> list[dict]:
 
 
 @torch.no_grad()
-def extract(config: dict, checkpoint: str, max_samples: int | None = None) -> dict:
+def extract(config: dict, checkpoint: str, max_samples: int | None = None,
+            sample_ids_path: str | None = None, label_mode: str = "masked") -> dict:
+    if label_mode not in {"masked", "chemistry_only"}:
+        raise ValueError("Unknown extraction label mode")
+    if sample_ids_path and max_samples is not None:
+        raise ValueError("Use either exact sample IDs or --max-samples, not both")
+    if config["data"].get("value_transform", {}).get("name") == GEO_VERSION:
+        if "value_rope_geo_mask15" not in output_dir(config).resolve().parts:
+            raise ValueError("Geo extraction outputs must be in a separate value_rope_geo_mask15 directory")
     ensure_output_dirs(config)
     out = output_dir(config)
     vocab = load_vocab_bundle(config)
@@ -58,6 +79,17 @@ def extract(config: dict, checkpoint: str, max_samples: int | None = None) -> di
     model.load_state_dict(ckpt["model_state_dict"])
     model.eval()
     dataset = WholeRockTokenDataset(config, vocab, mode="extract", max_samples=max_samples, mask_pure_labels=True)
+    if sample_ids_path:
+        wanted = pd.read_csv(sample_ids_path, dtype={"sample_id": str})["sample_id"]
+        if wanted.empty or wanted.duplicated().any():
+            raise ValueError("Paired extraction requires nonempty, unique sample IDs")
+        indexed = dataset.df.copy()
+        indexed.index = indexed[dataset.sample_col].astype(str)
+        if indexed.index.duplicated().any() or not wanted.isin(indexed.index).all():
+            raise ValueError("Paired sample IDs are missing or ambiguous in the database")
+        dataset.df = indexed.loc[wanted.tolist()].reset_index(drop=True)
+    if label_mode == "chemistry_only":
+        dataset.chemistry_only = True
     loader = DataLoader(
         dataset,
         batch_size=int(config["evaluation"]["batch_size"]),
@@ -77,10 +109,18 @@ def extract(config: dict, checkpoint: str, max_samples: int | None = None) -> di
         mean_numeric = (token_hidden * numeric_mask.unsqueeze(-1)).sum(dim=1) / denom
         cls_rows.extend(_latent_rows(raw_batch["sample_ids"], raw_batch["labels"], cls_latent, "latent"))
         mean_rows.extend(_latent_rows(raw_batch["sample_ids"], raw_batch["labels"], mean_numeric, "latent"))
-    cls_path = out / "latents" / "sample_cls_latent.csv"
-    mean_path = out / "latents" / "sample_mean_numeric_latent.csv"
+    prefix = "chemistry_only_" if label_mode == "chemistry_only" else ""
+    cls_path = out / "latents" / f"{prefix}sample_cls_latent.csv"
+    mean_path = out / "latents" / f"{prefix}sample_mean_numeric_latent.csv"
     pd.DataFrame(cls_rows).to_csv(cls_path, index=False, encoding="utf-8-sig")
     pd.DataFrame(mean_rows).to_csv(mean_path, index=False, encoding="utf-8-sig")
+    if config["data"].get("value_transform", {}).get("name") == GEO_VERSION:
+        ordered_ids = "\n".join(dataset.df[dataset.sample_col].astype(str).tolist())
+        save_json({"samples": len(dataset), "label_mode": label_mode,
+                   "ordered_sample_ids_sha256": hashlib.sha256(ordered_ids.encode()).hexdigest(),
+                   "coordinate_fingerprint": coordinate_fingerprint(config),
+                   "checkpoint": str(checkpoint)},
+                  out / "logs" / f"{prefix}extraction_manifest.json")
     print(f"[extract_embeddings] wrote {cls_path}")
     print(f"[extract_embeddings] wrote {mean_path}")
     return {"cls": str(cls_path), "mean_numeric": str(mean_path)}
@@ -94,6 +134,8 @@ def main() -> None:
     parser.add_argument("--sqlite-path", default=None)
     parser.add_argument("--outputs-dir", default=None)
     parser.add_argument("--device", default=None)
+    parser.add_argument("--sample-ids", default=None, help="Private CSV containing exact ordered sample_id values.")
+    parser.add_argument("--label-mode", choices=["masked", "chemistry_only"], default="masked")
     args = parser.parse_args()
     config = copy.deepcopy(load_config(args.config))
     if args.sqlite_path is not None:
@@ -102,7 +144,8 @@ def main() -> None:
         config["project"]["outputs_dir"] = args.outputs_dir
     if args.device is not None:
         config["training"]["device"] = args.device
-    extract(config, args.checkpoint, max_samples=args.max_samples)
+    extract(config, args.checkpoint, max_samples=args.max_samples,
+            sample_ids_path=args.sample_ids, label_mode=args.label_mode)
 
 
 if __name__ == "__main__":

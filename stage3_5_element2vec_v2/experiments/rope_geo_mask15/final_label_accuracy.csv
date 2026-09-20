@@ -1,0 +1,5 @@
+task,n,accuracy
+numeric_tag,1246,0.9735152487961477
+rock_group,617,1.0
+rock_origin,777,0.9948519948519948
+rock_type,1826,0.9561883899233297

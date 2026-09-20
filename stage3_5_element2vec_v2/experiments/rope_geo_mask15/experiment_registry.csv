@@ -1,0 +1,12 @@
+experiment_id,status,scope
+geo15_implementation,verified,coordinates and observed-token multi-mask with unchanged architecture
+geo15_training,completed,13200 optimizer updates and final train-probe check
+geo15_local_geometry,completed_small_step_improvement,sweeps tangent curvature and multi-h Jacobian with CPU numerical check
+geo15_additivity,completed_scale_dependent_improvement,small-step gain does not extend to all large perturbations
+geo15_processes,completed_mixed_results,exact raw mixing and melting plus differentiation and weathering
+geo15_context,completed_weaker_than_baselines,fixed raw value and fixed coordinate background probes
+geo15_global_quality,completed_goal_not_met,rock neighborhoods weaker while source/reference purity increases
+geo15_missingness,completed_mixed_results,latent cosine robustness improves but rock accuracy remains weak
+geo15_collisions,completed_no_supported_collisions,finite support test does not prove global injectivity
+geo15_layers,completed,input QK and layers 1 3 6 9 12
+geo15_spaces_controls,completed,FULL PCA64 PCA32 PCA3 PCA2 and random model/projection controls

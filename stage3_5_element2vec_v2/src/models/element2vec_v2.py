@@ -71,6 +71,8 @@ class Element2VecV2(nn.Module):
         masked_hidden = out["encoded"][torch.arange(out["encoded"].shape[0], device=positions.device), positions]
         out["masked_hidden"] = masked_hidden
         out["decoder_outputs"] = self.decoders(masked_hidden)
+        if 'numeric_prediction_mask' in batch:
+            out['numeric_value_predictions'] = self.decoders.numeric_value_decoder(out['encoded'][:, 1:]).squeeze(-1)
         return out
 
 
@@ -145,6 +147,8 @@ class Element2VecValueRoPE(nn.Module):
         ]
         out["masked_hidden"] = masked_hidden
         out["decoder_outputs"] = self.decoders(masked_hidden)
+        if 'numeric_prediction_mask' in batch:
+            out['numeric_value_predictions'] = self.decoders.numeric_value_decoder(out['encoded'][:, 1:]).squeeze(-1)
         return out
 
 

@@ -88,6 +88,20 @@ Caches, fitting pools, projection bases, and sample-level outputs are intentiona
 
 Published CSV/Markdown/figures are a frozen snapshot. A fresh run may differ because of package versions, data revisions, nondeterministic kernels, or a changed research view. Write regenerated outputs to the stage's standard ignored directories, compare aggregate metrics, and commit only a deliberate new snapshot after reviewing data exposure.
 
+## Independent RoPE_geo + 15% mask run
+
+Use the new Stage 3.5 config v2_value_rope_geo_mask15.yaml and the existing frozen
+vocabularies. Geo references/rules are versioned in the config and validated
+against the checkpoint. No geo per-element statistics are fitted.
+User-launched full training and paired analysis completed on 2026-09-13.
+Tested MPS smoke outputs remain isolated from the formal run.
+See [formulas, environment, training and extraction commands](../stage3_5_element2vec_v2/experiments/rope_geo_mask15/README.md)
+and the [paired analysis protocol](../stage3_5_element2vec_v2/experiments/rope_geo_mask15/PAIRED_PROTOCOL.md).
+The new 12,000-ID pairing is frozen locally; do not replace the prior audit's
+raw stimuli with geo coordinates or overwrite any published RoPE-z result.
+Post-training commands and legacy-cache replay verification are documented in
+[ANALYSIS_REPRODUCE.md](../stage3_5_element2vec_v2/experiments/rope_geo_mask15/ANALYSIS_REPRODUCE.md).
+
 ## Verification before publication
 
 ```bash

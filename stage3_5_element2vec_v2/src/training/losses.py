@@ -17,7 +17,12 @@ def compute_losses(outputs: dict, batch: dict, pure_fields: list[str], loss_weig
         "rock_type_loss": zero,
     }
     value_mask = task_ids == 0
-    if value_mask.any():
+    if 'numeric_prediction_mask' in batch:
+        token_mask = batch['numeric_prediction_mask'] & batch['attention_mask'] & batch['numeric_token_mask'] & value_mask[:, None]
+        if token_mask.any():
+            losses['numeric_value_loss'] = F.huber_loss(outputs['numeric_value_predictions'][token_mask],
+                                                       batch['numeric_targets_all'][token_mask], reduction='mean')
+    elif value_mask.any():
         losses["numeric_value_loss"] = F.huber_loss(
             dec["numeric_value"][value_mask],
             batch["numeric_value_targets"][value_mask],

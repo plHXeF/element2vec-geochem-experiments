@@ -1,0 +1,33 @@
+{
+  "date": "2026-09-12",
+  "experiment": "rope_geo_mask15",
+  "training_status": "not_started_by_agent",
+  "stage3_5_tests_passed": 25,
+  "existing_stage3_6_tests_passed": 6,
+  "python_syntax_files_passed": 29,
+  "model_parameters": 85255040,
+  "smoke": {
+    "device": "mps",
+    "real_samples": 8,
+    "micro_batch": 2,
+    "gradient_accumulation": 2,
+    "optimizer_steps": 2,
+    "probe_steps": [0, 1, 2],
+    "cpu_reload_consistency": true,
+    "cpu_latent_extraction": true,
+    "formal_batch_512_tested": false
+  },
+  "preflight": {
+    "data_samples": 270241,
+    "closure_eligible": 161270,
+    "closure_fraction": 0.596763629501075,
+    "numeric_mask_samples": 4096,
+    "numeric_mask_fraction": 0.15014893040888166,
+    "original_paired_samples": 12000,
+    "fit_pool": 8000,
+    "evaluation_pool": 4000,
+    "current_database_matches_old_paired_coordinates": true
+  },
+  "previous_reports_unchanged": true,
+  "new_outputs_git_ignored": true
+}

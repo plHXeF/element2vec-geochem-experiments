@@ -1,0 +1,8 @@
+family,rows,admissible_rows,cases,complete_admissible_cases,closure_crossing_cases
+context,1800,1695,6,0,6
+derivative,11791,11427,907,724,173
+dropout,2000,1904,400,378,336
+joint,2850,2739,505,452,90
+process,307,239,15,11,2
+shift,767,767,119,119,26
+sweep,6762,5335,98,37,46

@@ -13,6 +13,8 @@ import torch
 
 from ..data.build_vocab import build_vocab
 from ..data.collate import collate_token_batch
+from ..data.geochemical_coordinates import coordinate_spec, coordinate_fingerprint, GEO_VERSION
+from ..utils.io import save_json
 from ..data.dataset import (
     ID_TO_TASK,
     TASK_TO_ID,
@@ -111,6 +113,8 @@ def save_checkpoints(model, optimizer, scheduler, config, vocab, step: int, out:
             "optimizer_state_dict": optimizer.state_dict(),
             "scheduler_state_dict": scheduler.state_dict() if scheduler is not None else None,
             "config": config,
+            "coordinate_spec": coordinate_spec(config) if "value_transform" in config["data"] else None,
+            "coordinate_fingerprint": coordinate_fingerprint(config) if "numeric_fields" in config["data"] else None,
             "numeric_vocab": vocab.numeric_vocab,
             "pure_vocab": vocab.pure_vocab,
             "value_transform_stats": vocab.transform_stats.to_dict(orient="records"),
@@ -234,6 +238,13 @@ def task_count_row(batch: dict) -> dict[str, int]:
     }
 
 
+def numeric_mask_counts(batch: dict) -> dict[str, int]:
+    eligible = (batch["task_ids"] == 0)[:, None] & batch["numeric_token_mask"] & batch["attention_mask"]
+    selected = batch.get("numeric_prediction_mask", batch["mask_value_flags"].bool())
+    return {"numeric_masked_tokens": int((selected & eligible).sum().detach().cpu()),
+            "numeric_eligible_tokens": int(eligible.sum().detach().cpu())}
+
+
 def average_rows(rows: list[dict]) -> dict:
     if not rows:
         return {}
@@ -264,21 +275,40 @@ def evaluate_probe(model, probe_batches: list[dict], device: torch.device, pure_
     model.eval()
     totals: dict[str, float] = {}
     total_samples = 0
+    numeric_total, numeric_count = 0.0, 0
+    multi_value = False
     for raw_batch in probe_batches:
         batch = move_batch_to_device(raw_batch, device)
         outputs = model(batch)
         losses = compute_losses(outputs, batch, pure_fields, config["training"]["loss_weights"])
         batch_size = int(batch["attention_mask"].shape[0])
         total_samples += batch_size
+        if "numeric_prediction_mask" in batch:
+            multi_value = True
+            count = numeric_mask_counts(batch)["numeric_masked_tokens"]
+            numeric_total += float(losses["numeric_value_loss"].detach().cpu()) * count
+            numeric_count += count
         for key, value in losses.items():
             totals[key] = totals.get(key, 0.0) + float(value.detach().cpu()) * batch_size
         del batch, outputs, losses
     if total_samples == 0:
         return {}
-    return {f"probe_{key}": value / total_samples for key, value in totals.items()}
+    result = {f"probe_{key}": value / total_samples for key, value in totals.items()}
+    if multi_value:
+        old_numeric = result["probe_numeric_value_loss"]
+        result["probe_numeric_value_loss"] = numeric_total / max(numeric_count, 1)
+        result["probe_total_loss"] += float(config["training"]["loss_weights"].get("numeric_value", 1.0)) * (result["probe_numeric_value_loss"] - old_numeric)
+        result["probe_numeric_masked_tokens"] = numeric_count
+    return result
 
 
 def train(config: dict, max_steps_override: int | None = None, max_samples: int | None = None) -> dict:
+    if config["data"].get("value_transform", {}).get("name") == GEO_VERSION:
+        destination = output_dir(config).resolve()
+        if "value_rope_geo_mask15" not in destination.parts:
+            raise ValueError("Geo experiment outputs must be inside a separate value_rope_geo_mask15 directory")
+        if (destination / "checkpoints/full_model.pt").exists() or (destination / "logs/train_log.csv").exists():
+            raise FileExistsError("Geo training output already exists; choose a fresh --outputs-dir to preserve the run")
     ensure_output_dirs(config)
     out = output_dir(config)
     set_seed(int(config["training"]["seed"]))
@@ -291,6 +321,11 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
         build_vocab(config)
     vocab = load_vocab_bundle(config)
     dataset = WholeRockTokenDataset(config, vocab, mode="train", max_samples=max_samples)
+    if config["data"].get("value_transform", {}).get("name") == GEO_VERSION:
+        save_json({"config": config, "coordinate_qc": dataset.coordinate_qc,
+                   "max_steps_override": max_steps_override, "max_samples_override": max_samples,
+                   "validation": "full-data training; fixed training probe, no held-out validation"},
+                  out / "logs/run_manifest.json")
     device = choose_device(str(config["training"].get("device", "auto")))
     model = build_model(config, vocab).to(device)
     export_model_embeddings(model, vocab, out, "initial")
@@ -355,7 +390,9 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
                     f"tasks(value/tag/label)="
                     f"{counts['mask_numeric_value_count']}/"
                     f"{counts['mask_numeric_tag_count']}/"
-                    f"{counts['mask_pure_label_count']}"
+                    f"{counts['mask_pure_label_count']} "
+                    f"numeric_masked/eligible={numeric_mask_counts(raw_batch)['numeric_masked_tokens']}/"
+                    f"{numeric_mask_counts(raw_batch)['numeric_eligible_tokens']}"
                 )
             batch = move_batch_to_device(raw_batch, device)
             model.train()
@@ -373,6 +410,7 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
                 "num_tokens_mean": float(batch["attention_mask"].sum(dim=1).float().mean().detach().cpu()),
                 "num_tokens_max": int(batch["attention_mask"].sum(dim=1).max().detach().cpu()),
                 **task_count_row(batch),
+                **numeric_mask_counts(batch),
             }
             accum_rows.append(loss_row)
             if len(accum_rows) < grad_accum_steps:
@@ -404,6 +442,9 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
             }
             if log_memory:
                 row.update(device_memory_stats(device))
+            row["numeric_masked_tokens"] = sum(r["numeric_masked_tokens"] for r in accum_rows)
+            row["numeric_eligible_tokens"] = sum(r["numeric_eligible_tokens"] for r in accum_rows)
+            row["numeric_mask_fraction"] = row["numeric_masked_tokens"] / max(row["numeric_eligible_tokens"], 1)
             row.update(
                 ema.update(
                     row,
