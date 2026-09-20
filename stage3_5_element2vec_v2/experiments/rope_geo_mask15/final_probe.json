@@ -1,0 +1,10 @@
+{
+  "step": 13200,
+  "probe_numeric_value_loss": 0.018779968707962405,
+  "probe_numeric_tag_loss": 0.07944493822287768,
+  "probe_rock_group_loss": 0.0006798265872802745,
+  "probe_rock_origin_loss": 0.03299393141613027,
+  "probe_rock_type_loss": 0.13453651033341885,
+  "probe_total_loss": 0.26643517658128446,
+  "probe_numeric_masked_tokens": 12261
+}

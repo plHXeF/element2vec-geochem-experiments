@@ -1,5 +1,9 @@
 # Reproducibility and continuation guide
 
+## September 2026 paired value-RoPE audit
+
+The completed follow-up compares the final V2 and value-RoPE checkpoints, both seed-42 random architectures, and raw/missingness controls on the original Stage 3.6 samples. See [exact commands and data requirements](../stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPRODUCE.md) and the [aggregate report](../stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPORT.md). Sample-level outputs and checkpoints stay in the ignored value-RoPE output directory. New replay directories preserve the historical audit.
+
 ## Reproduction levels
 
 The repository supports three distinct levels. State which one was used in any report.
@@ -41,6 +45,21 @@ Then run the two-step smoke test from the root README. Long training should be s
 - device memory after probes and checkpoints;
 - checkpoint hashes and ability to reload on CPU.
 
+## Value-RoPE Z continuation experiment
+
+The Value-RoPE configuration is `stage3_5_element2vec_v2/configs/v2_value_rope_z.yaml`. It intentionally reads the frozen V2 vocabulary and robust-z statistics from `stage3_5_element2vec_v2/outputs/vocab/`; if any required file is missing, training fails instead of fitting replacement statistics.
+
+Before training, run:
+
+```bash
+python -m unittest discover -s stage3_5_element2vec_v2/tests -p 'test_*.py'
+python scripts/verify_public_tree.py --tracked
+```
+
+The formal run keeps the V2 seed, tasks, optimizer, learning-rate schedule, probe protocol, and 13,200-step budget. The checkpoint is a fresh initialization and is incompatible with the released MLP-fusion V2 checkpoint. Training and extraction accept explicit `--sqlite-path`, `--outputs-dir`, and `--device` overrides; training also accepts batch and probe-size overrides for isolated smoke tests.
+
+All Value-RoPE outputs are written below `stage3_5_element2vec_v2/outputs/value_rope_z/` and must remain untracked. The full checkpoint includes the model architecture, both frozen vocabularies, and value-transform records. Extraction validates these records before loading weights.
+
 ## Stage 3.6 replay order
 
 The normal dependency order is:
@@ -68,6 +87,20 @@ Caches, fitting pools, projection bases, and sample-level outputs are intentiona
 ## Historical outputs versus regenerated outputs
 
 Published CSV/Markdown/figures are a frozen snapshot. A fresh run may differ because of package versions, data revisions, nondeterministic kernels, or a changed research view. Write regenerated outputs to the stage's standard ignored directories, compare aggregate metrics, and commit only a deliberate new snapshot after reviewing data exposure.
+
+## Independent RoPE_geo + 15% mask run
+
+Use the new Stage 3.5 config v2_value_rope_geo_mask15.yaml and the existing frozen
+vocabularies. Geo references/rules are versioned in the config and validated
+against the checkpoint. No geo per-element statistics are fitted.
+User-launched full training and paired analysis completed on 2026-09-13.
+Tested MPS smoke outputs remain isolated from the formal run.
+See [formulas, environment, training and extraction commands](../stage3_5_element2vec_v2/experiments/rope_geo_mask15/README.md)
+and the [paired analysis protocol](../stage3_5_element2vec_v2/experiments/rope_geo_mask15/PAIRED_PROTOCOL.md).
+The new 12,000-ID pairing is frozen locally; do not replace the prior audit's
+raw stimuli with geo coordinates or overwrite any published RoPE-z result.
+Post-training commands and legacy-cache replay verification are documented in
+[ANALYSIS_REPRODUCE.md](../stage3_5_element2vec_v2/experiments/rope_geo_mask15/ANALYSIS_REPRODUCE.md).
 
 ## Verification before publication
 

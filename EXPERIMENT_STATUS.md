@@ -2,6 +2,14 @@
 
 Snapshot date: 2026-08-24
 
+## Value RoPE Z follow-up — completed 2026-09-12
+
+The 50-epoch `experiment/value-rope-z` run completed at step 13,200. The September 11–12 paired audit uses the original 12,000 samples and 8,000/4,000 projection pools, both trained models, and seed-42 random RoPE/MLP controls.
+
+Final fixed training-probe loss improves from 0.35137 to 0.30026. Small-step tangent stability and joint-intervention additivity improve, but chemistry-only rock-neighbor purity falls from 46.98% to 38.35%, while reference/source purity increases. Label-masked and CLS controls confirm the regression. Random models are smoother than trained models. Common-z suppression is not concentration-ratio invariance; wide out-of-support SiO2 sweeps show near-collisions.
+
+Retain this model as an architectural comparison, not a replacement for V2. See the [complete paired report](stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPORT.md), [11-item registry](stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/experiment_registry.csv), and [reproduction commands](stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPRODUCE.md). Checkpoints, sample-level outputs and fitted bases remain private and ignored.
+
 ## Overall status
 
 The repository is a publishable research snapshot, not a finished scientific claim or production package. Code, configurations, aggregate evidence, vocabularies, final static embeddings, training logs, and checkpoints are preserved. Private datasets and sample-level derived data are excluded.
@@ -54,6 +62,21 @@ Status: 50-epoch whole-rock training completed; final checkpoint published.
 - Only the final full checkpoint and same-step component exports are available.
 
 The training objective includes numeric-value reconstruction, numeric-tag prediction, and rock group/origin/type prediction. Consequently, geological label structure can reflect supervision and cannot by itself demonstrate emergent geochemical semantics.
+
+## Stage 3.5 — Value-RoPE Z architecture experiment
+
+Status: implementation and local verification complete; full 50-epoch training not yet run.
+
+- Experiment ID and branch: `value_rope_z` / `experiment/value-rope-z`, based on commit `5650034`.
+- Frozen inputs: the same 34 numeric fields, 96 pure-label tokens, and V2 robust-z transform statistics.
+- Token input: direct 768D tag/label embedding with no input fusion MLP.
+- Numeric injection: standardized z rotates all 64 dimensions of every attention head's Q and K; V receives no direct numeric input.
+- Masked numeric values use position zero plus one shared learned 768D mask-state vector.
+- Backbone and training budget remain 12 layers, 12 heads, 3,072D FFN, batch 512 with accumulation 2, 50 epochs, and 13,200 optimizer steps.
+- Parameter count: 85,255,040, compared with 86,798,583 for the released V2 model.
+- Generated checkpoints and sample-level outputs are local-only and excluded from Git.
+
+The experiment is an architecture comparison, not yet evidence of improved representation quality. Stage 3.6 comparisons require a completed checkpoint and revised interpretation of the direct input-embedding level.
 
 ## Stage 3.6 — Breadth-first representation-space audit
 
@@ -123,6 +146,25 @@ Direction-energy analysis further shows that confounding is more top-heavy than 
 7. Sample-label spaces do not naturally align; separately fitted PCA bases must never be compared directly.
 8. The project has scripts but no formal test suite or CI yet.
 9. Exact environment reproduction across macOS/MPS, Linux/CUDA, and CPU remains unverified.
+
+## RoPE_geo + 15% numeric mask (2026-09-12)
+
+Independent implementation on experiment/value-rope-z; user-launched training completed
+13,200 steps and paired analysis completed 2026-09-13. Only numeric coordinates and numeric-task mask density change;
+the 85,255,040-parameter RoPE backbone and prior training budget remain fixed.
+The original RoPE-z reports and conclusions are preserved.
+
+- [Experiment, formulas and commands](stage3_5_element2vec_v2/experiments/rope_geo_mask15/README.md)
+- [Independent report and current verification](stage3_5_element2vec_v2/experiments/rope_geo_mask15/REPORT.md)
+- [Paired evaluation protocol](stage3_5_element2vec_v2/experiments/rope_geo_mask15/PAIRED_PROTOCOL.md)
+
+Original 12,000 paired IDs and 8,000/4,000 analysis pools are frozen locally.
+The new combination improves several small-step geometric metrics but fails the
+global-representation goal: chemistry-only FULL k=15 rock purity is 0.3065
+(V2 0.4698; RoPE-z 0.3835), and source purity increases to 0.6293
+(RoPE-z 0.6063). Random controls show why smoothness alone is insufficient.
+There is no held-out pretraining validation. Private outputs are Git-ignored;
+only new aggregate tables and figures accompany the independent report.
 
 ## Recommended next experiments
 

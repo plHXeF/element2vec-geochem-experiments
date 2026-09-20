@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import math
 import random
 import gc
@@ -12,6 +13,8 @@ import torch
 
 from ..data.build_vocab import build_vocab
 from ..data.collate import collate_token_batch
+from ..data.geochemical_coordinates import coordinate_spec, coordinate_fingerprint, GEO_VERSION
+from ..utils.io import save_json
 from ..data.dataset import (
     ID_TO_TASK,
     TASK_TO_ID,
@@ -23,7 +26,7 @@ from ..data.dataset import (
 from ..models.element2vec_v2 import build_model
 from ..training.losses import compute_losses
 from ..training.scheduler import build_warmup_cosine_scheduler
-from ..utils.io import ensure_output_dirs, load_config, output_dir
+from ..utils.io import ensure_output_dirs, load_config, output_dir, vocab_dir
 from ..utils.logging import CsvLogger
 from ..utils.seed import set_seed
 
@@ -99,7 +102,8 @@ def export_model_embeddings(model, vocab, out: Path, prefix: str) -> None:
 def save_checkpoints(model, optimizer, scheduler, config, vocab, step: int, out: Path) -> None:
     out_ckpt = out / "checkpoints"
     out_ckpt.mkdir(parents=True, exist_ok=True)
-    torch.save(model.token_projector.state_dict(), out_ckpt / "token_projector.pt")
+    if hasattr(model, "token_projector"):
+        torch.save(model.token_projector.state_dict(), out_ckpt / "token_projector.pt")
     torch.save(model.transformer_encoder.state_dict(), out_ckpt / "transformer_encoder.pt")
     torch.save(model.decoders.state_dict(), out_ckpt / "decoders.pt")
     torch.save(
@@ -109,16 +113,26 @@ def save_checkpoints(model, optimizer, scheduler, config, vocab, step: int, out:
             "optimizer_state_dict": optimizer.state_dict(),
             "scheduler_state_dict": scheduler.state_dict() if scheduler is not None else None,
             "config": config,
+            "coordinate_spec": coordinate_spec(config) if "value_transform" in config["data"] else None,
+            "coordinate_fingerprint": coordinate_fingerprint(config) if "numeric_fields" in config["data"] else None,
             "numeric_vocab": vocab.numeric_vocab,
             "pure_vocab": vocab.pure_vocab,
+            "value_transform_stats": vocab.transform_stats.to_dict(orient="records"),
         },
         out_ckpt / "full_model.pt",
     )
 
 
 def resolve_training_steps(config: dict, dataset_size: int, max_steps_override: int | None = None) -> tuple[int, int, int | None]:
-    batch_size = int(config["training"]["batch_size"]) * int(config["training"].get("gradient_accumulation_steps", 1))
-    steps_per_epoch = max(1, math.ceil(dataset_size / batch_size))
+    micro_batch_size = int(config["training"]["batch_size"])
+    grad_accum = max(int(config["training"].get("gradient_accumulation_steps", 1)), 1)
+    micro_batches_per_epoch = math.ceil(dataset_size / micro_batch_size)
+    steps_per_epoch = micro_batches_per_epoch // grad_accum
+    if steps_per_epoch < 1:
+        raise ValueError(
+            f"Dataset yields {micro_batches_per_epoch} micro-batch(es), fewer than "
+            f"gradient_accumulation_steps={grad_accum}; increase --max-samples or lower --batch-size."
+        )
     target_epochs = config["training"].get("epochs", config["training"].get("target_epochs"))
     if max_steps_override is not None:
         return int(max_steps_override), steps_per_epoch, int(target_epochs) if target_epochs else None
@@ -141,6 +155,10 @@ def resolve_log_every(config: dict) -> int:
     if "logging" in config and "log_every_steps" in config["logging"]:
         return int(config["logging"]["log_every_steps"])
     return int(config["training"].get("log_every", 20))
+
+
+def resolve_batch_log_every(config: dict) -> int:
+    return max(int(config.get("logging", {}).get("batch_log_every", 0) or 0), 0)
 
 
 def make_task_plan(config: dict, batch_size: int, rng: random.Random) -> list[tuple[str, str | None]]:
@@ -220,6 +238,13 @@ def task_count_row(batch: dict) -> dict[str, int]:
     }
 
 
+def numeric_mask_counts(batch: dict) -> dict[str, int]:
+    eligible = (batch["task_ids"] == 0)[:, None] & batch["numeric_token_mask"] & batch["attention_mask"]
+    selected = batch.get("numeric_prediction_mask", batch["mask_value_flags"].bool())
+    return {"numeric_masked_tokens": int((selected & eligible).sum().detach().cpu()),
+            "numeric_eligible_tokens": int(eligible.sum().detach().cpu())}
+
+
 def average_rows(rows: list[dict]) -> dict:
     if not rows:
         return {}
@@ -250,29 +275,57 @@ def evaluate_probe(model, probe_batches: list[dict], device: torch.device, pure_
     model.eval()
     totals: dict[str, float] = {}
     total_samples = 0
+    numeric_total, numeric_count = 0.0, 0
+    multi_value = False
     for raw_batch in probe_batches:
         batch = move_batch_to_device(raw_batch, device)
         outputs = model(batch)
         losses = compute_losses(outputs, batch, pure_fields, config["training"]["loss_weights"])
         batch_size = int(batch["attention_mask"].shape[0])
         total_samples += batch_size
+        if "numeric_prediction_mask" in batch:
+            multi_value = True
+            count = numeric_mask_counts(batch)["numeric_masked_tokens"]
+            numeric_total += float(losses["numeric_value_loss"].detach().cpu()) * count
+            numeric_count += count
         for key, value in losses.items():
             totals[key] = totals.get(key, 0.0) + float(value.detach().cpu()) * batch_size
         del batch, outputs, losses
     if total_samples == 0:
         return {}
-    return {f"probe_{key}": value / total_samples for key, value in totals.items()}
+    result = {f"probe_{key}": value / total_samples for key, value in totals.items()}
+    if multi_value:
+        old_numeric = result["probe_numeric_value_loss"]
+        result["probe_numeric_value_loss"] = numeric_total / max(numeric_count, 1)
+        result["probe_total_loss"] += float(config["training"]["loss_weights"].get("numeric_value", 1.0)) * (result["probe_numeric_value_loss"] - old_numeric)
+        result["probe_numeric_masked_tokens"] = numeric_count
+    return result
 
 
 def train(config: dict, max_steps_override: int | None = None, max_samples: int | None = None) -> dict:
+    if config["data"].get("value_transform", {}).get("name") == GEO_VERSION:
+        destination = output_dir(config).resolve()
+        if "value_rope_geo_mask15" not in destination.parts:
+            raise ValueError("Geo experiment outputs must be inside a separate value_rope_geo_mask15 directory")
+        if (destination / "checkpoints/full_model.pt").exists() or (destination / "logs/train_log.csv").exists():
+            raise FileExistsError("Geo training output already exists; choose a fresh --outputs-dir to preserve the run")
     ensure_output_dirs(config)
     out = output_dir(config)
     set_seed(int(config["training"]["seed"]))
-    required = [out / "vocab" / "numeric_tag_vocab.json", out / "vocab" / "pure_label_vocab.json", out / "vocab" / "value_transform_stats.csv"]
+    vocab_root = vocab_dir(config)
+    required = [vocab_root / "numeric_tag_vocab.json", vocab_root / "pure_label_vocab.json", vocab_root / "value_transform_stats.csv"]
     if not all(p.exists() for p in required):
+        if config.get("data", {}).get("vocab_dir"):
+            missing = ", ".join(str(p) for p in required if not p.exists())
+            raise FileNotFoundError(f"Frozen vocabulary is incomplete; missing: {missing}")
         build_vocab(config)
     vocab = load_vocab_bundle(config)
     dataset = WholeRockTokenDataset(config, vocab, mode="train", max_samples=max_samples)
+    if config["data"].get("value_transform", {}).get("name") == GEO_VERSION:
+        save_json({"config": config, "coordinate_qc": dataset.coordinate_qc,
+                   "max_steps_override": max_steps_override, "max_samples_override": max_samples,
+                   "validation": "full-data training; fixed training probe, no held-out validation"},
+                  out / "logs/run_manifest.json")
     device = choose_device(str(config["training"].get("device", "auto")))
     model = build_model(config, vocab).to(device)
     export_model_embeddings(model, vocab, out, "initial")
@@ -292,8 +345,10 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
     probe_logger = CsvLogger(out / "logs" / "probe_log.csv")
     pure_fields = config["data"]["pure_label_fields"]
     log_every = resolve_log_every(config)
+    batch_log_every = resolve_batch_log_every(config)
     save_every = resolve_save_every(config, steps_per_epoch)
     grad_accum_steps = max(int(config["training"].get("gradient_accumulation_steps", 1)), 1)
+    micro_batches_per_epoch = math.ceil(len(dataset) / int(config["training"]["batch_size"]))
     ema = EmaTracker(int(config.get("logging", {}).get("ema_window", 500)))
     rng = random.Random(int(config["training"]["seed"]))
     probe_batches = build_fixed_probe_batches(dataset, config)
@@ -304,7 +359,8 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
     step = 0
     print(
         f"[train_v2] device={device} samples={len(dataset)} batch_size={config['training']['batch_size']} "
-        f"grad_accum={grad_accum_steps} steps_per_epoch={steps_per_epoch} target_epochs={target_epochs} max_steps={max_steps}"
+        f"grad_accum={grad_accum_steps} micro_batches_per_epoch={micro_batches_per_epoch} "
+        f"steps_per_epoch={steps_per_epoch} target_epochs={target_epochs} max_steps={max_steps}"
     )
     if probe_batches:
         probe_row = {"step": 0, "epoch": 0.0, **evaluate_probe(model, probe_batches, device, pure_fields, config)}
@@ -314,10 +370,30 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
         print(f"[probe] step=0 loss={probe_row.get('probe_total_loss', float('nan')):.4f}")
         if memory_cfg.get("empty_cache_after_probe", True):
             release_device_cache(device)
+    epoch_number = 0
     while step < max_steps:
+        epoch_number += 1
         accum_rows: list[dict] = []
         optimizer.zero_grad(set_to_none=True)
-        for raw_batch in iter_epoch_batches(dataset, config, rng):
+        for batch_number, raw_batch in enumerate(iter_epoch_batches(dataset, config, rng), start=1):
+            if batch_log_every and (
+                batch_number == 1
+                or batch_number == micro_batches_per_epoch
+                or batch_number % batch_log_every == 0
+            ):
+                counts = task_count_row(raw_batch)
+                target_epoch_text = str(target_epochs) if target_epochs is not None else "?"
+                print(
+                    f"[batch] epoch={epoch_number}/{target_epoch_text} "
+                    f"micro_batch={batch_number}/{micro_batches_per_epoch} "
+                    f"optimizer_step={step}/{max_steps} size={raw_batch['attention_mask'].shape[0]} "
+                    f"tasks(value/tag/label)="
+                    f"{counts['mask_numeric_value_count']}/"
+                    f"{counts['mask_numeric_tag_count']}/"
+                    f"{counts['mask_pure_label_count']} "
+                    f"numeric_masked/eligible={numeric_mask_counts(raw_batch)['numeric_masked_tokens']}/"
+                    f"{numeric_mask_counts(raw_batch)['numeric_eligible_tokens']}"
+                )
             batch = move_batch_to_device(raw_batch, device)
             model.train()
             outputs = model(batch)
@@ -334,6 +410,7 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
                 "num_tokens_mean": float(batch["attention_mask"].sum(dim=1).float().mean().detach().cpu()),
                 "num_tokens_max": int(batch["attention_mask"].sum(dim=1).max().detach().cpu()),
                 **task_count_row(batch),
+                **numeric_mask_counts(batch),
             }
             accum_rows.append(loss_row)
             if len(accum_rows) < grad_accum_steps:
@@ -365,6 +442,9 @@ def train(config: dict, max_steps_override: int | None = None, max_samples: int 
             }
             if log_memory:
                 row.update(device_memory_stats(device))
+            row["numeric_masked_tokens"] = sum(r["numeric_masked_tokens"] for r in accum_rows)
+            row["numeric_eligible_tokens"] = sum(r["numeric_eligible_tokens"] for r in accum_rows)
+            row["numeric_mask_fraction"] = row["numeric_masked_tokens"] / max(row["numeric_eligible_tokens"], 1)
             row.update(
                 ema.update(
                     row,
@@ -415,8 +495,35 @@ def main() -> None:
     parser.add_argument("--config", default="stage3_5_element2vec_v2/configs/v2_base.yaml")
     parser.add_argument("--max-steps", type=int, default=None)
     parser.add_argument("--max-samples", type=int, default=None)
+    parser.add_argument("--sqlite-path", default=None)
+    parser.add_argument("--outputs-dir", default=None)
+    parser.add_argument("--device", default=None)
+    parser.add_argument("--batch-size", type=int, default=None)
+    parser.add_argument("--probe-size", type=int, default=None)
+    parser.add_argument("--probe-batch-size", type=int, default=None)
+    parser.add_argument(
+        "--batch-log-every",
+        type=int,
+        default=None,
+        help="Print explicit batch progress every N micro-batches; 0 disables it.",
+    )
     args = parser.parse_args()
-    train(load_config(args.config), max_steps_override=args.max_steps, max_samples=args.max_samples)
+    config = copy.deepcopy(load_config(args.config))
+    if args.sqlite_path is not None:
+        config["data"]["sqlite_path"] = args.sqlite_path
+    if args.outputs_dir is not None:
+        config["project"]["outputs_dir"] = args.outputs_dir
+    if args.device is not None:
+        config["training"]["device"] = args.device
+    if args.batch_size is not None:
+        config["training"]["batch_size"] = args.batch_size
+    if args.probe_size is not None:
+        config.setdefault("probe", {})["size"] = args.probe_size
+    if args.probe_batch_size is not None:
+        config.setdefault("probe", {})["batch_size"] = args.probe_batch_size
+    if args.batch_log_every is not None:
+        config.setdefault("logging", {})["batch_log_every"] = args.batch_log_every
+    train(config, max_steps_override=args.max_steps, max_samples=args.max_samples)
 
 
 if __name__ == "__main__":

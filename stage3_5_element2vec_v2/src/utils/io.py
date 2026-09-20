@@ -39,6 +39,11 @@ def output_dir(config: dict[str, Any]) -> Path:
     return resolve_path(config["project"]["outputs_dir"])
 
 
+def vocab_dir(config: dict[str, Any]) -> Path:
+    configured = config.get("data", {}).get("vocab_dir")
+    return resolve_path(configured) if configured else output_dir(config) / "vocab"
+
+
 def ensure_output_dirs(config: dict[str, Any]) -> None:
     base = output_dir(config)
     for name in ["vocab", "checkpoints", "embeddings", "latents", "metrics", "logs"]:

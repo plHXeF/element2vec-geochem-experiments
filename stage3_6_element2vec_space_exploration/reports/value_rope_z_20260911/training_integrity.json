@@ -1,0 +1,28 @@
+[
+  {
+    "model": "v2",
+    "steps": 13200,
+    "last_epoch": 50.0,
+    "train_last500_mean": 0.36331242322921753,
+    "train_last500_std": 0.05929442451225169,
+    "final_lr": 3e-06,
+    "nan_losses": 0,
+    "effective_batches": {
+      "1024": 13150,
+      "929": 50
+    }
+  },
+  {
+    "model": "rope",
+    "steps": 13200,
+    "last_epoch": 50.0,
+    "train_last500_mean": 0.28889875331521037,
+    "train_last500_std": 0.05499640854064819,
+    "final_lr": 3e-06,
+    "nan_losses": 0,
+    "effective_batches": {
+      "1024": 13150,
+      "929": 50
+    }
+  }
+]

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import random
+import math
 import sqlite3
 from dataclasses import dataclass
 from typing import Any
@@ -9,8 +10,8 @@ import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
 
-from ..utils.io import load_json, output_dir, resolve_path
-from .transforms import apply_value_transform
+from ..utils.io import load_json, resolve_path, vocab_dir
+from .geochemical_coordinates import transform_numeric_frame
 
 
 TASK_TO_ID = {"mask_numeric_value": 0, "mask_numeric_tag": 1, "mask_pure_label": 2}
@@ -65,11 +66,11 @@ class VocabBundle:
 
 
 def load_vocab_bundle(config: dict) -> VocabBundle:
-    out = output_dir(config)
+    root = vocab_dir(config)
     return VocabBundle(
-        numeric_vocab=load_json(out / "vocab" / "numeric_tag_vocab.json"),
-        pure_vocab=load_json(out / "vocab" / "pure_label_vocab.json"),
-        transform_stats=pd.read_csv(out / "vocab" / "value_transform_stats.csv"),
+        numeric_vocab=load_json(root / "numeric_tag_vocab.json"),
+        pure_vocab=load_json(root / "pure_label_vocab.json"),
+        transform_stats=pd.read_csv(root / "value_transform_stats.csv"),
     )
 
 
@@ -86,6 +87,7 @@ class WholeRockTokenDataset(Dataset):
         self.vocab = vocab
         self.mode = mode
         self.mask_pure_labels = mask_pure_labels
+        self.chemistry_only = False
         data_cfg = config["data"]
         self.numeric_fields = data_cfg["numeric_fields"]
         self.pure_fields = data_cfg["pure_label_fields"]
@@ -98,14 +100,17 @@ class WholeRockTokenDataset(Dataset):
         query = f"SELECT {', '.join(_quote(c) for c in cols)} FROM {_quote(data_cfg['view_name'])}{limit_clause}"
         with sqlite3.connect(resolve_path(data_cfg["sqlite_path"])) as conn:
             self.df = pd.read_sql_query(query, conn)
-        stats_by_col = {
-            row["db_column"]: row.to_dict()
-            for _, row in vocab.transform_stats.iterrows()
-        }
-        clip_z = config["data"]["value_transform"].get("clip_z")
-        for item in self.numeric_fields:
-            col = item["db_column"]
-            self.df[col] = apply_value_transform(self.df[col], stats_by_col[col], clip_z=clip_z)
+        self.df, self.coordinate_qc = transform_numeric_frame(self.df, config, vocab)
+        self.numeric_mask = config.get('masking', {}).get('numeric_values', {'strategy': 'single'})
+        if self.numeric_mask['strategy'] not in {'single', 'observed_fraction'}:
+            raise ValueError('Unsupported numeric masking strategy')
+        if self.numeric_mask['strategy'] == 'observed_fraction':
+            if self.numeric_mask.get('rounding', 'stochastic') != 'stochastic':
+                raise ValueError('observed_fraction supports stochastic rounding only')
+            if self.numeric_mask.get('scope') != 'numeric_value_task':
+                raise ValueError('observed_fraction requires explicit scope=numeric_value_task')
+            if not 0 < float(self.numeric_mask['fraction']) <= 1 or int(self.numeric_mask['minimum']) < 1:
+                raise ValueError('Invalid numeric mask fraction/minimum')
 
     def __len__(self) -> int:
         return len(self.df)
@@ -198,7 +203,10 @@ class WholeRockTokenDataset(Dataset):
         row = self.df.iloc[idx]
         numeric_tokens = self._numeric_tokens(row)
         pure_tokens, labels = self._pure_tokens(row)
+        if self.chemistry_only and self.mode == "extract":
+            pure_tokens = []
         tokens = numeric_tokens + pure_tokens
+        numeric_targets_multi = []
         target = {
             "task": "none",
             "task_id": -1,
@@ -212,14 +220,23 @@ class WholeRockTokenDataset(Dataset):
             task = self._choose_task(numeric_tokens, labels, rng=rng, forced_task=forced_task)
             if task == "mask_numeric_value":
                 candidates = [i for i, t in enumerate(tokens) if t["kind"] == 0]
-                pos = rng.choice(candidates)
+                if self.numeric_mask['strategy'] == 'observed_fraction':
+                    expected = float(self.numeric_mask['fraction']) * len(candidates)
+                    count = math.floor(expected) + int(rng.random() < expected % 1)
+                    count = min(len(candidates), max(int(self.numeric_mask['minimum']), count))
+                    selected = rng.sample(candidates, count)
+                else:
+                    selected = [rng.choice(candidates)]
+                pos = selected[0]
                 target.update(
                     task=task,
                     task_id=TASK_TO_ID[task],
                     mask_position=pos,
                     numeric_value=float(tokens[pos]["value"]),
                 )
-                tokens[pos] = {**tokens[pos], "value": 0.0, "mask_value": 1.0}
+                for selected_pos in selected:
+                    numeric_targets_multi.append({'position': selected_pos, 'value': float(tokens[selected_pos]['value'])})
+                    tokens[selected_pos] = {**tokens[selected_pos], "value": 0.0, "mask_value": 1.0}
             elif task == "mask_numeric_tag":
                 candidates = [i for i, t in enumerate(tokens) if t["kind"] == 0]
                 pos = rng.choice(candidates)
@@ -259,11 +276,17 @@ class WholeRockTokenDataset(Dataset):
             paired = list(enumerate(tokens))
             rng.shuffle(paired)
             tokens = [t for _, t in paired]
+            position_map = {old_i: new_i for new_i, (old_i, _) in enumerate(paired)}
+            for item in numeric_targets_multi:
+                item['position'] = position_map[item['position']]
             if target["task_id"] >= 0:
                 target["mask_position"] = next(new_i for new_i, (old_i, _) in enumerate(paired) if old_i == old_pos)
-        return {
+        result = {
             "sample_id": row[self.sample_col],
             "tokens": tokens,
             "target": target,
             "labels": labels,
         }
+        if self.numeric_mask['strategy'] == 'observed_fraction':
+            result['numeric_value_targets_multi'] = numeric_targets_multi
+        return result

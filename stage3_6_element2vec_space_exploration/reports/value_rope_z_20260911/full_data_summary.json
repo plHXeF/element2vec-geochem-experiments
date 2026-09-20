@@ -1,0 +1,14 @@
+{
+  "samples": 270241,
+  "numeric_fields": 34,
+  "median_numeric_tokens": 24.0,
+  "mean_numeric_tokens": 21.801658519617675,
+  "min_numeric_tokens": 8,
+  "max_numeric_tokens": 34,
+  "rock_type_present": 252506,
+  "rock_type_classes": 81,
+  "references": 6105,
+  "sources": 16,
+  "distinct_reporting_panels": 24989,
+  "clipped_numeric_tokens": 7212
+}

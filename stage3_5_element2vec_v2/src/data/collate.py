@@ -17,6 +17,9 @@ def collate_token_batch(batch: list[dict]) -> dict[str, torch.Tensor | list]:
     task_ids = torch.full((batch_size,), -1, dtype=torch.long)
     mask_positions = torch.zeros(batch_size, dtype=torch.long)
     numeric_value_targets = torch.zeros(batch_size, dtype=torch.float32)
+    multi_value = any('numeric_value_targets_multi' in item for item in batch)
+    numeric_prediction_mask = torch.zeros(batch_size, max_len, dtype=torch.bool)
+    numeric_targets_all = torch.zeros(batch_size, max_len, dtype=torch.float32)
     numeric_tag_targets = torch.full((batch_size,), -100, dtype=torch.long)
     pure_class_targets = torch.full((batch_size,), -100, dtype=torch.long)
     sample_ids, labels, pure_fields, task_names = [], [], [], []
@@ -34,6 +37,14 @@ def collate_token_batch(batch: list[dict]) -> dict[str, torch.Tensor | list]:
             attention_mask[i, j] = True
             numeric_token_mask[i, j] = int(tok["kind"]) == 0
         target = item["target"]
+        for masked in item.get('numeric_value_targets_multi', []):
+            pos = int(masked['position'])
+            if not 0 <= pos < len(tokens) or tokens[pos]['kind'] != 0 or not tokens[pos]['mask_value']:
+                raise ValueError('Numeric supervision must point to an observed masked numeric token')
+            if numeric_prediction_mask[i, pos]:
+                raise ValueError('Duplicate numeric prediction position')
+            numeric_prediction_mask[i, pos] = True
+            numeric_targets_all[i, pos] = float(masked['value'])
         task_ids[i] = int(target["task_id"])
         mask_positions[i] = int(target["mask_position"])
         numeric_value_targets[i] = float(target["numeric_value"])
@@ -41,7 +52,7 @@ def collate_token_batch(batch: list[dict]) -> dict[str, torch.Tensor | list]:
         pure_class_targets[i] = int(target["pure_class_id"])
         pure_fields.append(str(target["pure_field"]))
         task_names.append(str(target["task"]))
-    return {
+    result = {
         "kind": kind,
         "numeric_tag_ids": numeric_tag_ids,
         "pure_label_ids": pure_label_ids,
@@ -60,3 +71,7 @@ def collate_token_batch(batch: list[dict]) -> dict[str, torch.Tensor | list]:
         "sample_ids": sample_ids,
         "labels": labels,
     }
+    if multi_value:
+        result['numeric_prediction_mask'] = numeric_prediction_mask
+        result['numeric_targets_all'] = numeric_targets_all
+    return result

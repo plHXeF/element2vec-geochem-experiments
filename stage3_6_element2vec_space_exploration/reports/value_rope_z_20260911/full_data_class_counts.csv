@@ -1,0 +1,97 @@
+field,label,count,fraction
+rock_group,igneous,234354,0.867203718162677
+rock_group,metamorphic,18392,0.0680577706565621
+rock_group,sedimentary,13203,0.04885639114716124
+rock_group,[missing],4292,0.01588212003359964
+rock_origin,volcanic,153121,0.5666090637616054
+rock_origin,plutonic,79891,0.2956287165900067
+rock_origin,[missing],27368,0.10127256781909481
+rock_origin,metaigneous,3232,0.011959695234993949
+rock_origin,metasedimentary,3123,0.011556351552873175
+rock_origin,metaplutonic,1734,0.006416494906398363
+rock_origin,metavolcanic,1387,0.00513245584496801
+rock_origin,clastic,273,0.001010209405678635
+rock_origin,chemical,111,0.0004107444836275769
+rock_origin,biogenic,1,3.7004007534015934e-06
+rock_type,subalkalic basalt,48622,0.17992088543189227
+rock_type,granite,25200,0.09325009898572015
+rock_type,basaltic andesite,18725,0.06929000410744483
+rock_type,[missing],17735,0.06562660736157726
+rock_type,rhyolite,13262,0.049074714791611934
+rock_type,alkalic basalt,13085,0.048419743858259846
+rock_type,granodiorite,11927,0.04413467978582081
+rock_type,andesite,11238,0.04158510366672711
+rock_type,dacite,8153,0.03016936734248319
+rock_type,subalkalic gabbro,7186,0.02659107981394385
+rock_type,diorite,5916,0.021891570857123826
+rock_type,trachybasalt,5902,0.021839765246576204
+rock_type,basaltic trachyandesite,5793,0.02143642156445543
+rock_type,tephrite,5618,0.020788851432610153
+rock_type,gabbroic diorite,4875,0.01803945367283277
+rock_type,trachyandesite,4824,0.017850733234409288
+rock_type,quartz monzonite,4731,0.01750659596434294
+rock_type,trachydacite,3977,0.014716493796278136
+rock_type,picrite,3732,0.013809895611694746
+rock_type,monzonite,3510,0.012988406644439593
+rock_type,wacke,3041,0.011252918691094245
+rock_type,shale,2999,0.011097501859451379
+rock_type,alkalic gabbro,2540,0.009399017913640046
+rock_type,iron-rich shale,2486,0.00919919627295636
+rock_type,alkali picrite,2462,0.009110386654874724
+rock_type,trachyte,2428,0.008984573029259068
+rock_type,monzodiorite,2270,0.008399909710221616
+rock_type,quartzite,2189,0.008100177249196087
+rock_type,arkose,1585,0.005865135194141525
+rock_type,syenite,1580,0.005846633190374518
+rock_type,mantle peridotite,1397,0.005169459852502026
+rock_type,gabbroic komatiite,1271,0.004703209357573426
+rock_type,dolomite,1129,0.004177752450590399
+rock_type,phonolite,1097,0.0040593396264815475
+rock_type,phonotephrite,1077,0.003985331611413516
+rock_type,monzogabbro,966,0.003574587127785939
+rock_type,foid gabbro,934,0.003456174303677088
+rock_type,limestone,920,0.0034043686931294658
+rock_type,meimechite,865,0.0032008466516923783
+rock_type,iron-rich sand,808,0.0029899238087484873
+rock_type,basaltic komatiite,783,0.0028974137899134477
+rock_type,sanukitoid,771,0.0028530089808726285
+rock_type,tephriphonolite,734,0.0027160941529967694
+rock_type,litharenite,620,0.002294248467108988
+rock_type,ultramafic foidite,607,0.002246143257314767
+rock_type,peridotgabbro,601,0.0022239408527943575
+rock_type,komatiite,589,0.0021795360437535387
+rock_type,ferropicrite,557,0.0020611232196446876
+rock_type,foid monzodiorite,546,0.00202041881135727
+rock_type,silico-magnesiocarbonatite,490,0.0018131963691667807
+rock_type,picrobasalt,468,0.0017317875525919458
+rock_type,boninite,422,0.0015615691179354724
+rock_type,foid monzosyenite,411,0.001520864709648055
+rock_type,silico-ferrocarbonatite,361,0.0013358446719779753
+rock_type,foid syenite,351,0.0012988406644439594
+rock_type,peridotite,345,0.0012766382599235498
+rock_type,alkali ferropicrite,340,0.0012581362561565417
+rock_type,intrusive komatiite,316,0.0011693266380749035
+rock_type,mantle pyroxenite,302,0.0011175210275272812
+rock_type,intermediate foidite,289,0.0010694158177330605
+rock_type,mafic foidite,243,0.0008991973830765872
+rock_type,calciocarbonatite,235,0.0008695941770493744
+rock_type,ferrocarbonatite,225,0.0008325901695153585
+rock_type,subarkose,219,0.000810387764994949
+rock_type,ultramafic foidolite,205,0.0007585821544473266
+rock_type,silexite,200,0.0007400801506803186
+rock_type,intermediate foidolite,158,0.0005846633190374518
+rock_type,magnesiocarbonatite,134,0.0004958537009558136
+rock_type,quartz arenite,131,0.00048475249869560876
+rock_type,quartzolite,121,0.0004477484911615928
+rock_type,sublitharenite,118,0.000436647288901388
+rock_type,mafic foidolite,91,0.000336736468559545
+rock_type,ultra-high alkali plutonic,48,0.00017761923616327647
+rock_type,silico-calciocarbonatite,44,0.0001628176331496701
+rock_type,ultra-high alkali volcanic,38,0.00014061522862926054
+rock_type,psammite,26,9.621041958844143e-05
+rock_type,laterite,16,5.9206412054425495e-05
+rock_type,oxide,14,5.180561054762231e-05
+rock_type,pelite,8,2.9603206027212747e-05
+rock_type,silicocarbonatite,4,1.4801603013606374e-05
+rock_type,carbonatite,4,1.4801603013606374e-05
+rock_type,bauxite,1,3.7004007534015934e-06

@@ -182,6 +182,52 @@ outputs/logs/probe_log.csv
 
 `train_log.csv` contains per-step losses plus an EMA window. `probe_log.csv` uses fixed samples and fixed masks, so it is the cleaner curve for checking whether the model is actually improving rather than just seeing random mask noise.
 
+## Value-RoPE Z Experiment
+
+`configs/v2_value_rope_z.yaml` is a controlled V2 architecture experiment. Numeric-field and pure-label IDs are embedded directly in 768 dimensions; the input fusion MLP is removed. A numeric value enters only as a continuous rotary position on every attention layer's Q and K tensors. The experiment uses the frozen V2 vocabulary and robust-z statistics from `outputs/vocab/`.
+
+For each attention head, all 64 dimensions are rotated in adjacent pairs with `base=10000` and `scale=1`. CLS, pure-label, padding, and masked-value positions are zero. A shared learned 768-dimensional state distinguishes a masked numeric value from a real standardized value of zero. The model has 85,255,040 parameters and retains the V2 12-layer, 12-head, 3072-dimensional FFN backbone and five training objectives.
+
+Run the tests before training:
+
+```bash
+python -m unittest discover \
+  -s stage3_5_element2vec_v2/tests \
+  -p 'test_*.py'
+```
+
+Run a two-step CPU smoke test against the private database:
+
+```bash
+python -m stage3_5_element2vec_v2.src.training.train_v2 \
+  --config stage3_5_element2vec_v2/configs/v2_value_rope_z.yaml \
+  --sqlite-path ../legacy_whole_rock_geochem/geochem.db \
+  --outputs-dir stage3_5_element2vec_v2/outputs/value_rope_z/smoke \
+  --device cpu --batch-size 2 --max-samples 8 --max-steps 2 \
+  --probe-size 8 --probe-batch-size 2
+```
+
+Start the complete 50-epoch run from scratch with:
+
+```bash
+python -m stage3_5_element2vec_v2.src.training.train_v2 \
+  --config stage3_5_element2vec_v2/configs/v2_value_rope_z.yaml \
+  --sqlite-path ../legacy_whole_rock_geochem/geochem.db
+```
+
+The full state is written to `outputs/value_rope_z/checkpoints/full_model.pt`. All files under `outputs/value_rope_z/` and all newly generated model-weight suffixes are ignored by Git. Value-RoPE checkpoints store their architecture, frozen vocabularies, and value-transform records; extraction rejects mismatched inputs.
+
+The Value-RoPE config prints one explicit `[batch]` line per micro-batch. Each line reports the epoch, micro-batch position, completed optimizer steps, actual batch size, and numeric-value/numeric-tag/pure-label mask counts. Pass `--batch-log-every N` to print every N micro-batches, or `--batch-log-every 0` to disable these lines.
+
+Extract label-masked 768-dimensional CLS and mean-numeric latents after training:
+
+```bash
+python -m stage3_5_element2vec_v2.src.evaluation.extract_embeddings \
+  --config stage3_5_element2vec_v2/configs/v2_value_rope_z.yaml \
+  --sqlite-path ../legacy_whole_rock_geochem/geochem.db \
+  --checkpoint stage3_5_element2vec_v2/outputs/value_rope_z/checkpoints/full_model.pt
+```
+
 ## Embedding Export
 
 The training script exports initial embeddings before optimization:

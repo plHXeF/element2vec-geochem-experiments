@@ -1,0 +1,18 @@
+{
+  "steps": 13200,
+  "final_epoch": 50.0,
+  "final_lr": 3e-06,
+  "weights_finite": true,
+  "loss_finite": true,
+  "train_last500": {
+    "total_loss": 0.2894712658524513,
+    "numeric_value_loss": 0.01875068669579918,
+    "numeric_tag_loss": 0.09542909397650508,
+    "rock_group_loss": 0.0016739115727288114,
+    "rock_origin_loss": 0.008075047042299086,
+    "rock_type_loss": 0.16554252668842673
+  },
+  "numeric_mask_fraction": 0.1500045322420603,
+  "last_logged_probe_step": 13000,
+  "pretraining_validation": "none; full-data training"
+}
