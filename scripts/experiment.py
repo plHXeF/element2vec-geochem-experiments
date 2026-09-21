@@ -144,7 +144,7 @@ def new_run(args):
     manifest = {"schema_version": 1, "experiment_id": card["id"], "run_id": run_id,
                 "status": "created", "frozen": False, "kind": "scratch" if args.scratch else "formal",
                 "created_at": now(), "git_commit": git("rev-parse", "HEAD"), "git_dirty": dirty,
-                "source_config": source_ref, "config_hash": ws.digest(ws.scientific_config(config)),
+                "source_config": source_ref, "default_config_entrypoint": card.get("config"), "config_hash": ws.digest(ws.scientific_config(config)),
                 "seed": seed, "device": "not executed", "algorithms": "not executed",
                 "inputs": inputs, "upstream_experiments": card["upstream_experiments"],
                 "upstream_runs": sorted({str(ws.asset(k).relative_to(ws.workspace_root())).split("/")[1] + "/" + str(ws.asset(k).relative_to(ws.workspace_root())).split("/")[2] for k in input_keys if ws.asset(k).is_relative_to(ws.workspace_root() / "runs")}),

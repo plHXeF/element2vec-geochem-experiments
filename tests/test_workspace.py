@@ -117,6 +117,12 @@ class WorkspaceTests(unittest.TestCase):
         p = self.create()
         self.cli("exec", "--run-dir", p, "--", "-c", "from argparse import Namespace; from geochem_workspace import guard_args; guard_args(Namespace(config='other.json'))", success=False)
 
+    def test_registered_custom_config_replaces_legacy_default_entrypoint(self):
+        config = self.root / "custom.json"
+        config.write_text(json.dumps({"seed": 91, "input": "asset://toy", "epsilon": 2e-9}))
+        p = Path(self.cli("new-run", "E001", "--config", config).stdout.strip())
+        self.cli("exec", "--run-dir", p, "--", "-c", "from geochem_workspace import load_config_file; c=load_config_file('config.json'); assert c['seed']==91 and c['epsilon']==2e-9")
+
 
 if __name__ == "__main__":
     unittest.main()

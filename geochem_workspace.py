@@ -188,7 +188,9 @@ def load_config_file(path: str | Path) -> dict:
     if active and (active / "config.logical.yaml").is_file():
         manifest = json.loads((active / "manifest.json").read_text())
         expected = manifest.get("source_config")
-        if expected and source == resolve_path(expected).resolve():
+        defaults = manifest.get("default_config_entrypoint")
+        primary_sources = {resolve_path(p).resolve() for p in (expected, defaults) if p}
+        if source in primary_sources:
             source = active / "config.logical.yaml"
     text = source.read_text()
     try:
@@ -213,6 +215,8 @@ def guard_args(args):
     selected = getattr(args, "config", None)
     if source and selected:
         accepted = {resolve_path(source).resolve(), root / "config.logical.yaml", root / "config.resolved.yaml", root / "configs/benchmark.json"}
+        if manifest.get("default_config_entrypoint"):
+            accepted.add(resolve_path(manifest["default_config_entrypoint"]).resolve())
         if resolve_path(selected).resolve() not in accepted:
             raise ValueError("--config differs from the registered run configuration; select the recorded config or create a new run")
     for key in ("output", "outputs_dir", "output_dir", "report", "report_dir"):
