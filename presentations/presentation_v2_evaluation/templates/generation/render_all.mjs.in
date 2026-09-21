@@ -1,0 +1,13 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {FileBlob,PresentationFile} from '@@ARTIFACT_TOOL@@';
+
+const root='@@WORKSPACE@@/presentation_v2_evaluation';
+const p=await PresentationFile.importPptx(await FileBlob.load(path.join(root,'build/candidate.pptx')));
+if(p.slides.items.length!==48)throw new Error('Wrong slide count');
+const dir=path.join(root,'build/rendered');await fs.mkdir(dir,{recursive:true});
+for(let i=0;i<p.slides.items.length;i++){
+ const image=await p.export({slide:p.slides.items[i],format:'png',scale:1.5});
+ await fs.writeFile(path.join(dir,`slide-${String(i+1).padStart(2,'0')}.png`),new Uint8Array(await image.arrayBuffer()));
+ if((i+1)%8===0)console.log(`Rendered ${i+1}/48`);
+}

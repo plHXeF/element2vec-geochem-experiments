@@ -1,0 +1,27 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {pathToFileURL} from 'node:url';
+
+const SKILL='@@PRESENTATION_SKILL@@';
+const ROOT='@@WORKSPACE@@/presentation_v2_evaluation';
+const template='@@WORKSPACE@@/2025-7-4汇报1.pptx';
+const candidate=path.join(ROOT,'build/candidate_with_video.pptx');
+const final=path.join(ROOT,'output/Geochem_评价体系汇报_20260917.pptx');
+const python='@@PYTHON@@';
+const {finalizePresentation}=await import(pathToFileURL(path.join(SKILL,'container_tools/artifact_tool_utils.mjs')).href);
+const sha=crypto.createHash('sha256').update(await fs.readFile(template)).digest('hex');
+await fs.mkdir(path.dirname(final),{recursive:true});
+await finalizePresentation({
+ workspaceDir:ROOT,candidatePath:candidate,finalPath:final,
+ explicitTotalSlideCount:48,
+ sourceTemplatePath:template,
+ pythonExecutable:python,
+ integrityValidatorPath:path.join(SKILL,'container_tools/inspect_presentation_package_integrity.py'),
+ layoutValidatorPath:path.join(SKILL,'container_tools/inspect_presentation_layout_geometry.py'),
+ layoutArgs:['--expected-slide-size-emu','12192000,6858000','--validate-heading-fit'],
+ fontPolicy:{basis:'design',families:['Hiragino Sans GB']},
+ verifyArtifactToolImport:true,
+ receiptPath:path.join(ROOT,'build/finalization_validation.json'),
+});
+console.log(final);

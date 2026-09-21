@@ -1,4 +1,4 @@
-processed_dir: ../pyrite_benchmark/data/processed
+processed_dir: asset://pyrite_processed
 sample_id_col: sample_id
 label_col: type
 element_columns: [As, Ni, Cu, Pb, Co, Au, Ag, Bi, Sb, Zn, Se, Te, Tl, Mn]

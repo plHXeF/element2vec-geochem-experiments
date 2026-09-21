@@ -1,0 +1,48 @@
+{
+  "id": "E009",
+  "title": "Latent Evaluation Benchmark",
+  "module": "latent_evaluation_benchmark",
+  "question": "传统表示与三个冻结模型在读出、充分性、几何和过程任务上如何比较？",
+  "controls": [
+    "ZVector、GeoNorm、PCA-Geo",
+    "V2、RoPE-z、RoPE_geo",
+    "目标字段在预处理前删除",
+    "train-only 拟合与显式预训练暴露",
+    "不加权合成总排名"
+  ],
+  "config": "latent_evaluation_benchmark/configs/benchmark.json",
+  "assets": [
+    "whole_rock",
+    "v2_checkpoint",
+    "rope_z_checkpoint",
+    "geo15_checkpoint",
+    "v2_vocab"
+  ],
+  "upstream_experiments": [
+    "E004",
+    "E007",
+    "E008"
+  ],
+  "protocol": "共享样本/episode；全部模型已有预训练暴露，不宣称来源外泛化。",
+  "execution_status": "completed",
+  "scientific_outcome": "mixed",
+  "conclusion": "比较可解码性、信息充分性与过程几何；不使用加权总分。",
+  "report": "reports/E009/REPORT.md",
+  "runs": [
+    {
+      "id": "legacy-latent-v01",
+      "path": "runs/E009/legacy-latent-v01",
+      "kind": "historical"
+    }
+  ],
+  "artifacts": {
+    "code": "latent_evaluation_benchmark",
+    "configuration": "latent_evaluation_benchmark/configs/benchmark.json",
+    "selected_report": "reports/E009/REPORT.md",
+    "results": [
+      "runs/E009/legacy-latent-v01"
+    ],
+    "weights": [],
+    "weight_note": "not applicable"
+  }
+}

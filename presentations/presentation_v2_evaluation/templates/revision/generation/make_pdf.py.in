@@ -1,0 +1,42 @@
+"""Faithful 1920x1080 rendered static PDF with searchable slide text and chapter bookmarks."""
+from pathlib import Path
+import json, re
+from zipfile import ZipFile
+from xml.etree import ElementTree as E
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+from PIL import Image, ImageOps, ImageDraw
+from pypdf import PdfReader
+HERE=Path(__file__).resolve().parent;OUT=HERE.parent/'output'
+specs=json.loads((HERE/'slides.json').read_text())
+pdfmetrics.registerFont(UnicodeCIDFont('STSong-Light'))
+pdfpath=OUT/'Geochem_V2项目进展_改进版.pdf'
+c=canvas.Canvas(str(pdfpath),pagesize=(960,540),pageCompression=1)
+c.setTitle('地球化学表示：设计、实验与认识');c.setAuthor('Element2Vec V2 项目汇报')
+with ZipFile(HERE/'candidate.pptx') as z:
+ for s in specs:
+  p=s['page'];img=HERE/f'rendered/slide-{p:02}.png';assert img.exists()
+  c.drawImage(str(img),0,0,width=960,height=540)
+  c.bookmarkPage(f'p{p}')
+  if s['visual']['kind']=='agenda':c.addOutlineEntry(s['title']+' '+str(s['ch']),f'p{p}',level=0,closed=False)
+  # Invisible text preserves searchability; image carries verified visual typography.
+  root=E.fromstring(z.read(f'ppt/slides/slide{p}.xml'))
+  texts=[t.text for t in root.iter('{http://schemas.openxmlformats.org/drawingml/2006/main}t') if t.text]
+  tx=c.beginText(40,505);tx.setFont('STSong-Light',8);tx.setTextRenderMode(3)
+  for text in texts:
+   for start in range(0,len(text),100):tx.textLine(text[start:start+100])
+  c.drawText(tx);c.showPage()
+c.save()
+assert len(PdfReader(pdfpath).pages)==len(specs)
+print(pdfpath)
+# Contact sheets are private QA artifacts, never substituted for the slides.
+for start in range(0,len(specs),12):
+ sheet=Image.new('RGB',(1600,960),'#E8EEF4');draw=ImageDraw.Draw(sheet)
+ for j,s in enumerate(specs[start:start+12]):
+  im=Image.open(HERE/f"rendered/slide-{s['page']:02}.png");im.thumbnail((512,288));x=(j%3)*530+8;y=(j//3)*240+10
+  im=im.resize((384,216)) if False else im.resize((400,225))
+  # 4 columns by 3 rows; each preview retains the exact 16:9 proportions.
+  x=(j%4)*400;y=(j//4)*320+28
+  sheet.paste(im,(x,y));draw.text((x+8,y-18),str(s['page']),fill='#123458')
+ sheet.save(HERE/f'contact-{start//12+1}.png')

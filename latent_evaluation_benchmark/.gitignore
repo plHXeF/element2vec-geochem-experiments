@@ -1,0 +1,7 @@
+cache/
+vendor/
+__pycache__/
+*.pyc
+outputs/animations/*.mp4
+outputs/animations/*.gif
+outputs/logs/

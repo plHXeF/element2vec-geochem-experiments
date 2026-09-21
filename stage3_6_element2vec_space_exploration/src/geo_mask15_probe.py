@@ -1,4 +1,13 @@
 """Aggregate final training-probe errors against a tag-median numeric baseline."""
+
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
+from geochem_workspace import asset, output_path
 import argparse
 from pathlib import Path
 import numpy as np
@@ -57,9 +66,9 @@ def run(args):
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
-    p.add_argument("--output",type=Path,default=Path("stage3_5_element2vec_v2/outputs/value_rope_geo_mask15/audit"))
-    p.add_argument("--baseline",type=Path,default=Path("stage3_5_element2vec_v2/outputs/value_rope_z/audit"))
-    p.add_argument("--geo-checkpoint",type=Path,default=Path("stage3_5_element2vec_v2/outputs/value_rope_geo_mask15/checkpoints/full_model.pt"))
+    p.add_argument("--output",type=Path,default=output_path("audit"))
+    p.add_argument("--baseline",type=Path,default=asset("rope_z_run") / "audit")
+    p.add_argument("--geo-checkpoint",type=Path,default=asset("geo15_checkpoint"))
     p.add_argument("--sqlite-path",type=Path,required=True)
     p.add_argument("--device",default="mps")
-    with threadpool_limits(limits=8):run(p.parse_args())
+    with threadpool_limits(limits=8):run(_guard_args(p.parse_args()))

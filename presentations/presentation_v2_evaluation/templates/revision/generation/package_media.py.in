@@ -1,0 +1,35 @@
+"""Embed existing video on the authored poster; preserve all native slide objects."""
+from pathlib import Path
+from zipfile import ZipFile, ZIP_DEFLATED
+from lxml import etree as E
+import json, shutil
+HERE=Path(__file__).resolve().parent
+OUT=HERE.parent/'output'
+specs=json.loads((HERE/'slides.json').read_text())
+v=next(s for s in specs if s['visual']['kind']=='video')
+page=v['page'];video=Path(v['visual']['video'])
+P='http://schemas.openxmlformats.org/presentationml/2006/main'
+A='http://schemas.openxmlformats.org/drawingml/2006/main'
+R='http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+P14='http://schemas.microsoft.com/office/powerpoint/2010/main'
+PKG='http://schemas.openxmlformats.org/package/2006/relationships'
+CT='http://schemas.openxmlformats.org/package/2006/content-types'
+q=lambda n,k:f'{{{n}}}{k}'
+slidepath=f'ppt/slides/slide{page}.xml';relpath=f'ppt/slides/_rels/slide{page}.xml.rels';media='ppt/media/four_processes.mp4'
+with ZipFile(HERE/'candidate.pptx') as z:
+ slide=E.fromstring(z.read(slidepath));rels=E.fromstring(z.read(relpath));types=E.fromstring(z.read('[Content_Types].xml'))
+ pics=slide.findall('.//'+q(P,'pic'));assert len(pics)==1
+ nv=pics[0].find(q(P,'nvPicPr'));c=nv.find(q(P,'cNvPr'));app=nv.find(q(P,'nvPr'))
+ E.SubElement(c,q(A,'hlinkClick'),{q(R,'id'):'rIdVideoRevision','action':'ppaction://media'})
+ E.SubElement(app,q(A,'videoFile'),{q(R,'link'):'rIdVideoRevision'})
+ el=E.SubElement(app,q(P,'extLst'));ex=E.SubElement(el,q(P,'ext'),uri='{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}')
+ E.SubElement(ex,q(P14,'media'),{q(R,'embed'):'rIdMediaRevision'})
+ for rid,typ in [('rIdVideoRevision',R+'/video'),('rIdMediaRevision','http://schemas.microsoft.com/office/2007/relationships/media')]:
+  E.SubElement(rels,q(PKG,'Relationship'),Id=rid,Type=typ,Target='/'+media)
+ if not any(e.get('Extension')=='mp4' for e in types):E.SubElement(types,q(CT,'Default'),Extension='mp4',ContentType='video/mp4')
+ repl={slidepath:slide,relpath:rels,'[Content_Types].xml':types}
+ with ZipFile(HERE/'candidate_with_video.pptx','w',ZIP_DEFLATED) as zz:
+  for info in z.infolist():zz.writestr(info,E.tostring(repl[info.filename],xml_declaration=True,encoding='UTF-8',standalone=True) if info.filename in repl else z.read(info.filename))
+  if media not in z.namelist():zz.write(video,media)
+shutil.copy2(video,OUT/'four_processes.mp4')
+print('Video attached to slide',page)

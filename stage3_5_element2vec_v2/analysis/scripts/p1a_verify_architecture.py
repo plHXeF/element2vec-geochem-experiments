@@ -6,6 +6,13 @@ Phase 1a: 模型架构维度链验证
 """
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[3]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args, output_path, load_config_file, asset
+if __name__ == "__main__":
+    _require_run_dir()
+
 import sys
 from pathlib import Path
 
@@ -161,7 +168,7 @@ def static_check_6_no_positional_embedding() -> list[dict]:
 
 def _read_yaml() -> dict:
     import yaml
-    return yaml.safe_load(YAML_PATH.read_text())
+    return load_config_file(YAML_PATH)
 
 
 def main():
@@ -210,7 +217,7 @@ def main():
     print(f"\n{'='*65}")
     print(f"结果: {passed}/{total} checks passed")
 
-    out_dir = Path(__file__).resolve().parent.parent / "outputs"
+    out_dir = output_path("analysis")
     out_dir.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(all_checks).to_csv(out_dir / "p1a_arch_checks.csv", index=False, encoding="utf-8-sig")
 

@@ -1,0 +1,40 @@
+{
+  "id": "E002",
+  "title": "地质先验表示",
+  "module": "stage2_geo_representation_xgb",
+  "question": "地质先验构造的 ratio、balance、信息特征是否增加可用结构？",
+  "controls": [
+    "基础 log/rank 表示",
+    "同一样本与目标",
+    "来源/缺失模式解释"
+  ],
+  "config": "stage2_geo_representation_xgb/configs/stage2_config.json",
+  "assets": [
+    "pyrite_processed"
+  ],
+  "upstream_experiments": [
+    "E001"
+  ],
+  "protocol": "citation GroupKFold 不完整；随机验证存在泄漏风险。",
+  "execution_status": "completed",
+  "scientific_outcome": "mixed",
+  "conclusion": "地质先验特征便于解释，尚未整体超过 value baseline。",
+  "report": "stage2_geo_representation_xgb/outputs/stage2_report.md",
+  "runs": [
+    {
+      "id": "legacy-stage2",
+      "path": "runs/E002/legacy-stage2",
+      "kind": "historical"
+    }
+  ],
+  "artifacts": {
+    "code": "stage2_geo_representation_xgb",
+    "configuration": "stage2_geo_representation_xgb/configs/stage2_config.json",
+    "selected_report": "stage2_geo_representation_xgb/outputs/stage2_report.md",
+    "results": [
+      "runs/E002/legacy-stage2"
+    ],
+    "weights": [],
+    "weight_note": "not applicable"
+  }
+}

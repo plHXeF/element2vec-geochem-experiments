@@ -1,7 +1,7 @@
-base_config: stage3_6_element2vec_space_exploration/configs/exploration.yaml
+base_config: stage3_6_element2vec_space_exploration/configs/replay_base.yaml
 
 pca_sweep:
-  output_root: stage3_6_element2vec_space_exploration/pca_sweep
+  output_root: run://pca_sweep
   dimensions: [256, 128, 64, 32, 16, 8, 5, 3, 2]
   max_fit_samples: 12000
   max_components: 256

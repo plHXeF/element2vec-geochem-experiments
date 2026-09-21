@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[3]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
 import argparse
 import copy
 import hashlib
@@ -136,7 +143,8 @@ def main() -> None:
     parser.add_argument("--device", default=None)
     parser.add_argument("--sample-ids", default=None, help="Private CSV containing exact ordered sample_id values.")
     parser.add_argument("--label-mode", choices=["masked", "chemistry_only"], default="masked")
-    args = parser.parse_args()
+    args = _guard_args(parser.parse_args())
+    _guard_args(args)
     config = copy.deepcopy(load_config(args.config))
     if args.sqlite_path is not None:
         config["data"]["sqlite_path"] = args.sqlite_path

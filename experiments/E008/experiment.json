@@ -1,0 +1,52 @@
+{
+  "id": "E008",
+  "title": "RoPE_geo + 15% mask",
+  "module": "stage3_5_element2vec_v2",
+  "question": "地质坐标 RoPE 与 15% 数值 mask 的联合变更带来什么差异？",
+  "controls": [
+    "V2 与 RoPE-z 冻结基线",
+    "共同评价样本与指标",
+    "geo 与 mask 同改，不能单因子归因"
+  ],
+  "config": "stage3_5_element2vec_v2/configs/v2_value_rope_geo_mask15.yaml",
+  "assets": [
+    "whole_rock",
+    "v2_vocab",
+    "v2_checkpoint",
+    "geo15_checkpoint",
+    "rope_z_run",
+    "subspace_audit"
+  ],
+  "upstream_experiments": [
+    "E007"
+  ],
+  "protocol": "保持训练预算；分开闭合规则跨界/界内结果，保留随机对照。",
+  "execution_status": "completed",
+  "scientific_outcome": "mixed",
+  "conclusion": "部分小步长局部几何改善；整体岩石邻域下降，来源聚集增强。",
+  "report": "stage3_5_element2vec_v2/experiments/rope_geo_mask15/REPORT.md",
+  "runs": [
+    {
+      "id": "legacy-geo-mask15",
+      "path": "runs/E008/legacy-geo-mask15",
+      "kind": "historical"
+    }
+  ],
+  "artifacts": {
+    "code": "stage3_5_element2vec_v2",
+    "configuration": "stage3_5_element2vec_v2/configs/v2_value_rope_geo_mask15.yaml",
+    "selected_report": "stage3_5_element2vec_v2/experiments/rope_geo_mask15/REPORT.md",
+    "results": [
+      "runs/E008/legacy-geo-mask15"
+    ],
+    "weights": [
+      "runs/E008/legacy-geo-mask15/checkpoints/decoders.pt",
+      "runs/E008/legacy-geo-mask15/checkpoints/full_model.pt",
+      "runs/E008/legacy-geo-mask15/checkpoints/transformer_encoder.pt",
+      "runs/E008/legacy-geo-mask15/smoke/checkpoints/decoders.pt",
+      "runs/E008/legacy-geo-mask15/smoke/checkpoints/full_model.pt",
+      "runs/E008/legacy-geo-mask15/smoke/checkpoints/transformer_encoder.pt"
+    ],
+    "weight_note": "Original checkpoint files; checksums are recorded in the frozen run artifact_checksums.json."
+  }
+}

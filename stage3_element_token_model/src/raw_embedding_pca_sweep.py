@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
 import argparse
 from pathlib import Path
 
@@ -183,7 +190,8 @@ Scan range: PCA dimensions 8 to 32.
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=str(STAGE_DIR / "configs" / "pyrite_token_transformer.yaml"))
-    args = parser.parse_args()
+    args = _guard_args(parser.parse_args())
+    _guard_args(args)
     run_sweep(load_config(args.config))
 
 

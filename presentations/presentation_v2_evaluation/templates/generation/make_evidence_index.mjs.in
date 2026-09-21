@@ -1,0 +1,44 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {slides} from './slides.mjs';
+
+const root='@@WORKSPACE@@';
+const out=path.join(root,'presentation_v2_evaluation/output');
+const data=path.join(out,'data');
+await fs.mkdir(data,{recursive:true});
+const files=[
+ 'presentation_html/assets/tables/stage2_ability_profile_table.csv',
+ 'latent_evaluation_benchmark/configs/benchmark.json',
+ 'latent_evaluation_benchmark/outputs/verification.json',
+ 'latent_evaluation_benchmark/outputs/decodability/metrics.csv',
+ 'latent_evaluation_benchmark/outputs/sufficiency/masked_recovery.csv',
+ 'latent_evaluation_benchmark/outputs/sufficiency/nuisance.csv',
+ 'latent_evaluation_benchmark/outputs/semantic_geometry/metrics.csv',
+ 'latent_evaluation_benchmark/outputs/process/trajectory_metrics.csv',
+ 'latent_evaluation_benchmark/outputs/process/operator_metrics.csv',
+ 'latent_evaluation_benchmark/outputs/composite/metrics.csv',
+ 'latent_evaluation_benchmark/outputs/composite/noncommutativity.csv',
+ 'latent_evaluation_benchmark/outputs/composite/order_coverage.csv',
+ 'latent_evaluation_benchmark/outputs/tables/paired_statistics.csv',
+ 'latent_evaluation_benchmark/outputs/tables/precision_status.json',
+ ];
+const manifest=[];
+for(const source of files){
+ const src=path.join(root,source);
+ const name=source.replaceAll('/','__');
+ const dest=path.join(data,name);
+ const contents=await fs.readFile(src);
+ await fs.writeFile(dest,contents);
+ manifest.push({source,copy:`data/${name}`,sha256:crypto.createHash('sha256').update(contents).digest('hex')});
+}
+function csvcell(v){return `"${String(v??'').replaceAll('"','""')}"`;}
+const line=row=>row.map(csvcell).join(',')+'\n';
+let slideCSV=line(['page','section','unique_summary','topic','visual_type','visual_source','evidence_and_limitations']);
+slides.forEach((s,i)=>{slideCSV+=line([i+1,s.section,s.subtitle,s.topic,s.visual.kind,s.visual.path||s.visual.nodes?.join(' → ')||'',s.notes]);});
+await fs.writeFile(path.join(out,'逐页证据索引.csv'),slideCSV);
+let dataCSV=line(['source','copy','sha256']);
+for(const r of manifest)dataCSV+=line([r.source,r.copy,r.sha256]);
+await fs.writeFile(path.join(out,'数据清单.csv'),dataCSV);
+await fs.writeFile(path.join(out,'README.md'),`# 地球化学表征评价体系汇报\n\n- PPTX：48 页（36 页主文、12 页技术附录），含讲者备注；第 30 页内嵌四过程 MP4。\n- PDF：静态阅读版，第 30 页显示视频后备帧。\n- MP4：混合、分离结晶、部分熔融、蚀变，约 40 秒。\n- \`逐页证据索引.csv\`：每页内容、图源与证据限定。\n- \`数据清单.csv\`：随附表格与配置的原始路径、复制路径及 SHA-256。\n- \`data/\`：已有实验中的 CSV/JSON 快照；未重新训练或改动原始结果。\n\n重要口径：V1 黄铁矿与 V2 全岩不是同一数据；全岩探针 test 只隔离探针拟合，真实记录仍参加过预训练。四层评价是 DEMO，过程定律为理想化构建。\n`);
+console.log(`${slides.length} slides; ${manifest.length} data files`);

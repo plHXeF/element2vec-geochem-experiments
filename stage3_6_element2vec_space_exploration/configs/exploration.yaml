@@ -1,16 +1,16 @@
 project:
   name: Element2Vec V2 breadth-first representation audit
-  root_dir: stage3_6_element2vec_space_exploration
-  audit_dir: stage3_6_element2vec_space_exploration/audit
-  cache_dir: stage3_6_element2vec_space_exploration/cache
-  results_dir: stage3_6_element2vec_space_exploration/results
-  reports_dir: stage3_6_element2vec_space_exploration/reports
+  root_dir: run://.
+  audit_dir: run://audit
+  cache_dir: run://cache
+  results_dir: run://results
+  reports_dir: run://reports
 
 source:
   model_config: stage3_5_element2vec_v2/configs/v2_base.yaml
-  checkpoint: stage3_5_element2vec_v2/outputs/checkpoints/full_model.pt
-  stage3_5_outputs: stage3_5_element2vec_v2/outputs
-  sqlite_path: legacy_whole_rock_geochem/geochem.db
+  checkpoint: asset://v2_checkpoint
+  stage3_5_outputs: asset://v2_run
+  sqlite_path: asset://whole_rock
   view_name: v_high_quality_dataset
 
 sampling:

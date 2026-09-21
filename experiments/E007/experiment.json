@@ -1,0 +1,52 @@
+{
+  "id": "E007",
+  "title": "Value RoPE-z",
+  "module": "stage3_5_element2vec_v2",
+  "question": "改变数值注入为 Value RoPE-z 后，相对 V2 的配对表示行为如何？",
+  "controls": [
+    "冻结 V2 词表/统计",
+    "V2 与 RoPE 的随机架构",
+    "共同样本、raw 与 missingness 对照"
+  ],
+  "config": "stage3_5_element2vec_v2/configs/v2_value_rope_z.yaml",
+  "assets": [
+    "whole_rock",
+    "v2_vocab",
+    "v2_checkpoint",
+    "rope_z_checkpoint",
+    "subspace_audit"
+  ],
+  "upstream_experiments": [
+    "E004",
+    "E005"
+  ],
+  "protocol": "保持原训练预算和配对样本；不直接比较不同坐标单位下的损失。",
+  "execution_status": "completed",
+  "scientific_outcome": "mixed",
+  "conclusion": "局部切向稳定性改善，整体岩石邻域和来源混杂变差。",
+  "report": "stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPORT.md",
+  "runs": [
+    {
+      "id": "legacy-rope-z",
+      "path": "runs/E007/legacy-rope-z",
+      "kind": "historical"
+    }
+  ],
+  "artifacts": {
+    "code": "stage3_5_element2vec_v2",
+    "configuration": "stage3_5_element2vec_v2/configs/v2_value_rope_z.yaml",
+    "selected_report": "stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPORT.md",
+    "results": [
+      "runs/E007/legacy-rope-z"
+    ],
+    "weights": [
+      "runs/E007/legacy-rope-z/checkpoints/decoders.pt",
+      "runs/E007/legacy-rope-z/checkpoints/full_model.pt",
+      "runs/E007/legacy-rope-z/checkpoints/transformer_encoder.pt",
+      "runs/E007/legacy-rope-z/smoke/checkpoints/decoders.pt",
+      "runs/E007/legacy-rope-z/smoke/checkpoints/full_model.pt",
+      "runs/E007/legacy-rope-z/smoke/checkpoints/transformer_encoder.pt"
+    ],
+    "weight_note": "Original checkpoint files; checksums are recorded in the frozen run artifact_checksums.json."
+  }
+}

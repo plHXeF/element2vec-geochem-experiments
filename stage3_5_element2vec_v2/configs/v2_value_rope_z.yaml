@@ -1,11 +1,11 @@
 project:
   name: Element2Vec V2 Value RoPE Z
   root_dir: stage3_5_element2vec_v2
-  outputs_dir: stage3_5_element2vec_v2/outputs/value_rope_z
+  outputs_dir: run://.
 
 data:
-  sqlite_path: legacy_whole_rock_geochem/geochem.db
-  vocab_dir: stage3_5_element2vec_v2/outputs/vocab
+  sqlite_path: asset://whole_rock
+  vocab_dir: asset://v2_vocab
   view_name: v_high_quality_dataset
   sample_id_column: sample_id
   max_samples: null

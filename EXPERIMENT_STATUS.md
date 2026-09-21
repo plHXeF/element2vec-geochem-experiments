@@ -1,5 +1,7 @@
 # Experiment status
 
+> **当前工作入口（2026-09 整理后）：** 请从 [E001—E009 实验总表](experiments/README.md)、[管理规则](docs/WORKSPACE_MANAGEMENT.md) 和 [运行命令](docs/EXPERIMENT_COMMANDS.md) 开始。数据和产物位于仓库外，每次执行创建独立运行。以下研究报告与旧路径用于历史阅读；写入型历史命令须按新运行流程执行，不能直接覆盖历史输出。
+
 Snapshot date: 2026-08-24
 
 ## Value RoPE Z follow-up — completed 2026-09-12

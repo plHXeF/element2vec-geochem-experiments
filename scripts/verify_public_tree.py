@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MAX_GIT_BYTES = 95 * 1024 * 1024
 
-FORBIDDEN_SUFFIXES = {".db", ".sqlite", ".sqlite3", ".xlsx", ".xls", ".parquet", ".feather"}
+FORBIDDEN_SUFFIXES = {".db", ".sqlite", ".sqlite3", ".xlsx", ".xls", ".parquet", ".feather", ".npy", ".npz", ".pkl", ".pickle"}
 MODEL_WEIGHT_SUFFIXES = {".pt", ".pth", ".ckpt", ".safetensors"}
 ALLOWED_TRACKED_MODEL_WEIGHTS = {
     # Historical Stage 3 prototype included in the published baseline snapshot.
@@ -24,6 +24,8 @@ FORBIDDEN_PARTS = {
     "fitting_pools", "pca_models", "random_projection_models",
 }
 FORBIDDEN_EXACT = {
+    "workspace.local.json",
+    "latent_evaluation_benchmark/configs/fitted_baseline_statistics.json",
     "pyrite_benchmark/data/raw/pyrite.xlsx",
     "legacy_whole_rock_geochem/geochem.db",
     "stage3_5_element2vec_v2/outputs/checkpoints/full_model.pt",
@@ -45,7 +47,7 @@ ABSOLUTE_PATH_PATTERNS = [
     re.compile(rb"/Users/plhxef/"),
     re.compile(rb"[A-Za-z]:\\\\Geochem\\\\"),
 ]
-TEXT_SUFFIXES = {".py", ".md", ".txt", ".csv", ".json", ".yaml", ".yml", ".sh"}
+TEXT_SUFFIXES = {".py", ".md", ".txt", ".csv", ".json", ".yaml", ".yml", ".sh", ".mjs", ".js", ".in"}
 
 
 def tracked_files() -> list[Path]:

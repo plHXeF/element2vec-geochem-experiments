@@ -1,0 +1,50 @@
+{
+  "id": "E006",
+  "title": "PCA 与子空间复验",
+  "module": "stage3_6_element2vec_space_exploration",
+  "question": "在固定实验定义下，PCA 子空间相对 FULL 和随机投影恢复了哪些信号？",
+  "controls": [
+    "共享 PCA 拟合/评价划分",
+    "FULL、PCA64/32/3/2，受原生秩限制",
+    "至少十个固定随机投影种子",
+    "原实验阈值和扰动量不变"
+  ],
+  "config": "stage3_6_element2vec_space_exploration/configs/subspace_audit.yaml",
+  "assets": [
+    "space_audit",
+    "v2_checkpoint",
+    "v2_vocab",
+    "whole_rock"
+  ],
+  "upstream_experiments": [
+    "E005"
+  ],
+  "protocol": "固定原样本、拟合/评价池、随机种子及阈值，保留随机投影对照。",
+  "execution_status": "completed",
+  "scientific_outcome": "mixed",
+  "conclusion": "严格低秩恢复主要见于 F2 的 PCA32/PCA64；不支持通用低维语义空间。",
+  "report": "stage3_6_element2vec_space_exploration/subspace_audit/reports/subspace_exploration_report.md",
+  "runs": [
+    {
+      "id": "legacy-pca-sweep",
+      "path": "runs/E006/legacy-pca-sweep",
+      "kind": "historical"
+    },
+    {
+      "id": "legacy-subspace-audit",
+      "path": "runs/E006/legacy-subspace-audit",
+      "kind": "historical"
+    }
+  ],
+  "artifacts": {
+    "code": "stage3_6_element2vec_space_exploration",
+    "configuration": "stage3_6_element2vec_space_exploration/configs/subspace_audit.yaml",
+    "selected_report": "stage3_6_element2vec_space_exploration/subspace_audit/reports/subspace_exploration_report.md",
+    "results": [
+      "runs/E006/legacy-pca-sweep",
+      "runs/E006/legacy-subspace-audit"
+    ],
+    "weights": [],
+    "weight_note": "not applicable"
+  }
+}

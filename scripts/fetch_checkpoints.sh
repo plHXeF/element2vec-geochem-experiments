@@ -3,16 +3,24 @@ set -euo pipefail
 
 REPO="plHXeF/element2vec-geochem-experiments"
 TAG="v0.1.0-stage3.6"
-DEST="stage3_5_element2vec_v2/outputs/checkpoints"
 FORCE=0
-
-if [[ "${1:-}" == "--force" ]]; then
-  FORCE=1
-elif [[ -n "${1:-}" ]]; then
-  echo "Usage: $0 [--force]" >&2
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --run-dir)
+      [[ $# -ge 2 ]] || { echo "--run-dir requires a path" >&2; exit 2; }
+      export GEOCHEM_RUN_DIR="$2"
+      shift 2
+      ;;
+    --force) FORCE=1; shift ;;
+    --help|-h) echo "Usage: $0 --run-dir REGISTERED_RUN [--force]"; exit 0 ;;
+    *) echo "Usage: $0 --run-dir REGISTERED_RUN [--force]" >&2; exit 2 ;;
+  esac
+done
+if [[ -z "${GEOCHEM_RUN_DIR:-}" ]]; then
+  echo "Specify --run-dir for a new registered run before downloading checkpoints." >&2
   exit 2
 fi
-
+DEST="$(python -c 'from geochem_workspace import require_run_dir; print(require_run_dir() / "checkpoints")')"
 if [[ ! -f "docs/checkpoint_manifest.json" ]]; then
   echo "Run this script from the repository root." >&2
   exit 2

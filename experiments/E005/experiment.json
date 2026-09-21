@@ -1,0 +1,42 @@
+{
+  "id": "E005",
+  "title": "表示空间审计",
+  "module": "stage3_6_element2vec_space_exploration",
+  "question": "静态 token、上下文 token 与样本 latent 各自支持哪些地质结构？",
+  "controls": [
+    "原化学、未训练模型与扰动对照",
+    "来源/面板/缺失模式",
+    "A—K、X 原子实验协议"
+  ],
+  "config": "stage3_6_element2vec_space_exploration/configs/exploration.yaml",
+  "assets": [
+    "whole_rock",
+    "v2_checkpoint",
+    "v2_vocab"
+  ],
+  "upstream_experiments": [
+    "E004"
+  ],
+  "protocol": "主比较 chemistry-only，配对随机模型与 nuisance 对照。",
+  "execution_status": "completed",
+  "scientific_outcome": "mixed",
+  "conclusion": "保留 50 个正、负、模糊及不可用子实验；来源与缺失结构显著。",
+  "report": "stage3_6_element2vec_space_exploration/reports/element2vec_exploration_report.md",
+  "runs": [
+    {
+      "id": "legacy-space-audit",
+      "path": "runs/E005/legacy-space-audit",
+      "kind": "historical"
+    }
+  ],
+  "artifacts": {
+    "code": "stage3_6_element2vec_space_exploration",
+    "configuration": "stage3_6_element2vec_space_exploration/configs/exploration.yaml",
+    "selected_report": "stage3_6_element2vec_space_exploration/reports/element2vec_exploration_report.md",
+    "results": [
+      "runs/E005/legacy-space-audit"
+    ],
+    "weights": [],
+    "weight_note": "not applicable"
+  }
+}

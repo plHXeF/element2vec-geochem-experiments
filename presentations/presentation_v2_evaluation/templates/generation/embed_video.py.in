@@ -1,0 +1,80 @@
+"""Attach the locally rendered MP4 to the poster picture on slide 30.
+
+Open XML structure follows Microsoft Learn's Add a video to a slide example.
+"""
+from __future__ import annotations
+
+from pathlib import Path
+from zipfile import ZipFile
+
+from lxml import etree
+
+
+ROOT = Path(__file__).resolve().parents[1]
+CANDIDATE = ROOT / "build/candidate.pptx"
+OUTPUT = ROOT / "build/candidate_with_video.pptx"
+VIDEO = ROOT / "output/four_processes.mp4"
+SLIDE = "ppt/slides/slide30.xml"
+RELS = "ppt/slides/_rels/slide30.xml.rels"
+MEDIA = "ppt/media/four_processes.mp4"
+P = "http://schemas.openxmlformats.org/presentationml/2006/main"
+A = "http://schemas.openxmlformats.org/drawingml/2006/main"
+R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+P14 = "http://schemas.microsoft.com/office/powerpoint/2010/main"
+PKG = "http://schemas.openxmlformats.org/package/2006/relationships"
+CT = "http://schemas.openxmlformats.org/package/2006/content-types"
+
+
+def q(uri: str, tag: str) -> str:
+    return f"{{{uri}}}{tag}"
+
+
+with ZipFile(CANDIDATE) as source:
+    slide = etree.fromstring(source.read(SLIDE))
+    rels = etree.fromstring(source.read(RELS))
+    types = etree.fromstring(source.read("[Content_Types].xml"))
+
+    # The authored poster is the only picture on slide 30. Keep its position,
+    # crop and existing PNG relationship; make the same picture clickable media.
+    pictures = slide.findall(".//" + q(P, "pic"))
+    if len(pictures) != 1:
+        raise RuntimeError(f"Expected one slide-30 poster, found {len(pictures)}")
+    pic = pictures[0]
+    nv = pic.find(q(P, "nvPicPr"))
+    c_nv = nv.find(q(P, "cNvPr"))
+    app = nv.find(q(P, "nvPr"))
+    etree.SubElement(c_nv, q(A, "hlinkClick"), {q(R, "id"): "rIdVideo", "action": "ppaction://media"})
+    etree.SubElement(app, q(A, "videoFile"), {q(R, "link"): "rIdVideo"})
+    ext_list = etree.SubElement(app, q(P, "extLst"))
+    ext = etree.SubElement(ext_list, q(P, "ext"), uri="{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}")
+    etree.SubElement(ext, q(P14, "media"), {q(R, "embed"): "rIdMedia"})
+
+    target = "/" + MEDIA
+    etree.SubElement(rels, q(PKG, "Relationship"), {
+        "Id": "rIdVideo",
+        "Type": "http://schemas.openxmlformats.org/officeDocument/2006/relationships/video",
+        "Target": target,
+    })
+    etree.SubElement(rels, q(PKG, "Relationship"), {
+        "Id": "rIdMedia",
+        "Type": "http://schemas.microsoft.com/office/2007/relationships/media",
+        "Target": target,
+    })
+    etree.SubElement(types, q(CT, "Default"), Extension="mp4", ContentType="video/mp4")
+
+    replacements = {
+        SLIDE: etree.tostring(slide, xml_declaration=True, encoding="UTF-8", standalone=True),
+        RELS: etree.tostring(rels, xml_declaration=True, encoding="UTF-8", standalone=True),
+        "[Content_Types].xml": etree.tostring(types, xml_declaration=True, encoding="UTF-8", standalone=True),
+    }
+    with ZipFile(OUTPUT, "w") as result:
+        for item in source.infolist():
+            result.writestr(item, replacements.get(item.filename, source.read(item.filename)))
+        result.write(VIDEO, MEDIA)
+
+with ZipFile(OUTPUT) as z:
+    assert z.read(MEDIA) == VIDEO.read_bytes()
+    x = etree.fromstring(z.read(SLIDE))
+    assert x.find(".//" + q(P14, "media")).get(q(R, "embed")) == "rIdMedia"
+    assert x.find(".//" + q(A, "videoFile")).get(q(R, "link")) == "rIdVideo"
+print(OUTPUT)

@@ -1,0 +1,346 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {FileBlob,PresentationFile} from '@@ARTIFACT_TOOL@@';
+import {slides,chapters,data} from './slides.mjs';
+
+const DIR=path.dirname(new URL(import.meta.url).pathname),ROOT='@@WORKSPACE@@';
+const SOURCE=path.join(ROOT,'presentation_v2_evaluation/output/Geochem_评价体系汇报_20260917.pptx');
+const OUT=path.resolve(DIR,'../output');
+const FONT='Hiragino Sans GB';
+const C={blue:'#073B82',ink:'#162D46',muted:'#5C6C7D',red:'#C4373D',pale:'#EEF3F9',line:'#CCD8E5',teal:'#168E91',gold:'#C98C28',violet:'#8053AB',gray:'#7A8898',white:'#FFFFFF'};
+const modelColors=[C.gray,'#3D8A6E','#87AC86',C.blue,'#DA8A31',C.violet];
+const pres=await PresentationFile.importPptx(await FileBlob.load(SOURCE));
+for(const s of [...pres.slides.items])s.delete();
+const bounds=[];let pageNo=0;
+function shape(s,x,y,w,h,fill='none',g='rect',stroke='none',sw=0){return s.shapes.add({geometry:g,position:{left:x,top:y,width:w,height:h},fill,line:{fill:stroke,width:sw}});}
+function txt(s,text,x,y,w,h,size=24,color=C.ink,bold=false,align='left'){
+ const a=shape(s,x,y,w,h,'none','textbox');a.text=String(text);
+ a.text.style={typeface:FONT,fontSize:size,color,bold,autoFit:'none',alignment:align,verticalAlignment:'middle',insets:{left:0,right:0,top:0,bottom:0}};
+ bounds.push({page:pageNo,text:String(text),x,y,w,h,size});return a;
+}
+function line(s,x1,y1,x2,y2,color=C.line,width=2,dash=false){
+ return s.shapes.add({geometry:'line',position:{left:Math.min(x1,x2),top:Math.min(y1,y2),width:Math.abs(x2-x1)||.1,height:Math.abs(y2-y1)||.1,verticalFlip:(y2-y1)*(x2-x1)<0},fill:'none',line:{fill:color,width,style:dash?'dashed':'solid'}});
+}
+function pathLine(s,points,color=C.blue,width=3,dash=false){
+ const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x||1,h=Math.max(...ys)-y||1;
+ return s.shapes.add({geometry:'custom',position:{left:x,top:y,width:w,height:h},fill:'none',line:{fill:color,width,style:dash?'dashed':'solid'},customPaths:[{width:w,height:h,commands:points.map((p,i)=>({[i?'lineTo':'moveTo']:{x:p[0]-x,y:p[1]-y}}))}]});
+}
+function node(s,label,x,y,w=190,h=66,color=C.blue,fill=C.pale,size=23){
+ const a=shape(s,x,y,w,h,fill,'roundRect',color,1.5);a.text=label;a.text.style={typeface:FONT,fontSize:size,color,bold:true,autoFit:'none',alignment:'center',verticalAlignment:'middle',insets:{left:10,right:10,top:4,bottom:4}};bounds.push({page:pageNo,text:label,x,y,w,h,size});return a;
+}
+function connect(s,a,b,from='right',to='left',color=C.blue,kind='elbow',dash=false){return s.shapes.connect(a,b,{fromSide:from,toSide:to,kind,line:{fill:color,width:2.2,style:dash?'dashed':'solid'},tail:{type:'triangle',width:'sm',length:'sm'}});}
+function dot(s,x,y,color=C.blue,r=7){return shape(s,x-r,y-r,2*r,2*r,color,'ellipse');}
+function arrow(s,x1,y1,x2,y2,color=C.blue,dash=false){const a=shape(s,x1,y1,1,1,'none','ellipse'),b=shape(s,x2,y2,1,1,'none','ellipse');return connect(s,a,b,'right','left',color,'straight',dash);}
+function nn(s,x,y,w=150,h=100,color=C.blue){
+ const layers=[3,4,3],nodes=[];for(let i=0;i<3;i++){nodes[i]=[];for(let j=0;j<layers[i];j++)nodes[i].push([x+i*w/2,y+(j+1)*h/(layers[i]+1)]);}
+ for(let i=0;i<2;i++)for(const a of nodes[i])for(const b of nodes[i+1])line(s,...a,...b,C.line,1.3);
+ for(const l of nodes)for(const p of l)shape(s,p[0]-6,p[1]-6,12,12,C.white,'ellipse',color,2);
+}
+function rock(s,x,y,scale=1,color=C.gray){
+ const pts=[[0,24],[18,0],[65,7],[86,40],[57,69],[13,60],[0,24]].map(([a,b])=>[x+a*scale,y+b*scale]);
+ const r=pathLine(s,pts,color,2);r.fill=C.pale;
+ for(const [a,b] of [[20,24],[45,36],[28,47],[62,20]])shape(s,x+a*scale,y+b*scale,7*scale,5*scale,color,'diamond');
+ return r;
+}
+function formula(s,label,x=150,y=485,w=980){txt(s,label,x,y,w,58,30,C.blue,true,'center');}
+function chart(s,v,x=65,y=182,w=1150,h=392){
+ if(v.title)txt(s,v.title,x,y,w,36,23,C.ink,true);
+ const cy=v.title?y+42:y,hh=v.title?h-42:h;
+ const threeModels=JSON.stringify(v.categories)===JSON.stringify(['V2','RoPE-z','RoPE-地化'])&&v.series.length===1;
+ const series=v.series.map((a,i)=>({...a,values:a.values.map(n=>Number(Number(n).toPrecision(12))),...(a.xValues?{xValues:a.xValues.map(n=>Number(Number(n).toPrecision(12)))}:{}),valuesFormatCode:v.format||'0.00',fill:v.modelColors?undefined:(v.series.length===6?modelColors[i]:[C.blue,C.teal,C.gold,C.violet,C.gray,C.red][i]),
+ line:{fill:v.series.length===6?modelColors[i]:[C.blue,C.teal,C.gold,C.violet,C.gray,C.red][i],width:2.8},
+ ...(v.modelColors||threeModels?{points:a.values.map((_,j)=>({idx:j,fill:modelColors[j+(threeModels?3:0)]}))}:{}),
+ marker:{symbol:'circle',size:6}}));
+ const ax={typeface:FONT,fontSize:v.compact?16:18,fill:C.muted};
+ const c=s.charts.add(v.chart||'bar',{position:{left:x,top:cy,width:w,height:hh},categories:v.categories||[],series,
+ barOptions:{direction:'column',grouping:'clustered',gapWidth:70},scatterOptions:{style:'lineWithMarkers'},lineOptions:{smooth:false},
+ hasLegend:!!v.legend,legend:{position:'bottom',overlay:false,textStyle:{typeface:FONT,fontSize:v.compact?15:18,fill:C.ink}},
+ xAxis:{visible:true,tickLabelPosition:'low',title:v.xTitle?{text:v.xTitle,textStyle:{...ax,fontSize:17}}:undefined,textStyle:ax,line:{fill:C.line,width:1},majorGridlines:null},
+ yAxis:{visible:true,title:v.yTitle?{text:v.yTitle,textStyle:{...ax,fontSize:17}}:undefined,min:v.min,max:v.max,numberFormatCode:v.format||'0.00',textStyle:ax,majorGridlines:{fill:'#E1E7ED',width:1},line:{fill:'none',width:0}},
+ dataLabels:{showValue:(!v.legend&&(v.chart||'bar')==='bar'),position:'outEnd',textStyle:{typeface:FONT,fontSize:19,fill:C.ink}},
+ chartFill:C.white,plotAreaFill:C.white,chartLine:{fill:'none',width:0},plotAreaLine:{fill:'none',width:0}});
+ return c;
+}
+function table(s,v,x=65,y=205,w=1150,h=325,size=23){
+ const vals=[v.headers,...v.rows].map(r=>r.map(String));
+ const tb=s.tables.add({rows:vals.length,columns:vals[0].length,left:x,top:y,width:w,height:h,values:vals,columnWidths:v.widths});
+ tb.borders.assign({fill:C.line,width:1,style:'solid'});
+ tb.cells.block({row:0,column:0,rowCount:vals.length,columnCount:vals[0].length}).assign({textStyle:{typeface:FONT,fontSize:size,color:C.ink},margins:{left:14,right:14,top:size<=20?3:9,bottom:size<=20?3:9},anchor:'center'});
+ for(let r=0;r<vals.length;r++)for(let c=0;c<vals[0].length;c++){
+  const cell=tb.getCell(r,c);cell.fill=r===0?C.blue:(r%2===0?C.pale:C.white);cell.text.style={typeface:FONT,fontSize:r===0?size:size,color:r===0?C.white:C.ink,bold:r===0,autoFit:'none',verticalAlignment:'middle'};
+ }
+ return tb;
+}
+function facts(s,v,x=75,y=210,w=1125,h=345){
+ const n=v.items.length,ww=w/n;
+ v.items.forEach((r,i)=>{const xx=x+i*ww;txt(s,r[0],xx,y,ww-25,52,24,C.muted,true);txt(s,r[1],xx,y+88,ww-25,86,ww<300?36:51,C.blue,true);txt(s,r[2],xx,y+211,ww-28,95,21,C.muted);if(i)line(s,xx-20,y+15,xx-20,y+290,C.line,1);});
+ if(v.foot)txt(s,v.foot,x,y+h-10,w,52,18,C.muted);
+}
+function base(s,spec){
+ s.background.fill=C.white;txt(s,`${String(spec.ch).padStart(2,'0')}  ${chapters[spec.ch-1]}`,64,21,760,30,20,C.blue,true);
+ txt(s,spec.sub,895,21,320,30,20,C.muted,true,'right');
+ txt(s,spec.title,64,66,1150,60,spec.title.length>31?32:36,C.ink,true);
+ line(s,65,593,1215,593,C.line,1);
+ txt(s,spec.take,65,610,1150,50,spec.take.length>48?23:25,C.blue,true);
+ txt(s,`${String(spec.page).padStart(2,'0')} / ${slides.length}`,1112,684,103,20,14,C.muted,false,'right');
+ if(spec.detail)txt(s,'细节 · 可快速带过',65,681,290,22,14,C.muted);
+}
+async function image(s,p,x,y,w,h){const ext=path.extname(p);return s.images.add({blob:await fs.readFile(p),contentType:ext==='.svg'?'image/svg+xml':'image/png',alt:p,fit:'contain',position:{left:x,top:y,width:w,height:h}});}
+
+function diagram(s,v){
+ const kind=v.kind;
+ if(kind==='representation'){
+  txt(s,'一份岩石的观测',75,195,480,40,26,C.blue,true);table(s,{headers:['测项','数值（示例）'],rows:[['SiO₂','50 wt%'],['MgO','8 wt%'],['Rb','40 ppm']],widths:[240,230]},75,250,470,240,25);
+  const n=node(s,'同一份信息',603,322,165,70);const a=node(s,'原始含量',875,217,260,60),b=node(s,'对数／标准化',875,323,260,60,C.teal),c=node(s,'模型坐标',875,429,260,60,C.violet);connect(s,n,a);connect(s,n,b);connect(s,n,c);txt(s,'不同表示可能改变样品间的距离',615,525,540,30,22,C.muted);return;
+ }
+ if(kind==='geometry'){
+  for(const [x,y] of [[200,330],[255,285],[310,350],[795,310],[850,260],[910,330]])dot(s,x,y,x<500?C.blue:C.teal,10);
+  arrow(s,275,465,540,410,C.gold);txt(s,'相近样品',143,392,300,45,29,C.blue,true);txt(s,'属性相似的另一组',760,392,375,45,29,C.teal,true);
+  txt(s,'距离',485,261,160,42,30,C.muted,true);line(s,330,330,760,300,C.muted,2,true);
+  txt(s,'方向',375,465,160,40,28,C.gold,true);txt(s,'组成改变后，坐标怎样移动？',140,528,800,35,25,C.muted);txt(s,'概念示意，非实测坐标',905,530,305,28,18,C.muted,false,'right');return;
+ }
+ if(kind==='analogy'){
+  const words=v.mode==='words',left=words?'男人':'辉长岩',right=words?'女人':'玄武岩',bottom=words?'国王':'花岗岩',top=words?'女王':'流纹岩';
+  const pp=[[215,415,left],[470,265,right],[725,415,bottom],[980,265,top]];
+  for(let i=0;i<pp.length;i++){const[x,y,t]=pp[i];dot(s,x,y,i<2?C.blue:C.teal,11);txt(s,t,x-83,y+20,166,48,30,i<2?C.blue:C.teal,true,'center');}
+  arrow(s,235,399,450,279,C.blue,!words);arrow(s,745,399,960,279,C.teal,!words);
+  txt(s,words?'关系向量的示意':'火山岩—深成岩对应关系',450,181,650,45,25,C.muted);
+  formula(s,words?'女王 − 国王 ≈ 女人 − 男人':'玄武岩 − 辉长岩 ≈ 流纹岩 − 花岗岩？',100,510,1080);
+  if(!words)txt(s,'待检验假设',920,457,265,35,25,C.red,true);return;
+ }
+ if(kind==='capabilities'){
+  const labels=['预测有效性','局部邻域','全局结构','信息保真','指标连续性','泛化稳定性'];
+  const center=node(s,'表示的能力',494,329,278,84,C.blue,C.pale,30);
+  const pos=[[100,210],[500,201],[920,210],[100,465],[500,465],[920,465]];
+  labels.forEach((t,i)=>{const[x,y]=pos[i],a=node(s,t,x,y,245,62,i<3?C.blue:C.gray);connect(s,center,a, i<3?'top':'bottom',i<3?'bottom':'top',C.line,'straight');});
+  txt(s,'早期已量化',80,285,300,32,20,C.blue);txt(s,'后来继续补充',905,405,300,32,20,C.gray,false,'right');return;
+ }
+ if(kind==='timeline'){
+  const ys=[236,300,364,428,492];v.items.forEach((it,i)=>{dot(s,120,ys[i]+17,C.blue,8);if(i<4)line(s,120,ys[i]+25,120,ys[i+1]+9,C.line,3);txt(s,it[0],170,ys[i]-4,280,44,28,C.blue,true);txt(s,it[1],490,ys[i]-4,675,44,26,C.ink);});return;
+ }
+ if(kind==='dataset'){
+  rock(s,105,290,2.5,C.blue);txt(s,'全岩化学',75,488,305,44,31,C.blue,true,'center');
+  facts(s,{items:[['样品规模','270,241','不同来源、不同测项覆盖'],['数值字段','34','主量、微量和辅助字段']]},425,215,750,345);return;
+ }
+ if(kind==='tokens'){
+  const labs=[['SiO₂\n50 wt%','MgO\n8 wt%','Rb\n40 ppm','Sr\n300 ppm'],['SiO₂\n70 wt%','MgO\n1 wt%','Ni\n8 ppm']];
+  labs.forEach((arr,r)=>{txt(s,'样品 '+(r?'B':'A'),75,235+r*171,170,50,29,C.blue,true);arr.forEach((a,i)=>node(s,a,270+i*213,215+r*171,180,97,r?C.teal:C.blue,C.pale,26));});
+  txt(s,'教学示例；没有测量的元素，不生成有效单元',270,540,910,33,22,C.muted);return;
+ }
+ if(kind==='token'){
+  const a=node(s,'元素身份：Rb',84,216,274,60),b=node(s,'标准化含量',84,337,274,60,C.teal),c=node(s,'两个遮盖标志',84,458,274,60,C.gold);
+  const merge=node(s,'拼接为\n512 维输入',488,327,222,97);[a,b,c].forEach(n=>connect(s,n,merge));
+  nn(s,804,302,175,130);txt(s,'共享小型神经网络',746,454,290,40,24,C.blue,true,'center');connect(s,merge,shape(s,770,362,1,1));
+  const out=node(s,'768 维\n信息单元',1062,322,150,95,C.violet);connect(s,shape(s,1004,362,1,1),out);return;
+ }
+ if(kind==='v2architecture'){
+  const a=node(s,'元素身份',67,218,168,54),b=node(s,'数值',67,310,168,54,C.teal),c=node(s,'遮盖标志',67,402,168,54,C.gold);
+  const proj=node(s,'输入融合\n小型神经网络',309,294,196,108);nn(s,334,211,144,60);[a,b,c].forEach(n=>connect(s,n,proj));
+  const trans=node(s,'12 层 Transformer\n元素间交换信息',584,285,291,126);connect(s,proj,trans);
+  const outputs=[node(s,'数值恢复',981,202,215,53,C.teal),node(s,'字段识别',981,291,215,53,C.blue),node(s,'岩石标签预测',981,380,215,53,C.violet)];outputs.forEach(o=>connect(s,trans,o));
+  txt(s,'训练时按遮盖任务选择',938,452,290,30,18,C.muted);
+  const mean=node(s,'评价：移除标签输入，取有效数值单元均值',359,500,562,60,C.red,'#FFF7F6',23);connect(s,trans,mean,'bottom','top',C.red);return;
+ }
+ if(kind==='attention'){
+  const target=node(s,'更新 Rb 的表示',492,354,296,92,C.blue,C.pale,28);
+  const sources=[['Sr',116,223],['SiO₂',473,200],['MgO',894,223],['Ni',955,440]];
+  sources.forEach(([label,x,y],i)=>{const a=node(s,label,x,y,180,65,i%2?C.teal:C.blue);connect(s,a,target,i===3?'left':'bottom',i===3?'right':'top',i%2?C.teal:C.blue,'straight');});
+  txt(s,'根据当前样品，调整参考权重',365,486,540,45,26,C.blue,true,'center');txt(s,'注意力是信息汇总机制；权重本身不是因果证据',170,545,970,30,22,C.muted,false,'center');return;
+ }
+ if(kind==='masktrain'){
+  const input=node(s,'一份样品',75,323,190,83);const tasks=[['45%','Rb = ？','恢复数值'],['15%','？ = 72.3','识别字段'],['40%','岩石类型 = ？','预测标签']];
+  tasks.forEach((it,i)=>{const y=201+i*123;const t=node(s,it[1],417,y,325,74,[C.teal,C.blue,C.violet][i]);connect(s,input,t);txt(s,it[0],304,y-24,95,32,22,C.muted,true);const o=node(s,it[2],928,y,254,74,[C.teal,C.blue,C.violet][i]);connect(s,t,o);});return;
+ }
+ if(kind==='traininfer'){
+  txt(s,'训练',88,196,300,48,30,C.blue,true);txt(s,'本轮评价',704,196,400,48,30,C.teal,true);line(s,626,199,626,547,C.line,2);
+  node(s,'化学观测 ＋ 岩石标签',85,276,455,74);node(s,'遮盖任务与参数学习',85,429,455,74);arrow(s,313,360,313,409);
+  node(s,'只输入化学观测',711,276,463,74,C.teal);node(s,'有效数值单元均值',711,429,463,74,C.teal);arrow(s,942,360,942,409,C.teal);return;
+ }
+ if(kind==='exploremap'){
+  const rows=[['元素身份与数值','A / B','周期性质、比值、数值轨迹'],['样品背景与外部信息','C / D / X','背景读出、同位素、来源'],['过程与局部扰动','E / F','混合、元素响应、可加性'],['岩石标签与样品对齐','G / H','关系类比、标签检索'],['矿物代理与额外信息','I / J','矿物代理、传统指标增量'],['基线与鲁棒性','K','随机模型、缺测、输入顺序']];
+  rows.forEach((r,i)=>{const y=190+i*61;txt(s,r[1],76,y,145,40,22,C.muted,true);txt(s,r[0],225,y,410,40,24,C.blue,true);txt(s,r[2],680,y,510,40,21,C.ink);if(i<5)line(s,76,y+48,1199,y+48,C.line,1);});return;
+ }
+ if(kind==='perturb'){
+  ['基性背景','中性背景','酸性背景'].forEach((t,i)=>{const x=115+i*397;rock(s,x+72,215,1.2,[C.blue,C.teal,C.violet][i]);txt(s,t,x,322,280,45,27,C.ink,true,'center');node(s,'同一元素 ＋ 0.5 z',x,392,287,60,[C.blue,C.teal,C.violet][i]);arrow(s,x+110,515,x+237,477,[C.blue,C.teal,C.violet][i]);});
+  txt(s,'比较三组响应方向，而不是比较三个绝对坐标',230,538,850,35,23,C.muted,false,'center');return;
+ }
+ if(kind==='addition'){
+  arrow(s,170,470,357,286,C.blue);arrow(s,357,286,550,366,C.teal);arrow(s,170,470,550,366,C.gold,true);arrow(s,170,470,549,326,C.violet);
+  txt(s,'单元素变化 A',78,238,300,37,23,C.blue,true);txt(s,'变化 B',399,259,210,38,23,C.teal,true);txt(s,'联合变化',373,405,230,36,23,C.violet,true);
+  facts(s,{items:[['方向余弦','0.942','方向较接近'],['残差比例','0.374','并非严格相加']]},674,220,540,345);return;
+ }
+ if(kind==='inputcompare'){
+  txt(s,'V2',75,220,200,50,31,C.blue,true);const a=node(s,'身份 ＋ 数值',250,216,295,79),b=node(s,'输入小网络',632,216,226,79),c=node(s,'注意力',950,216,229,79);connect(s,a,b);connect(s,b,c);
+  txt(s,'RoPE',75,414,210,50,31,C.violet,true);const d=node(s,'元素身份',250,411,295,79,C.violet),e=node(s,'注意力 Q / K / V',692,414,487,79,C.violet);connect(s,d,e);const n=node(s,'数值控制旋转',659,310,310,57,C.teal);connect(s,n,e,'bottom','top',C.teal);return;
+ }
+ if(kind==='ropeblock'){
+  const input=node(s,'元素表示',65,300,165,70);const split=shape(s,280,334,1,1);connect(s,input,split);
+  const q=node(s,'Q',339,199,94,59),k=node(s,'K',339,302,94,59),val=node(s,'V',339,429,94,59,C.gray);[q,k,val].forEach(a=>connect(s,split,a));
+  const qr=node(s,'旋转 Q',511,199,136,59,C.teal),kr=node(s,'旋转 K',511,302,136,59,C.teal);connect(s,q,qr);connect(s,k,kr);
+  const value=node(s,'数值坐标',468,510,222,55,C.teal);
+  pathLine(s,[[579,510],[579,487],[679,487],[679,230],[654,230]],C.teal,2);arrow(s,654,230,647,230,C.teal);
+  pathLine(s,[[679,333],[654,333]],C.teal,2);arrow(s,654,333,647,333,C.teal);
+  const weights=node(s,'匹配权重',719,236,189,66,C.blue);connect(s,qr,weights);connect(s,kr,weights);
+  const sum=node(s,'加权汇总 V',720,407,193,69);connect(s,weights,sum,'bottom','top');connect(s,val,sum);
+  const add1=node(s,'＋',978,410,60,61),ffn=node(s,'前馈网络',1071,324,146,70);connect(s,sum,add1);connect(s,add1,ffn,'top','left');
+  const add2=node(s,'＋',1093,205,60,60);connect(s,ffn,add2,'top','bottom');
+  pathLine(s,[[148,300],[148,177],[1007,177],[1007,405]],C.gold,2);arrow(s,1007,391,1007,408,C.gold);
+  pathLine(s,[[1007,410],[1038,410],[1038,235],[1088,235]],C.gold,2);arrow(s,1080,235,1090,235,C.gold);
+  txt(s,'残差旁路',1044,478,170,37,19,C.gold,true);txt(s,'每个子模块前进行归一化；本图省略归一化细节',71,547,650,25,17,C.muted);return;
+ }
+ if(kind==='rotation'){
+  const centers=[[260,358],[700,358]];centers.forEach(([x,y],i)=>{shape(s,x-111,y-111,222,222,'none','ellipse',C.line,2);line(s,x-120,y,x+120,y,C.line,1);line(s,x,y-120,x,y+120,C.line,1);arrow(s,x,y,x+100,y,C.gray);arrow(s,x,y,x+(i?35:75),y-(i?94:66),i?C.teal:C.blue);txt(s,i?'较大数值坐标':'较小数值坐标',x-180,498,360,41,26,i?C.teal:C.blue,true,'center');});
+  txt(s,'数值变化',439,327,165,52,23,C.muted,true,'center');txt(s,'多频率\n同时旋转',1003,296,210,123,31,C.violet,true,'center');return;
+ }
+ if(kind==='tradeoff'){
+  txt(s,'局部数值响应',90,208,510,55,32,C.teal,true);txt(s,'整体岩石邻域',738,208,490,55,32,C.blue,true);
+  pathLine(s,[[105,430],[160,405],[215,385],[270,363],[325,343],[380,325],[435,305]],C.teal,4);
+  for(const [x,y,c] of [[820,343,C.blue],[857,328,C.teal],[926,380,C.blue],[997,303,C.teal],[1071,397,C.blue],[1030,354,C.teal]])dot(s,x,y,c,13);
+  txt(s,'小步预测误差下降',95,489,500,50,30,C.teal,true);txt(s,'同类近邻比例下降',738,489,500,50,30,C.blue,true);line(s,631,218,631,548,C.line,2);return;
+ }
+ if(kind==='layers'){
+  const rows=[['01','信息是否容易读出','从线性方法到更复杂读出器'],['02','选定信息能否恢复','共享遮盖与恢复任务'],['03','空间距离是否合理','三点距离与邻域连续性'],['04','过程是否容易预测','共享轨迹、一步与连续预测']];
+  rows.forEach((a,i)=>{const y=189+i*92;shape(s,70+i*27,y,1115-i*27,74,i%2?C.white:C.pale);txt(s,a[0],88+i*27,y+6,70,60,34,C.blue,true);txt(s,a[1],200+i*27,y+10,415,52,28,C.blue,true);txt(s,a[2],741,y+11,430,50,22,C.muted);});return;
+ }
+ if(kind==='baselines'){
+  const input=node(s,'同一原始记录',65,334,220,83);const group1=node(s,'传统方法',376,213,194,60,C.gray),group2=node(s,'固定模型',376,453,194,60,C.blue);connect(s,input,group1);connect(s,input,group2);
+  const names=[['原值标准化','地化标准化','地化 PCA'],['V2','RoPE-z','RoPE-地化']];
+  names.forEach((ns,r)=>ns.forEach((n,i)=>{const a=node(s,n,670,(r?397:184)+i*65,220,49,modelColors[i+r*3],C.white,21);connect(s,r?group2:group1,a);const e=shape(s,1021,358,1,1);connect(s,a,e);}));
+  node(s,'共同任务',1027,326,194,81,C.red,'#FFF7F6',27);return;
+ }
+ if(kind==='split'){
+  txt(s,'模型预训练',75,200,300,45,30,C.blue,true);node(s,'全部现有样品与标签',402,196,787,69,C.blue);
+  txt(s,'本轮读出器',75,358,300,45,30,C.teal,true);const widths=[520,134,134],labels=['训练 70%','验证 15%','测试 15%'];let x=402;
+  labels.forEach((t,i)=>{node(s,t,x,353,widths[i],90,[C.blue,C.teal,C.violet][i],C.pale,i?21:29);x+=widths[i]+7;});txt(s,'后续划分不能撤销上方的预训练接触',402,484,800,57,28,C.red,true);return;
+ }
+ if(kind==='probes'){
+  node(s,'固定的样品表示',466,182,348,65);line(s,640,247,640,291,C.blue,2.2);line(s,201,291,1086,291,C.blue,2.2);
+  const labels=['线性读出','小网络','中网络','大网络'];
+  labels.forEach((t,i)=>{const x=92+i*295,c=[C.gray,C.blue,C.teal,C.violet][i];arrow(s,x+109,291,x+109,329,C.blue);node(s,t,x,330,218,61,c);if(i)nn(s,x+35,414,148,90,c);else line(s,x+60,491,x+155,421,C.gray,3);
+  txt(s,i?['','32','128 / 64','512 / 256 / 128'][i]:'无隐藏层',x-9,517,236,44,21,C.muted,false,'center');});return;
+ }
+ if(kind==='triplet'){
+  const a=node(s,'锚点 A',122,330,228,85,C.blue),p=node(s,'属性近 P',603,220,261,77,C.teal),n=node(s,'属性远 N',864,454,261,77,C.gold);
+  connect(s,a,p,'right','left',C.teal,'straight');connect(s,a,n,'right','left',C.gold,'straight');
+  txt(s,'期望距离较短',354,243,254,44,26,C.teal,true);txt(s,'期望距离较长',432,427,320,44,26,C.gold,true);
+  txt(s,'例：比较 SiO₂ 含量差异',839,174,374,35,20,C.muted);return;
+ }
+ if(kind==='semanticmatrix'){
+  const targets=['SiO2','Mg_number','SigmaREE10','total_alkali','La_Yb','Sr_Y','Eu_anomaly','rock_group','rock_origin'];
+  const names=['SiO₂','镁值','稀土总量','总碱','La/Yb','Sr/Y','Eu 异常','岩石大类','成因类别'];
+  table(s,{headers:['属性','原值','地化','PCA','V2','RoPE-z','RoPE-地化'],rows:targets.map((t,i)=>[names[i],...data.models.map(m=>Number(data.semantic.find(r=>r.target===t&&r.representation===m).triplet_accuracy).toFixed(3))]),widths:[248,135,135,135,135,135,227]},65,184,1150,355,20);return;
+ }
+ if(kind==='bank'){
+  const init=node(s,'合成初值\n真实初值',70,316,202,109);const ps=['混合','分离结晶','部分熔融','理想蚀变'];
+  ps.forEach((t,i)=>{const n=node(s,t,410,190+i*91,224,61,[C.blue,C.teal,C.gold,C.violet][i]);connect(s,init,n);const b=shape(s,744,345,1,1);connect(s,n,b);});
+  const bank=node(s,'共享物理轨迹\n每条 33 个状态',760,304,249,98);const repr=node(s,'六种\n表示',1082,313,129,90,C.red);connect(s,bank,repr);txt(s,'单过程各 2,000 条；复合过程 8,000 条',738,475,475,72,23,C.muted);return;
+ }
+ if(kind==='initials'){
+  txt(s,'合成初值',74,191,353,45,29,C.blue,true);txt(s,'半合成初值',74,435,353,45,29,C.teal,true);
+  const a=node(s,'矿物质量比例',291,193,233,62),b=node(s,'主量化学计量',598,193,241,62);connect(s,a,b);
+  const t=node(s,'微量先验 ＋ 稀土曲线',411,307,412,64,C.gold),real=node(s,'完整合法主量的真实样品',291,440,548,71,C.teal);
+  const end=node(s,'初始全岩状态',978,313,236,90,C.violet);connect(s,b,end);connect(s,t,end);connect(s,real,end);return;
+ }
+ if(kind==='process'){
+  const p=v.process;
+  if(p==='mixing'){
+   rock(s,87,209,1.25,C.blue);rock(s,87,411,1.25,C.teal);txt(s,'端元 A',198,228,188,50,27,C.blue,true);txt(s,'端元 B',198,428,188,50,27,C.teal,true);
+   const a=shape(s,357,252,1,1),b=shape(s,357,457,1,1),m=node(s,'混合物\n比例 t',471,310,249,106,C.violet);connect(s,a,m);connect(s,b,m);
+   arrow(s,867,475,1130,231,C.blue);dot(s,867,475,C.blue,9);dot(s,1130,231,C.teal,9);txt(s,'A',827,486,54,38,26,C.blue,true);txt(s,'B',1142,203,58,38,26,C.teal,true);txt(s,'原始线性坐标',815,536,410,34,24,C.muted);return;
+  }
+  if(p==='fractionation'||p==='melting'){
+   const melt=p==='melting';rock(s,92,293,1.45,C.blue);txt(s,melt?'源岩':'初始熔体',75,431,302,48,29,C.blue,true);
+   const n=node(s,melt?'部分熔融':'矿物移除',397,312,258,95,C.gold);
+   const u=node(s,melt?'熔体产物':'移出的矿物',867,210,325,83,C.teal),d=node(s,melt?'残余体':'剩余熔体',867,424,325,83,C.violet);connect(s,shape(s,260,359,1,1),n);connect(s,n,u);connect(s,n,d);
+   txt(s,melt?'本轮追踪微量熔体；主量固定':'主量预算与微量分配分别计算',349,510,492,62,22,C.muted,false,'center');return;
+  }
+  const fields=['SiO₂','MgO','K₂O','Rb','Sr'];const vals=[0,0,1,1,-1];fields.forEach((t,i)=>{const x=88+i*231;node(s,t,x,231,184,76,[C.gray,C.gray,C.teal,C.teal,C.red][i]);txt(s,vals[i]>0?'增加':vals[i]<0?'减少':'保持',x,426,184,62,30,vals[i]>0?C.teal:vals[i]<0?C.red:C.gray,true,'center');if(vals[i])arrow(s,x+91,vals[i]>0?399:337,x+91,vals[i]>0?337:399,vals[i]>0?C.teal:C.red);else line(s,x+57,365,x+130,365,C.gray,4);});txt(s,'示意：部分字段变化，具体字段由每条轨迹参数决定',173,525,979,40,23,C.muted,false,'center');return;
+ }
+ if(kind==='metrics'){
+  const names=['相邻方向是否一致','路径绕了多远','局部是否主要沿一维','远处状态是否折返'];
+  names.forEach((t,i)=>txt(s,t,75+(i%2)*602,190+Math.floor(i/2)*206,533,40,26,C.blue,true));
+  pathLine(s,[[104,317],[178,284],[252,250],[326,279],[409,249]],C.blue,4);
+  pathLine(s,[[716,313],[785,266],[873,319],[1012,241],[1154,282]],C.teal,4);line(s,716,313,1154,282,C.gray,2,true);
+  pathLine(s,[[104,512],[188,471],[272,436],[363,426],[429,404]],C.gold,4);shape(s,202,449,112,25,'none','ellipse',C.line,2);
+  pathLine(s,[[724,516],[846,482],[1001,418],[1110,475],[943,519],[828,491]],C.violet,4);dot(s,846,482,C.red,9);dot(s,828,491,C.red,9);return;
+ }
+ if(kind==='operator'){
+  const a=node(s,'当前坐标 z',85,220,277,76),b=node(s,'过程参数 θ',85,427,277,76,C.teal),mid=node(s,'条件线性算子\n预测下一步',499,313,321,113);
+  connect(s,a,mid);connect(s,b,mid);const out=node(s,'预测坐标',967,245,244,73),truth=node(s,'真实坐标',967,434,244,73,C.teal);connect(s,mid,out);connect(s,out,truth,'bottom','top',C.red,'straight',true);txt(s,'比较误差',928,353,152,48,23,C.red,true);return;
+ }
+ if(kind==='composite'){
+  const xs=[247,595,942];txt(s,'真实过程',70,224,180,47,25,C.teal,true);txt(s,'连续预测',70,442,180,47,25,C.blue,true);
+  xs.forEach((x,i)=>{const a=node(s,['起点','段 A 终点','段 B 终点'][i],x,215,253,78,C.teal),b=node(s,['同一起点','预测 A 终点','预测 B 终点'][i],x,430,253,78,C.blue);if(i){arrow(s,x-80,254,x-8,254,C.teal);arrow(s,x-80,469,x-8,469,C.blue);}if(i===2)connect(s,a,b,'bottom','top',C.red,'straight',true);});
+  txt(s,'不在这里重置为真实状态',514,529,487,38,25,C.red,true,'center');return;
+ }
+ if(kind==='order'){
+  const start=node(s,'同一起点',65,316,203,93);const a=node(s,'混合',424,210,237,69),b=node(s,'分异',424,435,237,69,C.teal),aa=node(s,'分异',753,210,237,69,C.teal),bb=node(s,'混合',753,435,237,69);connect(s,start,a);connect(s,start,b);connect(s,a,aa);connect(s,b,bb);const e1=dot(s,1127,245,C.blue,14),e2=dot(s,1127,470,C.teal,14);connect(s,aa,e1);connect(s,bb,e2);line(s,1127,268,1127,445,C.red,2,true);shape(s,1015,328,210,43,C.white);txt(s,'终点差异',1029,327,195,45,27,C.red,true,'center');return;
+ }
+ if(kind==='operatortable'){
+  const names=['原值标准化','地化标准化','地化 PCA','V2','RoPE-z','RoPE-地化'];
+  const rows=data.models.map((m,i)=>[names[i],...['Mixing','Fractionation','PartialMelting','Alteration'].map(p=>data.operator[m][p].toFixed(4))]);
+  table(s,{headers:['表示','混合','分离结晶','部分熔融','理想蚀变'],rows,widths:[290,200,230,230,200]},65,197,1150,346,24);
+  txt(s,'0.0000 为四位小数舍入；模型内比较不等于直接差值显著性检验',85,552,1120,30,18,C.muted);return;
+ }
+ if(kind==='return'){
+  txt(s,'空间愿景',75,215,355,58,36,C.blue,true);txt(s,'关系可比较，变化可解释，过程可计算',75,312,530,145,37,C.ink,true);
+  const labels=[['已经看到','背景可读；部分局部规律'],['仍待验证','通用关系方向与独立泛化']];labels.forEach((r,i)=>{txt(s,r[0],731,216+i*191,434,49,27,i?C.red:C.teal,true);txt(s,r[1],731,280+i*191,470,95,27,C.ink);});return;
+ }
+ if(kind==='boundaries'){
+  const labels=[['数据','真实样品参加过预训练'],['设计','单次训练；部分因素同时变化'],['过程','理想定律；真实覆盖有限'],['统计','部分复合比较区间仍较宽']];labels.forEach((r,i)=>{const x=78+(i%2)*611,y=205+Math.floor(i/2)*187;txt(s,r[0],x,y,530,48,34,C.blue,true);line(s,x,y+66,x+498,y+66,C.line,2);txt(s,r[1],x,y+90,520,75,26,C.ink);});return;
+ }
+ if(kind==='next'){
+  const rows=[['独立数据','先隔离文献／地区，再进行预训练'],['机制识别','补齐坐标与遮盖消融，重复训练种子'],['真实过程','自然岩套或校准正演，匹配比较容量']];rows.forEach((r,i)=>{txt(s,String(i+1).padStart(2,'0'),80,210+i*112,118,71,48,C.blue,true);txt(s,r[0],235,216+i*112,293,60,30,C.blue,true);txt(s,r[1],538,220+i*112,661,66,25,C.ink);});return;
+ }
+ throw new Error('Missing diagram kind '+kind);
+}
+
+const selected=process.env.ONLY_PAGES?new Set(process.env.ONLY_PAGES.split(',').map(Number)):null;
+for(const spec of slides){
+ if(selected&&!selected.has(spec.page))continue;
+ pageNo=spec.page;const s=pres.slides.add();
+ if(spec.visual.kind==='cover'){
+  s.background.fill=C.white;shape(s,0,0,25,720,C.blue);txt(s,'Element2Vec V2',73,69,900,67,31,C.blue,true);
+  txt(s,'地球化学表示',73,206,1150,91,68,C.blue,true);txt(s,'设计、实验与认识',76,319,1140,85,52,C.ink,true);
+  line(s,78,459,1190,459,C.line,2);txt(s,'V2 与 RoPE 分支的项目进展',79,494,1110,60,29,C.muted);txt(s,'2026.09.17',80,628,560,42,22,C.muted);
+ }else if(spec.visual.kind==='agenda'){
+  s.background.fill=C.white;txt(s,'汇报目录',72,54,1130,80,46,C.blue,true);
+  chapters.forEach((t,i)=>{const active=i===spec.ch-1,y=175+i*69;txt(s,String(i+1).padStart(2,'0'),80,y,85,49,29,active?C.red:'#A3ACB6',active);txt(s,t,196,y,1000,50,30,active?C.red:'#8995A2',active);if(active)shape(s,61,y+12,7,28,C.red);});
+  txt(s,`${String(spec.page).padStart(2,'0')} / ${slides.length}`,1112,684,103,20,14,C.muted,false,'right');
+ }else{
+  base(s,spec);const v=spec.visual;
+  if(v.kind==='table')table(s,v);
+  else if(v.kind==='chart')chart(s,v);
+  else if(v.kind==='dualchart'){
+   for(const [v2,x] of [[v.left,65],[v.right,675]])if(v2.kind==='facts')facts(s,v2,x,222,525,303);else chart(s,{...v2,compact:true},x,187,540,389);
+  }else if(v.kind==='triplechart')v.panels.forEach((p,i)=>chart(s,{...p,compact:true},57+i*407,193,391,380));
+  else if(v.kind==='facts')facts(s,v);
+  else if(v.kind==='video'){
+   await image(s,v.path,510,174,690,410);txt(s,'上方：真实化学变化\n下方：六种表示中的轨迹',78,217,399,101,27,C.blue,true);txt(s,'ZVector：原值标准化\nGeoNorm：地化标准化\nPCAGeo：地化降维\nRoPEz：RoPE-z\nRoPEgeo：RoPE-地化',78,348,406,181,22,C.muted);txt(s,'点击图像播放 40 秒动画',80,543,410,34,21,C.blue,true);
+  }else diagram(s,v);
+ }
+ s.speakerNotes.textFrame.setText(spec.notes);
+}
+await fs.mkdir(OUT,{recursive:true});
+const candidate=path.join(DIR,selected?'sample.pptx':'candidate.pptx');
+await(await PresentationFile.exportPptx(pres)).save(candidate);
+await fs.writeFile(path.join(DIR,'bounds.json'),JSON.stringify(bounds,null,2));
+if(!selected){
+ await fs.writeFile(path.join(DIR,'slides.json'),JSON.stringify(slides,null,2));
+ const script='# 地球化学表示：设计、实验与认识\n\n主讲约 60 分钟（不含问答）。细节页可按备注短讲，追问段不计入主讲。\n\n'+slides.map(s=>`## 第 ${s.page} 页 · ${s.title}\n\n${s.ch?'板块：'+chapters[s.ch-1]+'；':''}建议 ${s.seconds} 秒${s.detail?'；细节页可快速带过':''}。\n\n${s.speech}\n\n${s.extra?'追问时展开：'+s.extra+'\n\n':''}证据索引：${s.evidence.join('；')}\n`).join('\n');
+ await fs.writeFile(path.join(OUT,'中文演讲稿.md'),script);
+ const quote=s=>'"'+String(s).replaceAll('"','""')+'"';
+ const rows=[['页码','板块','标题','版式','建议秒数','讲述层级','证据索引'],...slides.map(s=>[s.page,s.ch?chapters[s.ch-1]:'封面',s.title,s.visual.kind,s.seconds,s.detail?'细节':'主讲',s.evidence.join('；')])];
+ await fs.writeFile(path.join(OUT,'逐页证据索引.csv'),'\ufeff'+rows.map(r=>r.map(quote).join(',')).join('\n'));
+ await fs.copyFile(path.join(DIR,'data.json'),path.join(OUT,'图表汇总数据.json'));
+ await fs.copyFile(path.join(DIR,'source_manifest.json'),path.join(OUT,'来源数据清单.json'));
+}
+console.log('Saved',candidate,pres.slides.items.length,'slides');
+if(process.env.RENDER==='1'){
+ const dir=path.join(DIR,selected?'sample_rendered':'rendered');await fs.mkdir(dir,{recursive:true});
+ const specs=slides.filter(s=>!selected||selected.has(s.page));
+ for(let i=0;i<pres.slides.items.length;i++){
+  const b=await pres.export({slide:pres.slides.items[i],format:'png',scale:1.5});await fs.writeFile(path.join(dir,`slide-${String(specs[i].page).padStart(2,'0')}.png`),new Uint8Array(await b.arrayBuffer()));
+  if(i%5===0)console.log('Rendered',i+1,'/',pres.slides.items.length);
+ }
+}

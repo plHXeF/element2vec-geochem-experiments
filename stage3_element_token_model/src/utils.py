@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from geochem_workspace import output_path, resolve_path as workspace_resolve_path, load_config_file
+
 import ast
 import json
 import os
@@ -13,7 +18,7 @@ import pandas as pd
 
 STAGE_DIR = Path(__file__).resolve().parents[1]
 WORKSPACE_DIR = STAGE_DIR.parent
-OUTPUT_DIR = STAGE_DIR / "outputs"
+OUTPUT_DIR = output_path()
 
 
 def _strip_inline_comment(text: str) -> str:
@@ -60,44 +65,11 @@ def _parse_scalar(value: str) -> Any:
 
 
 def load_config(path: str | Path) -> dict[str, Any]:
-    path = Path(path)
-    try:
-        import yaml  # type: ignore
-
-        with path.open("r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
-    except Exception:
-        pass
-
-    root: dict[str, Any] = {}
-    stack: list[tuple[int, dict[str, Any]]] = [(-1, root)]
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
-        if not raw_line.strip() or raw_line.lstrip().startswith("#"):
-            continue
-        indent = len(raw_line) - len(raw_line.lstrip(" "))
-        line = _strip_inline_comment(raw_line.strip())
-        if not line or ":" not in line:
-            continue
-        key, value = line.split(":", 1)
-        key = key.strip()
-        value = value.strip()
-        while indent <= stack[-1][0]:
-            stack.pop()
-        parent = stack[-1][1]
-        if value == "":
-            child: dict[str, Any] = {}
-            parent[key] = child
-            stack.append((indent, child))
-        else:
-            parent[key] = _parse_scalar(value)
-    return root
+    return load_config_file(path)
 
 
 def resolve_path(path_value: str | Path) -> Path:
-    path = Path(path_value)
-    if path.is_absolute():
-        return path
-    return (STAGE_DIR / path).resolve()
+    return workspace_resolve_path(path_value, base=STAGE_DIR)
 
 
 def ensure_output_dirs() -> None:

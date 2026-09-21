@@ -1,0 +1,10 @@
+{
+  "inputs": [
+    "asset://presentation_pyrite",
+    "asset://presentation_v2",
+    "asset://latent_reference",
+    "asset://space_audit",
+    "asset://subspace_audit"
+  ],
+  "purpose": "Prepare generation source and a private compatibility view of frozen presentation inputs; no model execution"
+}

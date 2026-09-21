@@ -1,0 +1,7 @@
+{
+  "inputs": [
+    "asset://stage2_run",
+    "asset://stage3_run"
+  ],
+  "purpose": "Render the existing pyrite aggregate evidence into a fresh presentation directory"
+}

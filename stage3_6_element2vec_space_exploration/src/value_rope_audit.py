@@ -5,6 +5,15 @@ persisted before model evaluation. No labels enter chemistry-only inference.
 """
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
+from geochem_workspace import asset, output_path
+
 import argparse
 import copy
 import gc
@@ -63,7 +72,7 @@ def prepare(args):
                                    ['mafic', 'felsic', 'intermediate'], default='unknown')
     meta.to_csv(out / 'metadata.csv', index=False)
     z = meta[zcols].to_numpy(float)
-    pools = args.legacy / 'subspace_audit/projections/fitting_pools'
+    pools = asset('subspace_audit') / 'projections/fitting_pools'
     id_to_pos = pd.Series(np.arange(len(meta)), index=meta.sample_id)
     fit = id_to_pos.loc[pd.read_csv(pools / 'sample_fit_pool.csv').sample_id].to_numpy()
     ev = id_to_pos.loc[pd.read_csv(pools / 'sample_evaluation_pool.csv').sample_id].to_numpy()
@@ -404,12 +413,13 @@ def main():
     p.add_argument('phase',choices=['prepare','extract','analyze','probe'])
     p.add_argument('--legacy',type=Path,required=True,help='Private original Stage 3.6 directory')
     p.add_argument('--v2-checkpoint',type=Path,required=True)
-    p.add_argument('--rope-checkpoint',type=Path,default=Path('stage3_5_element2vec_v2/outputs/value_rope_z/checkpoints/full_model.pt'))
-    p.add_argument('--output',type=Path,default=Path('stage3_5_element2vec_v2/outputs/value_rope_z/audit'))
+    p.add_argument('--rope-checkpoint',type=Path,default=asset("rope_z_checkpoint"))
+    p.add_argument('--output',type=Path,default=output_path("audit"))
     p.add_argument('--device',default='mps');p.add_argument('--batch-size',type=int,default=128)
-    p.add_argument('--sqlite-path',type=Path)
+    p.add_argument('--sqlite-path',type=Path,default=asset('whole_rock'))
     p.add_argument('--models',nargs='+',choices=MODELS,default=list(MODELS));p.add_argument('--force',action='store_true')
-    args=p.parse_args();torch.set_num_threads(8)
+    args=_guard_args(p.parse_args());torch.set_num_threads(8)
+    _guard_args(args)
     if args.phase=='prepare':prepare(args)
     elif args.phase=='extract':extract(args)
     elif args.phase=='probe':final_probe(args)

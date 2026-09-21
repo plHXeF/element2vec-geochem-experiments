@@ -1,0 +1,150 @@
+"""Render a saved PartialMelting episode and assemble four existing process clips.
+
+Reads frozen benchmark caches only. Does not run an encoder or regenerate data.
+"""
+from __future__ import annotations
+
+import csv
+import json
+import pickle
+import subprocess
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.animation import FFMpegWriter, FuncAnimation
+
+
+ROOT = Path(__file__).resolve().parents[2]
+BENCH = ROOT / "latent_evaluation_benchmark"
+ASSETS = ROOT / "presentation_v2_evaluation" / "assets"
+ASSETS.mkdir(parents=True, exist_ok=True)
+NAMES = ["ZVector", "GeoNorm", "PCAGeo", "V2", "RoPEz", "RoPEgeo"]
+COLORS = ["#8996a3", "#5f83a8", "#7692af", "#003195", "#2786ba", "#df834e"]
+
+
+def run(*args: str) -> None:
+    subprocess.run(args, check=True, stdout=subprocess.DEVNULL)
+
+
+def render_partial() -> Path:
+    rows = []
+    with (BENCH / "outputs/process/trajectory_metrics.csv").open() as stream:
+        for r in csv.DictReader(stream):
+            if r["kind"] == "PartialMelting" and r["representation"] == "GeoNorm" and r["simplicity"]:
+                rows.append(r)
+    rows.sort(key=lambda r: (float(r["simplicity"]), r["episode_id"]))
+    eid = rows[len(rows) // 2]["episode_id"]
+    bank = BENCH / "cache/process_bank"
+    metadata = json.loads((bank / f"{eid}.json").read_text())
+    physical = np.load(bank / f"{eid}.npz")["states"]
+    fields = json.loads((bank / "schema.json").read_text())["fields"]
+    latent = {}
+    for name in NAMES:
+        with (BENCH / "cache" / f"visualization_pca_{name}.pkl").open("rb") as stream:
+            pca = pickle.load(stream)
+        z = np.load(BENCH / "cache/process_latents" / name / f"{eid}.npz")["z"]
+        latent[name] = pca.transform(z)
+
+    fig = plt.figure(figsize=(15, 11), facecolor="white")
+    major = fig.add_subplot(331)
+    trace = fig.add_subplot(332)
+    info = fig.add_subplot(333)
+    info.axis("off")
+    axes = [fig.add_subplot(3, 3, i + 4, projection="3d") for i in range(6)]
+    major_fields = ["sio2", "al2o3", "mgo", "cao"]
+    trace_fields = ["la_ppm", "sr_ppm", "ni_ppm"]
+    mlines, tlines, trails, dots = [], [], [], []
+    for i, f in enumerate(major_fields):
+        y = physical[:, fields.index(f)]
+        major.plot(y, color=COLORS[i], alpha=0.18)
+        line, = major.plot([], [], color=COLORS[i], label=f)
+        mlines.append((fields.index(f), line))
+    for i, f in enumerate(trace_fields):
+        y = np.maximum(physical[:, fields.index(f)], 1e-9)
+        trace.plot(y, color=COLORS[i], alpha=0.18)
+        line, = trace.plot([], [], color=COLORS[i], label=f)
+        tlines.append((fields.index(f), line))
+    major.set(title="Raw major chemistry", xlabel="trajectory step", ylabel="wt%")
+    trace.set(title="Raw trace chemistry", xlabel="trajectory step", ylabel="ppm", yscale="log")
+    major.legend(fontsize=8)
+    trace.legend(fontsize=8)
+    for i, (name, ax) in enumerate(zip(NAMES, axes)):
+        z = latent[name]
+        ax.plot(*z.T, color=COLORS[i], alpha=0.18)
+        trail, = ax.plot([], [], [], color=COLORS[i], lw=2)
+        dot, = ax.plot([], [], [], "o", color=COLORS[i], ms=6)
+        trails.append(trail)
+        dots.append(dot)
+        for dim, setter in enumerate([ax.set_xlim, ax.set_ylim, ax.set_zlim]):
+            low, high = z[:, dim].min(), z[:, dim].max()
+            pad = max((high - low) * 0.15, 0.01)
+            setter(low - pad, high + pad)
+        ax.set(title=name, xlabel="PC1", ylabel="PC2", zlabel="PC3")
+        ax.tick_params(labelsize=7)
+    label = info.text(0, 1, "", va="top", family="monospace", fontsize=10)
+    grid = np.asarray(metadata["stage_grids"][0])
+
+    def update(k: int):
+        for j, line in mlines:
+            line.set_data(np.arange(k + 1), physical[: k + 1, j])
+        for j, line in tlines:
+            line.set_data(np.arange(k + 1), np.maximum(physical[: k + 1, j], 1e-9))
+        label.set_text(
+            f"PartialMelting / median\n{metadata['source_type']}\n"
+            f"F = {grid[k]:.4f}\nStep {k}/32\n\n"
+            + "\n".join(f"{f:>8}: {physical[k, fields.index(f)]:.3g}" for f in major_fields + trace_fields)
+            + "\n\nPCA for display only."
+        )
+        for i, name in enumerate(NAMES):
+            z = latent[name]
+            trails[i].set_data_3d(*z[: k + 1].T)
+            dots[i].set_data_3d(*z[k : k + 1].T)
+        return []
+
+    fig.suptitle(f"Shared physical episode: {eid}", fontsize=15)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    target = ASSETS / "PartialMelting_median.mp4"
+    FuncAnimation(fig, update, frames=len(physical), interval=100).save(
+        str(target), writer=FFMpegWriter(fps=10, codec="libx264", extra_args=["-pix_fmt", "yuv420p"]), dpi=100
+    )
+    update(16)
+    fig.savefig(ASSETS / "PartialMelting_median_frame016.png", dpi=130)
+    plt.close(fig)
+    (ASSETS / "PartialMelting_episode.json").write_text(
+        json.dumps({"episode_id": eid, "selection": "middle GeoNorm simplicity, tie break episode ID", "source": str(bank)}, indent=2)
+    )
+    return target
+
+
+def assemble(partial: Path) -> None:
+    originals = BENCH / "outputs/animations"
+    sources = [
+        originals / "Mixing_median.mp4",
+        originals / "Fractionation_median.mp4",
+        partial,
+        originals / "Alteration_median.mp4",
+    ]
+    normalized = []
+    for i, src in enumerate(sources, 1):
+        target = ASSETS / f"process_{i:02d}.mp4"
+        run(
+            "ffmpeg", "-y", "-v", "error", "-i", str(src),
+            "-vf", "setpts=3*PTS,fps=30,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=white,format=yuv420p",
+            "-an", "-c:v", "libx264", "-crf", "20", "-preset", "medium", str(target),
+        )
+        normalized.append(target)
+    concat = ASSETS / "process_concat.txt"
+    concat.write_text("".join(f"file '{p}'\n" for p in normalized))
+    out = ROOT / "presentation_v2_evaluation/output/four_processes.mp4"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    run("ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", str(concat), "-c", "copy", str(out))
+    run("ffprobe", "-v", "error", "-show_entries", "stream=codec_name,width,height,nb_frames", "-show_entries", "format=duration", "-of", "json", str(out))
+    print(out)
+
+
+if __name__ == "__main__":
+    assemble(render_partial())

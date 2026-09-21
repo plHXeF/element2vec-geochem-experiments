@@ -1,0 +1,75 @@
+"""Plot frozen raw-chemistry trajectories used in the presentation."""
+from pathlib import Path
+import json
+import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import pandas as pd
+
+ROOT = Path(__file__).resolve().parents[2]
+BANK = ROOT / "latent_evaluation_benchmark/cache/process_bank"
+OUT = ROOT / "presentation_v2_evaluation/assets"
+FIELDS = json.loads((BANK / "schema.json").read_text())["fields"]
+EPISODES = {
+    "Mixing": "Mixing_semi-synthetic_00978",
+    "Fractionation": "Fractionation_synthetic_00662",
+    "PartialMelting": "PartialMelting_semi-synthetic_00869",
+    "Alteration": "Alteration_synthetic_00252",
+}
+MAJOR = ["sio2", "al2o3", "mgo", "cao"]
+TRACE = ["la_ppm", "sr_ppm", "ni_ppm", "yb_ppm"]
+COLORS = ["#003195", "#2786BA", "#E38143", "#5C8B66"]
+LABELS = {"sio2":"SiO₂", "al2o3":"Al₂O₃", "mgo":"MgO", "cao":"CaO",
+          "la_ppm":"La", "sr_ppm":"Sr", "ni_ppm":"Ni", "yb_ppm":"Yb"}
+
+for kind, eid in EPISODES.items():
+    data = np.load(BANK / f"{eid}.npz")["states"]
+    meta = json.loads((BANK / f"{eid}.json").read_text())
+    progress = np.asarray(meta["stage_grids"][0], dtype=float)
+    fig, axes = plt.subplots(1, 2, figsize=(12, 3.9), dpi=170, facecolor="white")
+    for ax, names, scale, ylabel in zip(axes, [MAJOR, TRACE], ["linear", "log"], ["wt%", "ppm"]):
+        for name, color in zip(names, COLORS):
+            ax.plot(progress, data[:, FIELDS.index(name)], lw=2.6, color=color, label=LABELS[name])
+        ax.set_yscale(scale)
+        ax.set_xlabel({"Mixing":"mixing fraction t", "Fractionation":"residual melt F",
+                       "PartialMelting":"melt fraction F", "Alteration":"alteration progress t"}[kind], fontsize=11)
+        ax.set_ylabel(ylabel, fontsize=11)
+        ax.grid(alpha=.22, lw=.7)
+        ax.legend(fontsize=9, frameon=False, ncol=4, loc="upper center", bbox_to_anchor=(.5, 1.17))
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.tick_params(labelsize=9)
+    axes[0].set_title("Major oxides", fontsize=13, color="#003195", pad=30)
+    axes[1].set_title("Trace elements", fontsize=13, color="#003195", pad=30)
+    fig.subplots_adjust(left=.07, right=.985, bottom=.20, top=.78, wspace=.26)
+    fig.savefig(OUT / f"{kind}_raw_trajectory.png", dpi=170)
+    plt.close(fig)
+    print(kind, eid)
+
+# Test-split composition error and legal AB/BA order-effect correlations.
+RESULTS = ROOT / "latent_evaluation_benchmark/outputs/composite"
+metrics = pd.read_csv(RESULTS / "metrics.csv")
+order = pd.read_csv(RESULTS / "noncommutativity.csv")
+names = ["ZVector", "GeoNorm", "PCAGeo", "V2", "RoPEz", "RoPEgeo"]
+color = ["#8493A4", "#547AA2", "#A5AFC3", "#003195", "#2786BA", "#E38143"]
+fig, axes = plt.subplots(1, 2, figsize=(12, 3.9), dpi=170, facecolor="white")
+for typ, style in [("same-process", "-"), ("heterogeneous", "--")]:
+    y = metrics[(metrics.split == "test") & (metrics.composite_type == typ)].groupby("representation").composition_error.median().reindex(names)
+    axes[0].plot(range(len(names)), y, style, marker="o", lw=2.3, label=typ)
+axes[0].set_ylabel("median composition error", fontsize=11)
+axes[0].set_title("Composite rollout / test", fontsize=13, color="#003195")
+axes[0].legend(frameon=False, fontsize=9)
+for j, source in enumerate(["synthetic", "semi-synthetic"]):
+    y = order[order.source_type == source].set_index("representation").Spearman.reindex(names)
+    axes[1].plot(range(len(names)), y, ["-", "--"][j], marker="o", lw=2.3, label=source)
+axes[1].set_ylabel("AB/BA order-effect Spearman", fontsize=11)
+axes[1].set_title("Legal reverse-order subset", fontsize=13, color="#003195")
+axes[1].legend(frameon=False, fontsize=9)
+for ax in axes:
+    ax.set_xticks(range(len(names)), names, rotation=30, ha="right", fontsize=9)
+    ax.grid(axis="y", alpha=.22)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.tick_params(labelsize=9)
+fig.subplots_adjust(left=.07, right=.985, bottom=.20, top=.86, wspace=.29)
+fig.savefig(OUT / "Composite_results.png", dpi=170)
+plt.close(fig)

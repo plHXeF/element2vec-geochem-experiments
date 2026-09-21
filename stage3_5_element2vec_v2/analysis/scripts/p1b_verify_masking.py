@@ -6,6 +6,13 @@ pure label field 权重、extraction 模式下的防泄漏。
 """
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[3]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args, output_path, load_config_file, asset
+if __name__ == "__main__":
+    _require_run_dir()
+
 import sys, json
 from collections import Counter
 from pathlib import Path
@@ -16,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 STAGE_DIR = Path(__file__).resolve().parents[2]
 YAML_PATH = STAGE_DIR / "configs" / "v2_base.yaml"
 SRC = STAGE_DIR / "src"
-OUTPUTS = STAGE_DIR / "outputs"
+OUTPUTS = asset("v2_run")
 
 
 def check_mask_task_weights(cfg: dict) -> list[dict]:
@@ -192,7 +199,7 @@ def check_mask_numeric_tag_id_validity(cfg: dict) -> list[dict]:
     """验证 mask_numeric_tag_idx 合法性（最后一个 index）"""
     results = []
     # Read vocab
-    vocab_path = STAGE_DIR / "outputs" / "vocab" / "numeric_tag_vocab.json"
+    vocab_path = asset("v2_vocab") / "numeric_tag_vocab.json"
     if vocab_path.exists():
         vocab = json.loads(vocab_path.read_text())
         n_tags = len(vocab["numeric_tags"])
@@ -219,7 +226,7 @@ def check_mask_numeric_tag_id_validity(cfg: dict) -> list[dict]:
 
 def main():
     import yaml
-    cfg = yaml.safe_load(YAML_PATH.read_text())
+    cfg = load_config_file(YAML_PATH)
 
     print("=" * 65)
     print("Phase 1b: Mask 机制审计")
@@ -271,7 +278,7 @@ def main():
     print(f"结果: {passed}/{total} checks passed")
 
     import pandas as pd
-    out_dir = Path(__file__).resolve().parent.parent / "outputs"
+    out_dir = output_path("analysis")
     out_dir.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(all_checks).to_csv(out_dir / "p1b_mask_checks.csv", index=False, encoding="utf-8-sig")
 

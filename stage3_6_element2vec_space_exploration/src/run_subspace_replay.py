@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
 import argparse
 from pathlib import Path
 from typing import Any
@@ -118,7 +125,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="stage3_6_element2vec_space_exploration/configs/subspace_audit.yaml")
     parser.add_argument("--phase", choices=["main", "random", "aux"], default="main")
-    args = parser.parse_args()
+    args = _guard_args(parser.parse_args())
+    _guard_args(args)
     run(load_yaml(args.config), args.phase)
 
 

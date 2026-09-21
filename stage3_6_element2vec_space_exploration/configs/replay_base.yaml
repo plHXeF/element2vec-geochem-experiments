@@ -1,0 +1,47 @@
+project:
+  name: Element2Vec V2 breadth-first representation audit
+  root_dir: run://.
+  audit_dir: asset://space_audit/audit
+  cache_dir: asset://space_audit/cache
+  results_dir: asset://space_audit/results
+  reports_dir: run://reports
+
+source:
+  model_config: stage3_5_element2vec_v2/configs/v2_base.yaml
+  checkpoint: asset://v2_checkpoint
+  stage3_5_outputs: asset://v2_run
+  sqlite_path: asset://whole_rock
+  view_name: v_high_quality_dataset
+
+sampling:
+  seed: 42
+  main_samples: 12000
+  visible_label_control_samples: 2000
+  random_model_control_samples: 3000
+  token_reservoir_per_field: 1000
+  batch_size: 128
+  stratify_by: rock_type
+
+analysis:
+  primary_input_mode: numeric_only
+  auxiliary_input_modes:
+    - masked_labels
+  latent_spaces:
+    - projected_mean_numeric
+    - encoded_mean_numeric
+    - cls
+  pca_components: 12
+  neighbor_k: 15
+  permutation_repeats: 199
+  probe_folds: 5
+  max_pairwise_samples: 3000
+  figure_dpi: 180
+  status_thresholds:
+    strong_effect: 0.30
+    moderate_effect: 0.15
+    weak_effect: 0.05
+
+runtime:
+  device: auto
+  max_target_minutes: 10
+  num_threads: 8

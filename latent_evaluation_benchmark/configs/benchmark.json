@@ -1,0 +1,294 @@
+{
+  "version": "0.1",
+  "seed": 20260916,
+  "database": "asset://whole_rock",
+  "view": "v_high_quality_dataset",
+  "real_samples": 12000,
+  "features": [
+    "sio2",
+    "tio2",
+    "al2o3",
+    "fe2o3",
+    "feo",
+    "mgo",
+    "cao",
+    "na2o",
+    "k2o",
+    "p2o5",
+    "mno",
+    "loi",
+    "co2",
+    "rb_ppm",
+    "sr_ppm",
+    "ba_ppm",
+    "zr_ppm",
+    "nb_ppm",
+    "y_ppm",
+    "v_ppm",
+    "cr_ppm",
+    "ni_ppm",
+    "cu_ppm",
+    "zn_ppm",
+    "la_ppm",
+    "ce_ppm",
+    "nd_ppm",
+    "th_ppm",
+    "u_ppm",
+    "pb_ppm",
+    "sc_ppm",
+    "co_ppm",
+    "ga_ppm",
+    "yb_ppm"
+  ],
+  "major": [
+    "sio2",
+    "tio2",
+    "al2o3",
+    "fe2o3",
+    "feo",
+    "mgo",
+    "cao",
+    "na2o",
+    "k2o",
+    "p2o5",
+    "mno"
+  ],
+  "auxiliary": [
+    "loi",
+    "co2"
+  ],
+  "trace": [
+    "rb_ppm",
+    "sr_ppm",
+    "ba_ppm",
+    "zr_ppm",
+    "nb_ppm",
+    "y_ppm",
+    "v_ppm",
+    "cr_ppm",
+    "ni_ppm",
+    "cu_ppm",
+    "zn_ppm",
+    "la_ppm",
+    "ce_ppm",
+    "nd_ppm",
+    "th_ppm",
+    "u_ppm",
+    "pb_ppm",
+    "sc_ppm",
+    "co_ppm",
+    "ga_ppm",
+    "yb_ppm"
+  ],
+  "ree_input": [
+    "la_ppm",
+    "ce_ppm",
+    "nd_ppm",
+    "yb_ppm"
+  ],
+  "ree_measured": [
+    "la_ppm",
+    "ce_ppm",
+    "nd_ppm",
+    "sm_ppm",
+    "eu_ppm",
+    "gd_ppm",
+    "dy_ppm",
+    "er_ppm",
+    "yb_ppm",
+    "lu_ppm"
+  ],
+  "isotope": [
+    "sr87_sr86",
+    "epsilon_nd",
+    "epsilon_hf",
+    "pb206_pb204",
+    "pb207_pb204",
+    "pb208_pb204"
+  ],
+  "age_derived": [
+    "age",
+    "asi",
+    "mali",
+    "cia"
+  ],
+  "baseline": {
+    "major_pseudocount_wt": 1e-06,
+    "trace_pseudocount_ppm": 1e-09,
+    "min_scale": 1e-08,
+    "ree_reference_ppm": {
+      "la_ppm": 0.237,
+      "ce_ppm": 0.613,
+      "pr_ppm": 0.0928,
+      "nd_ppm": 0.457,
+      "sm_ppm": 0.148,
+      "eu_ppm": 0.0563,
+      "gd_ppm": 0.199,
+      "tb_ppm": 0.0361,
+      "dy_ppm": 0.246,
+      "ho_ppm": 0.0546,
+      "er_ppm": 0.16,
+      "tm_ppm": 0.0247,
+      "yb_ppm": 0.161,
+      "lu_ppm": 0.0246
+    },
+    "reference_source": "McDonough & Sun 1995 CI chondrite, ppm",
+    "reference_url": "https://www.earthref.org/GERMRD/c:3/",
+    "pca_variance": 0.95,
+    "pca_max_dims": 64
+  },
+  "device": "mps",
+  "batch_size": 256,
+  "probe": {
+    "widths": [
+      [],
+      [
+        32
+      ],
+      [
+        128,
+        64
+      ],
+      [
+        512,
+        256,
+        128
+      ]
+    ],
+    "learning_rates": [
+      0.001,
+      0.0003
+    ],
+    "weight_decay": 0.01,
+    "epochs": 160,
+    "patience": 16,
+    "batch_size": 512,
+    "min_samples": 60
+  },
+  "semantic": {
+    "knn": 20,
+    "triplets": 3000,
+    "low_quantile": 0.2,
+    "high_quantile": 0.8,
+    "availability_tolerance": 3,
+    "permutations": 100
+  },
+  "process": {
+    "states": 33,
+    "per_source": 1000,
+    "composites": 2000,
+    "max_episodes": 8000,
+    "bootstrap": 2000,
+    "precision": 0.02,
+    "ridge_alphas": [
+      0.001,
+      0.1,
+      10,
+      1000
+    ],
+    "boundary_tolerance": 2,
+    "fold_gap": 3,
+    "window": 7,
+    "fractionation_F": [
+      1,
+      0.1
+    ],
+    "melting_F": [
+      0.01,
+      0.5
+    ],
+    "dirichlet_concentration": 30,
+    "modal_centers": {
+      "Felsic": [
+        0.3,
+        0.3,
+        0.25,
+        0.08,
+        0,
+        0.07
+      ],
+      "Intermediate": [
+        0.1,
+        0.45,
+        0.12,
+        0.25,
+        0.02,
+        0.06
+      ],
+      "Mafic": [
+        0,
+        0.45,
+        0.02,
+        0.4,
+        0.08,
+        0.05
+      ],
+      "Ultramafic": [
+        0,
+        0.05,
+        0,
+        0.35,
+        0.55,
+        0.05
+      ]
+    },
+    "ree_a0": [
+      1,
+      5
+    ],
+    "ree_a1": [
+      -1.5,
+      1.5
+    ],
+    "ree_a2": [
+      -0.8,
+      0.8
+    ],
+    "ree_eu": [
+      -1,
+      1
+    ],
+    "ood_percentiles": [
+      1,
+      99
+    ],
+    "trace_prior_dims": 6
+  },
+  "atomic_weights": {
+    "H": 1.008,
+    "O": 15.999,
+    "Si": 28.085,
+    "Al": 26.9815385,
+    "Na": 22.989769,
+    "K": 39.0983,
+    "Ca": 40.078,
+    "Mg": 24.305,
+    "Fe": 55.845,
+    "Ti": 47.867,
+    "P": 30.973762,
+    "Mn": 54.938044
+  },
+  "experiments": [
+    {
+      "name": "V2",
+      "root": "repo://.",
+      "implementation_root": "repo://.",
+      "checkpoint": "asset://v2_checkpoint",
+      "vocab": "asset://v2_vocab"
+    },
+    {
+      "name": "RoPEz",
+      "root": "repo://.",
+      "implementation_root": "repo://.",
+      "checkpoint": "asset://rope_z_checkpoint",
+      "vocab": "asset://v2_vocab"
+    },
+    {
+      "name": "RoPEgeo",
+      "root": "repo://.",
+      "implementation_root": "repo://.",
+      "checkpoint": "asset://geo15_checkpoint",
+      "vocab": "asset://v2_vocab"
+    }
+  ]
+}

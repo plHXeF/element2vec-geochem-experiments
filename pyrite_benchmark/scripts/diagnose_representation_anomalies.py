@@ -1,10 +1,20 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
 import os
 from pathlib import Path
 
 os.environ.setdefault("OMP_NUM_THREADS", "4")
 os.environ.setdefault("LOKY_MAX_CPU_COUNT", "16")
+
+from geochem_workspace import configured_seed
+RANDOM_SEED = configured_seed(42)
 
 import numpy as np
 import pandas as pd
@@ -70,7 +80,7 @@ def main() -> None:
         DIAG_DIR / "observed_mask_top_patterns_by_label.csv", index=False, encoding="utf-8-sig"
     )
 
-    mask_pca = PCA(n_components=4, random_state=42).fit(standard_scale(mask_array))
+    mask_pca = PCA(n_components=4, random_state=RANDOM_SEED).fit(standard_scale(mask_array))
     mask_loadings = pd.DataFrame(
         mask_pca.components_.T,
         index=selected,
@@ -83,7 +93,7 @@ def main() -> None:
     # Raw robust PCA diagnostics
     # ------------------------------------------------------------------
     raw = robust_scale(value_array)
-    raw_pca = PCA(n_components=4, random_state=42).fit(raw)
+    raw_pca = PCA(n_components=4, random_state=RANDOM_SEED).fit(raw)
     raw_scores = raw_pca.transform(raw)
     raw_loadings = pd.DataFrame(
         raw_pca.components_.T,

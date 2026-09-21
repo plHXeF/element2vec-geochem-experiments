@@ -1,0 +1,45 @@
+{
+  "id": "E001",
+  "title": "黄铁矿基础表示",
+  "module": "pyrite_benchmark",
+  "question": "对数、秩、比值等基础编码怎样影响黄铁矿表示结构和预测表现？",
+  "controls": [
+    "原始/robust-z 负对照",
+    "log 与 rank 基线",
+    "掩码/缺失模式控制"
+  ],
+  "config": null,
+  "assets": [
+    "pyrite_raw",
+    "pyrite_processed"
+  ],
+  "upstream_experiments": [],
+  "protocol": "随机分层评价；需补矿区/地区分组验证。",
+  "execution_status": "completed",
+  "scientific_outcome": "exploratory",
+  "conclusion": "log/rank 是主要 value-only baseline；mask 与 raw robust 保留为对照。",
+  "report": "pyrite_benchmark/results/representation_benchmark/benchmark_report.md",
+  "runs": [
+    {
+      "id": "legacy-baseline",
+      "path": "runs/E001/legacy-baseline",
+      "kind": "historical"
+    },
+    {
+      "id": "legacy-dimension-sweep",
+      "path": "runs/E001/legacy-dimension-sweep",
+      "kind": "historical"
+    }
+  ],
+  "artifacts": {
+    "code": "pyrite_benchmark",
+    "configuration": null,
+    "selected_report": "pyrite_benchmark/results/representation_benchmark/benchmark_report.md",
+    "results": [
+      "runs/E001/legacy-baseline",
+      "runs/E001/legacy-dimension-sweep"
+    ],
+    "weights": [],
+    "weight_note": "not applicable"
+  }
+}

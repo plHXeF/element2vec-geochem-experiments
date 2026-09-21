@@ -1,0 +1,54 @@
+{
+  "real_split": "sample-ID SHA256 70/15/15, no claim of unseen-pretraining generalization",
+  "representation_input": "same 34 numerical fields; chemistry only; all labels removed",
+  "targets": {
+    "Mg_number": "100*(MgO/40.304)/((MgO/40.304)+(FeO/71.844))",
+    "SigmaREE10": "sum of all 10 measured database REE columns, require all ten positive",
+    "Eu_anomaly": "Eu_N/sqrt(Sm_N*Gd_N), external to all input schemas",
+    "regression_loss": "MSE after training-only target mean/std",
+    "classification_loss": "unweighted cross entropy; early stopping on validation CE, not test balanced accuracy"
+  },
+  "masked_recovery": {
+    "mask_fraction": 0.2,
+    "mask_realization": "one saved per record, shared by six representations",
+    "minimum_train_val_test_labels": 10,
+    "input_fields": "evaluate only randomly masked observations",
+    "external_fields": "evaluate all observed isotope/age labels on the same masked-chemistry representation; these labels were never inputs",
+    "probe": "linear Ridge; alpha selected on val"
+  },
+  "nuisance": {
+    "missingness_clusters": 12,
+    "kmeans_n_init": 10,
+    "reference_min_train_count": 10,
+    "reference_max_classes": 64,
+    "source_enrichment_k": 20
+  },
+  "process": {
+    "modal_fractions": "mass fractions; positive support Dirichlet, exact zero centers remain zero",
+    "partition_groups": {"compatible": ["Ni", "Cr", "Co", "Sc", "V"], "neutral": ["Cu", "Zn", "Ga"]},
+    "partition_bases": {"compatible": 3.0, "neutral": 1.0, "incompatible": 0.08},
+    "partition_group_log_sd": 0.25,
+    "partition_individual_log_sd": 0.15,
+    "alteration_changed_fraction": 0.3,
+    "alteration_individual_log_sd": 0.45,
+    "alteration_shared_ree_log_sd": 0.3,
+    "composite_fractionation_endpoint_F_uniform": [0.75, 0.95],
+    "single_fractionation_endpoint_F": 0.1,
+    "max_generation_attempts": 300,
+    "major_mass_balance": "remove actual source mass times delta F; cumulate compositions constrained by remaining oxide budgets",
+    "alteration_state": "positive unclosed concentration law; no post-hoc closure that would alter the specified law",
+    "batch_melt_composite": "excluded: first melt is not the source identity"
+  },
+  "operator": {
+    "formula": "dz/dt = A z + B theta + b",
+    "theta": "endmember, D, alteration a, instantaneous cumulate mineral controls, and progress parameter; physical controls scaled only on operator train",
+    "mixing_condition": "theta additionally contains the stage-initial latent; the raw source-chemistry block is zeroed. In composite rollout this latent is the PREVIOUS PREDICTION, never a true intermediate state",
+    "fit_stride": 4,
+    "evaluation_stride": 1,
+    "MC_fit_policy": "freeze operator fits and boundary thresholds after initial EpisodeBank, then append evaluations",
+    "boundary_threshold_candidates": [0.01, 0.03, 0.1, 0.2, 0.4, 0.8, 1.2],
+    "rollout_divergence_norm_in_train_radii": 1e15
+  },
+  "bootstrap": "paired median differences, clustered by initial-state ID; 2000 resamples; precision check against CI half-width 0.02; append only process families failing precision through max 8000",
+  "animation": {"PCA_reference_episode_count": 2000, "reference_state_stride": 4, "fps": 10, "selection_disagreement": "max absolute V2 versus GeoNorm simplicity difference"}
+}

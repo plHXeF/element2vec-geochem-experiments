@@ -7,7 +7,7 @@ No dataset is included in this repository. A fresh clone can inspect the code, r
 Expected path:
 
 ```text
-legacy_whole_rock_geochem/geochem.db
+asset://whole_rock -> <workspace>/data/whole_rock/whole-rock-v1/geochem.db
 ```
 
 Expected SQLite view:
@@ -24,23 +24,24 @@ Check the database without exporting rows:
 python scripts/doctor.py --check-schema
 ```
 
-If the research view is missing, read `legacy_whole_rock_geochem/research_views_documentation.md`. `create_research_views.py` mutates the database schema by creating views, so back up the private database before using it.
+If the research view is missing, read `legacy_whole_rock_geochem/research_views_documentation.md`. `create_research_views.py` copies the registered database into the explicit run, then creates views in that copy. Register a new data version before adopting it; never mutate a frozen input.
 
 ## Pyrite workbook for Stages 1–3
 
 Expected path:
 
 ```text
-pyrite_benchmark/data/raw/pyrite.xlsx
+asset://pyrite_raw -> <workspace>/data/pyrite/pyrite-v1/raw/pyrite.xlsx
 ```
 
 Generate the processed inputs once:
 
 ```bash
-python pyrite_benchmark/scripts/prepare_pyrite_dataset.py
+python scripts/experiment.py new-run E001
+python scripts/experiment.py exec --run-dir /path/returned/above -- pyrite_benchmark/scripts/prepare_pyrite_dataset.py
 ```
 
-This writes sample-level CSV files under `pyrite_benchmark/data/processed/`. Stages 2 and 3 read those files rather than reparsing the workbook.
+This writes sample-level CSV files to the run’s `prepared_data/`. To adopt a revision, register a new version in `data/pyrite/`, with hashes and the preparation run ID, then map `asset://pyrite_processed` in `workspace.local.json`. Current stages read the frozen processed input rather than reparsing the workbook. Local paths are not committed; logical asset names in configurations are stable across machines.
 
 ## Expected historical scale
 

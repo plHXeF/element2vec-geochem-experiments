@@ -16,6 +16,13 @@
   - 跨文献重复组内，保留字段完整度最高的样本
 """
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from geochem_workspace import require_run_dir, asset, output_path
+if __name__ == "__main__":
+    require_run_dir()
+
 import sqlite3
 from pathlib import Path
 from collections import defaultdict
@@ -28,9 +35,8 @@ try:
 except ImportError:
     HAS_PANDAS = False
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = ROOT_DIR / "data"
-DOCS_DIR = ROOT_DIR / "docs"
+DATA_DIR = output_path("prepared_data")
+DOCS_DIR = output_path("reports")
 DB_PATH = DATA_DIR / "geochem.db"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -948,9 +954,14 @@ def main() -> None:
     print("\n研究子数据集视图创建工具")
     print("=" * 80)
 
-    if not DB_PATH.exists():
-        print(f"错误：数据库文件不存在: {DB_PATH}")
-        return
+    require_run_dir()
+    if DB_PATH.exists():
+        raise FileExistsError(f"Refusing to overwrite a prepared database: {DB_PATH}; create a new run")
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    # SQLite backup gives a consistent copy without mutating the frozen input.
+    with sqlite3.connect(asset("whole_rock").as_uri() + "?mode=ro", uri=True) as source:
+        with sqlite3.connect(DB_PATH) as target:
+            source.backup(target)
 
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
 

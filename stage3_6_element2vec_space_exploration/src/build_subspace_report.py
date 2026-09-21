@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
 import argparse
 import json
 import shutil
@@ -125,7 +132,7 @@ def _status_for_group(group: pd.DataFrame) -> pd.DataFrame:
     return group
 
 
-def _attach_paired_bootstrap(matrix: pd.DataFrame, root: Path, repeats: int = 1000) -> pd.DataFrame:
+def _attach_paired_bootstrap(matrix: pd.DataFrame, root: Path, full_results: Path, repeats: int = 1000) -> pd.DataFrame:
     """Attach paired delta-vs-FULL intervals where old runs saved atomic observations."""
     definitions = {
         "F1_lithology_perturbation": ("rhyolite_toward_basalt_perturbations.csv", "sample_id", "alignment_with_rhyolite_to_basalt_centroid", False),
@@ -133,7 +140,7 @@ def _attach_paired_bootstrap(matrix: pd.DataFrame, root: Path, repeats: int = 10
     }
     rng = np.random.default_rng(42)
     for eid, (filename, key, value, collapse) in definitions.items():
-        full_path = root.parent / "results" / eid / filename
+        full_path = full_results / eid / filename
         if not full_path.exists():
             continue
         full = pd.read_csv(full_path)
@@ -227,7 +234,7 @@ def _build_matrix(base_config: dict[str, Any], root: Path, rows: pd.DataFrame) -
                 "recommended_next_step": source.get("recommended_next_step", old["recommended_next_step"]) if applicable else "No projection result may be inferred.",
             })
     matrix = pd.DataFrame(matrix_rows)
-    matrix = _attach_paired_bootstrap(matrix, root)
+    matrix = _attach_paired_bootstrap(matrix, root, resolve_path(base_config["project"]["results_dir"]))
     matrix = pd.concat(
         [_status_for_group(group.assign(experiment_id=eid)) for eid, group in matrix.groupby("experiment_id", sort=False)],
         ignore_index=True,
@@ -476,7 +483,8 @@ def run(config: dict[str, Any]) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="stage3_6_element2vec_space_exploration/configs/subspace_audit.yaml")
-    args = parser.parse_args()
+    args = _guard_args(parser.parse_args())
+    _guard_args(args)
     run(load_yaml(args.config))
 
 

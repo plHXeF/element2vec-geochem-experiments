@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from geochem_workspace import resolve_path as workspace_resolve_path, load_config_file, output_path, run_dir
+
 import json
 from pathlib import Path
 from typing import Any
@@ -12,15 +14,11 @@ REPO_ROOT = PACKAGE_ROOT.parent
 
 
 def resolve_path(path: str | Path) -> Path:
-    path = Path(path)
-    if path.is_absolute():
-        return path
-    return REPO_ROOT / path
+    return workspace_resolve_path(path)
 
 
 def load_config(path: str | Path) -> dict[str, Any]:
-    with open(resolve_path(path), "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+    return load_config_file(path)
 
 
 def save_json(obj: Any, path: str | Path) -> None:
@@ -36,7 +34,10 @@ def load_json(path: str | Path) -> Any:
 
 
 def output_dir(config: dict[str, Any]) -> Path:
-    return resolve_path(config["project"]["outputs_dir"])
+    path = resolve_path(config["project"]["outputs_dir"])
+    if run_dir() and not path.resolve().is_relative_to(run_dir()):
+        raise ValueError("project.outputs_dir must be inside --run-dir; use run:// in the configuration")
+    return path
 
 
 def vocab_dir(config: dict[str, Any]) -> Path:

@@ -1,7 +1,7 @@
-base_config: stage3_6_element2vec_space_exploration/configs/exploration.yaml
+base_config: stage3_6_element2vec_space_exploration/configs/replay_base.yaml
 
 subspace_audit:
-  output_root: stage3_6_element2vec_space_exploration/subspace_audit
+  output_root: run://subspace_audit
   seed: 42
   numerical_dtype: float32
   main_spaces: [FULL, PCA64, PCA32, PCA3, PCA2]

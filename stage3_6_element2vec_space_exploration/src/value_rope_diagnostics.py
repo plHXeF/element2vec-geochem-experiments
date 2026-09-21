@@ -1,6 +1,15 @@
 """Data-support, distant-collision and Jacobian diagnostics (private outputs)."""
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
+from geochem_workspace import asset, output_path
+
 import argparse
 import sqlite3
 from pathlib import Path
@@ -117,8 +126,8 @@ def run(args):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--output',type=Path,default=Path('stage3_5_element2vec_v2/outputs/value_rope_z/audit'))
-    p.add_argument('--sqlite-path',type=Path,required=True);run(p.parse_args())
+    p.add_argument('--output',type=Path,default=output_path("audit"))
+    p.add_argument('--sqlite-path',type=Path,required=True);run(_guard_args(p.parse_args()))
 
 
 if __name__=='__main__':main()

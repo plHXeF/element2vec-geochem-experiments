@@ -5,6 +5,13 @@ Phase 1c: 数据流水线检查
 """
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[3]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args, output_path, load_config_file, asset
+if __name__ == "__main__":
+    _require_run_dir()
+
 import json
 import sys
 from pathlib import Path
@@ -17,7 +24,7 @@ sys.path.insert(0, str(ROOT))
 
 STAGE_DIR = Path(__file__).resolve().parents[2]
 YAML_PATH = STAGE_DIR / "configs" / "v2_base.yaml"
-OUTPUTS = STAGE_DIR / "outputs"
+OUTPUTS = asset("v2_run")
 SRC = STAGE_DIR / "src"
 
 
@@ -177,12 +184,12 @@ def check_sqlite_connection() -> list[dict]:
 
 def _read_yaml() -> dict:
     import yaml
-    return yaml.safe_load(YAML_PATH.read_text())
+    return load_config_file(YAML_PATH)
 
 
 def main():
     import yaml
-    cfg = yaml.safe_load(YAML_PATH.read_text())
+    cfg = load_config_file(YAML_PATH)
 
     print("=" * 65)
     print("Phase 1c: 数据流水线检查")
@@ -220,7 +227,7 @@ def main():
     print(f"结果: {passed}/{total} checks passed")
 
     import pandas as pd
-    out_dir = Path(__file__).resolve().parent.parent / "outputs"
+    out_dir = output_path("analysis")
     out_dir.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(all_checks).to_csv(out_dir / "p1c_data_checks.csv", index=False, encoding="utf-8-sig")
 

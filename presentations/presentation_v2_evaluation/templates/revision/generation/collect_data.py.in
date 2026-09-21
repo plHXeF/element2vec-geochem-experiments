@@ -1,0 +1,42 @@
+"""Read existing aggregate results only. No model or sample-level data is exported."""
+from pathlib import Path
+import json, csv, statistics as st, hashlib
+
+ROOT=Path('@@WORKSPACE@@')
+HERE=Path(__file__).resolve().parent
+BR=Path('@@ROPE_SOURCE@@')
+B=ROOT/'latent_evaluation_benchmark/outputs'
+S=ROOT/'stage3_6_element2vec_space_exploration'
+G=BR/'stage3_5_element2vec_v2/experiments/rope_geo_mask15'
+manifest=[]
+def register(p):
+ p=Path(p);manifest.append({'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()});return p
+def read(p):
+ return list(csv.DictReader(register(p).open(encoding='utf-8-sig')))
+def obj(p):return json.loads(register(p).read_text())
+models=['ZVector','GeoNorm','PCAGeo','V2','RoPEz','RoPEgeo']
+out={'models':models}
+out['context']={k:obj(S/f'results/{k}/metrics.json') for k in ['C1_same_value_context','X1_context_raw_control','X2_role_raw_control']}
+out['probe']=read(B/'decodability/metrics.csv')
+out['semantic']=read(B/'semantic_geometry/metrics.csv')
+out['nuisance']=read(B/'sufficiency/nuisance.csv')
+recovery=read(B/'sufficiency/masked_recovery.csv')
+out['recovery']={m:{g:st.median([float(r['R2']) for r in recovery if r['representation']==m and r['group']==g and r['status']=='ok' and r['R2']]) for g in ['major','trace','REE','isotope','age/derived']} for m in models}
+operator=read(B/'process/operator_metrics.csv')
+out['operator']={m:{p:st.median([float(r['normalized_next_state_error']) for r in operator if r['representation']==m and r['process']==p and r['split']=='test']) for p in ['Mixing','Fractionation','PartialMelting','Alteration']} for m in models}
+out['operator_parameters']={m:{p:int(float(next(r['parameter_count'] for r in operator if r['representation']==m and r['process']==p))) for p in ['Mixing','Fractionation']} for m in models}
+composite=read(B/'composite/metrics.csv')
+out['composite']={m:{p:st.median([float(r['composition_error']) for r in composite if r['representation']==m and r['composite_type']==p and r['split']=='test']) for p in ['same-process','heterogeneous']} for m in models}
+out['order_coverage']=read(B/'composite/order_coverage.csv')
+out['precision']=obj(B/'tables/precision_status.json')
+out['quality']=[r for r in read(G/'quality.csv') if r['mode']=='numeric' and r['space']=='FULL' and r['k']=='15']
+out['local']=read(G/'fine_steps_summary.csv')
+out['linearity']=read(G/'linearity_summary.csv')
+out['pca']=read(S/'pca_sweep/reports/dimension_summary.csv')
+out['training']=read(ROOT/'stage3_5_element2vec_v2/outputs/logs/probe_log.csv')
+out['direction_energy']=read(S/'subspace_audit/results/S/direction_energy_summary.csv')
+for p in [S/'reports/V2_TO_PRESENT_SYNTHESIS_ZH.md',S/'subspace_audit/reports/subspace_exploration_report.md',G/'REPORT.md',B.parent/'REPORT.md',ROOT/'presentation_html/build_presentation.py']:
+ register(p)
+(HERE/'data.json').write_text(json.dumps(out,ensure_ascii=False,indent=2))
+(HERE/'source_manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
+print('Collected aggregate data from',len(manifest),'sources')

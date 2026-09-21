@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from geochem_workspace import resolve_path as workspace_resolve_path, load_config_file, output_path, run_dir
+
 import json
 import os
 import random
@@ -16,13 +18,11 @@ REPO_ROOT = PACKAGE_ROOT.parent
 
 
 def resolve_path(path: str | Path) -> Path:
-    path = Path(path)
-    return path if path.is_absolute() else REPO_ROOT / path
+    return workspace_resolve_path(path)
 
 
 def load_yaml(path: str | Path) -> dict[str, Any]:
-    with open(resolve_path(path), "r", encoding="utf-8") as handle:
-        return yaml.safe_load(handle)
+    return load_config_file(path)
 
 
 def save_json(payload: Any, path: str | Path) -> None:

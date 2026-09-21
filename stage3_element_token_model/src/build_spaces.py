@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args, asset
+if __name__ == "__main__":
+    _require_run_dir()
+
 import argparse
 from pathlib import Path
 
@@ -27,8 +34,8 @@ def _pca_space(df: pd.DataFrame, n_components: int, random_seed: int) -> pd.Data
 
 def _maybe_previous_baseline(sample_meta: pd.DataFrame) -> tuple[pd.DataFrame | None, str]:
     candidates = [
-        WORKSPACE_DIR / "stage2_geo_representation_xgb" / "outputs" / "representations" / "log_robust_z_14.csv",
-        WORKSPACE_DIR / "stage2_geo_representation_xgb" / "outputs" / "representations" / "rank_uniform_z_14.csv",
+        asset("stage2_run") / "representations" / "log_robust_z_14.csv",
+        asset("stage2_run") / "representations" / "rank_uniform_z_14.csv",
     ]
     for path in candidates:
         if path.exists():
@@ -86,7 +93,8 @@ def build_spaces(config: dict) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=str(STAGE_DIR / "configs" / "pyrite_token_transformer.yaml"))
-    args = parser.parse_args()
+    args = _guard_args(parser.parse_args())
+    _guard_args(args)
     build_spaces(load_config(args.config))
 
 

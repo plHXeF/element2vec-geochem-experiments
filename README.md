@@ -1,5 +1,7 @@
 # Element2Vec Geochemistry Experiments
 
+> **当前工作入口（2026-09 整理后）：** 请从 [E001—E009 实验总表](experiments/README.md)、[管理规则](docs/WORKSPACE_MANAGEMENT.md) 和 [运行命令](docs/EXPERIMENT_COMMANDS.md) 开始。数据和产物位于仓库外，每次执行创建独立运行。以下研究报告与旧路径用于历史阅读；写入型历史命令须按新运行流程执行，不能直接覆盖历史输出。
+
 Element2Vec is a staged research project about how geochemical measurements can be encoded as tokens and whether the resulting token and sample-latent spaces contain interpretable geological structure. This repository publishes the current experimental snapshot, the code needed to reproduce it when the original datasets are supplied, compact result tables and figures, and the trained Element2Vec V2 checkpoints.
 
 > **Research snapshot — no license granted.** This repository is publicly visible for scientific communication and personal continuity. It has no open-source license. Public access does not grant permission to use, copy, modify, redistribute, sublicense, commercialize, or incorporate the code or model weights into another project. See [RIGHTS.md](RIGHTS.md).
@@ -70,74 +72,29 @@ The included CSV files are compact vocabularies, model-derived static embeddings
 
 ## Quick start on another computer
 
-```bash
-git clone https://github.com/plHXeF/element2vec-geochem-experiments.git
-cd element2vec-geochem-experiments
-
-conda env create -f environment.yml
-conda activate element2vec-geochem
-
-./scripts/fetch_checkpoints.sh
-python scripts/doctor.py
-```
-
-Then supply one or both private datasets at their expected paths:
-
-```text
-legacy_whole_rock_geochem/geochem.db
-pyrite_benchmark/data/raw/pyrite.xlsx
-```
-
-If only the V2/Stage 3.6 line is needed, only `geochem.db` is required. The released checkpoint can be inspected and used immediately after download; recomputing sample latents or experiments also requires the database.
-
-## Reproduce the Element2Vec V2 line
-
-Build the vocabulary and transformation statistics:
+Create the Python environment from `environment.yml`, then configure local inputs using [dataset setup](docs/DATASET_SETUP.md) and `docs/workspace.local.example.json`. The current local workspace is already configured.
 
 ```bash
-python -m stage3_5_element2vec_v2.src.data.build_vocab \
-  --config stage3_5_element2vec_v2/configs/v2_base.yaml
+python scripts/doctor.py --check-schema
+python scripts/experiment.py list
+python scripts/experiment.py new-run E005
 ```
 
-Run a two-step smoke test before a long training run:
+Use the returned run directory for every step. For example:
 
 ```bash
-python -m stage3_5_element2vec_v2.src.training.train_v2 \
-  --config stage3_5_element2vec_v2/configs/v2_base.yaml \
-  --max-samples 256 --max-steps 2
-```
-
-Extract Stage 3.6 caches and replay the registered analyses:
-
-```bash
-python -m stage3_6_element2vec_space_exploration.src.audit_project \
-  --config stage3_6_element2vec_space_exploration/configs/exploration.yaml
-python -m stage3_6_element2vec_space_exploration.src.extract_cache \
-  --config stage3_6_element2vec_space_exploration/configs/exploration.yaml
-python -m stage3_6_element2vec_space_exploration.src.run_experiments \
-  --config stage3_6_element2vec_space_exploration/configs/exploration.yaml
-python -m stage3_6_element2vec_space_exploration.src.build_reports \
-  --config stage3_6_element2vec_space_exploration/configs/exploration.yaml
-python -m stage3_6_element2vec_space_exploration.src.verify_outputs \
+python scripts/experiment.py exec --run-dir /path/to/run -- \
+  -m stage3_6_element2vec_space_exploration.src.audit_project \
   --config stage3_6_element2vec_space_exploration/configs/exploration.yaml
 ```
 
-For the strict FULL/PCA64/PCA32/PCA3/PCA2 replay with random-projection controls:
+Follow [the complete per-experiment order](docs/EXPERIMENT_COMMANDS.md). The workflow is **register → commit code → create run → execute/check → update card → merge → freeze**. Reusing a frozen run is rejected. Formal runs require a clean recorded commit; `--scratch` retains uncommitted and untracked source for debugging.
 
-```bash
-python -m stage3_6_element2vec_space_exploration.src.run_subspace_replay \
-  --config stage3_6_element2vec_space_exploration/configs/subspace_audit.yaml
-python -m stage3_6_element2vec_space_exploration.src.build_subspace_report \
-  --config stage3_6_element2vec_space_exploration/configs/subspace_audit.yaml
-python -m stage3_6_element2vec_space_exploration.src.verify_subspace_audit \
-  --config stage3_6_element2vec_space_exploration/configs/subspace_audit.yaml
-```
-
-Long training is intentionally not hidden behind a one-command bootstrap. Monitor hardware memory, learning curves, probe loss, and checkpoint writes. See [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md).
+For a different training experiment, create a run with its exact config and seed. Default V2/RoPE recipes use the frozen V2 vocabulary; fitting new statistics is a distinct configuration. No long training or full benchmark starts automatically. Checkpoints and sample-level artifacts stay outside Git.
 
 ## Checkpoints
 
-The small Stage 3 prototype checkpoint is stored directly in the repository. The four Element2Vec V2 files are distributed through GitHub Release assets; the two large files are split into ordered 64 MiB parts for transfer reliability. `scripts/fetch_checkpoints.sh` downloads/reassembles them into the exact path expected by the configs and verifies SHA-256 checksums. See [docs/CHECKPOINTS.md](docs/CHECKPOINTS.md).
+The small Stage 3 prototype checkpoint is stored directly in the repository. The four Element2Vec V2 files are distributed through GitHub Release assets; the two large files are split into ordered 64 MiB parts for transfer reliability. `scripts/fetch_checkpoints.sh` downloads/reassembles them into an explicitly registered mutable run’s `checkpoints/` and verifies SHA-256 checksums. See [docs/CHECKPOINTS.md](docs/CHECKPOINTS.md).
 
 ## Known limitations
 

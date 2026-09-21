@@ -1,0 +1,10 @@
+id,title,module,execution_status,scientific_outcome,report
+E001,黄铁矿基础表示,pyrite_benchmark,completed,exploratory,pyrite_benchmark/results/representation_benchmark/benchmark_report.md
+E002,地质先验表示,stage2_geo_representation_xgb,completed,mixed,stage2_geo_representation_xgb/outputs/stage2_report.md
+E003,黄铁矿 token Transformer,stage3_element_token_model,completed,exploratory,stage3_element_token_model/outputs/stage3_report.md
+E004,全岩 Element2Vec V2,stage3_5_element2vec_v2,completed,exploratory,EXPERIMENT_STATUS.md
+E005,表示空间审计,stage3_6_element2vec_space_exploration,completed,mixed,stage3_6_element2vec_space_exploration/reports/element2vec_exploration_report.md
+E006,PCA 与子空间复验,stage3_6_element2vec_space_exploration,completed,mixed,stage3_6_element2vec_space_exploration/subspace_audit/reports/subspace_exploration_report.md
+E007,Value RoPE-z,stage3_5_element2vec_v2,completed,mixed,stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPORT.md
+E008,RoPE_geo + 15% mask,stage3_5_element2vec_v2,completed,mixed,stage3_5_element2vec_v2/experiments/rope_geo_mask15/REPORT.md
+E009,Latent Evaluation Benchmark,latent_evaluation_benchmark,completed,mixed,reports/E009/REPORT.md

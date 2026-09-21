@@ -1,0 +1,44 @@
+from pathlib import Path
+from zipfile import ZipFile
+from xml.etree import ElementTree as E
+from pypdf import PdfReader
+import json, hashlib, re
+
+here = Path(__file__).resolve().parent
+out = here.parent / 'output'
+specs = json.loads((here / 'slides.json').read_text())
+ppt = out / 'Geochem_V2项目进展_改进版.pptx'
+ns = {'a':'http://schemas.openxmlformats.org/drawingml/2006/main',
+      'p':'http://schemas.openxmlformats.org/presentationml/2006/main'}
+with ZipFile(ppt) as z:
+    slides = [n for n in z.namelist() if re.fullmatch(r'ppt/slides/slide\d+\.xml', n)]
+    assert len(slides) == len(specs) == 77
+    for s in specs:
+        n = E.fromstring(z.read(f"ppt/notesSlides/notesSlide{s['page']}.xml"))
+        paragraphs = [''.join(p.itertext()) for p in n.findall('.//a:p', ns)]
+        texts = [''.join(t.text or '' for t in p.findall('.//a:t',ns)) for p in n.findall('.//a:p', ns)]
+        combined = '\n'.join(texts)
+        assert s['speech'] in combined, s['page']
+        assert '证据索引：' + '；'.join(s['evidence']) in combined, s['page']
+        body = [t for t in texts if t.strip() and not t.strip().isdigit()]
+        assert body[-1].startswith('证据索引：'), s['page']
+        for evidence in s['evidence']:
+            if evidence.startswith('/'):
+                assert Path(evidence).exists(), evidence
+    movie = z.read('ppt/media/four_processes.mp4')
+    assert movie == (out/'four_processes.mp4').read_bytes()
+    workbook_count = len([n for n in z.namelist() if n.startswith('ppt/embeddings/') and n.endswith('.xlsx')])
+    assert workbook_count == 28, workbook_count
+for item in json.loads((here/'source_manifest.json').read_text()):
+    assert hashlib.sha256(Path(item['path']).read_bytes()).hexdigest() == item['sha256'], item['path']
+pdf = PdfReader(out/'Geochem_V2项目进展_改进版.pdf')
+assert len(pdf.pages) == 77
+assert '地球化学表示' in pdf.pages[0].extract_text()
+assert [s['page'] for s in specs if s['visual']['kind']=='agenda'] == [2,11,21,33,44,72]
+result = {'pages':77, 'notes_and_evidence':77, 'native_chart_workbooks':workbook_count,
+          'media_bytes_match':True, 'source_hashes_unchanged':True,
+          'pdf_pages':len(pdf.pages), 'main_speech_characters':sum(len(s['speech']) for s in specs),
+          'scheduled_seconds':sum(s['seconds'] for s in specs),
+          'native_powerpoint_execution':'not performed: computer-use permissions unavailable'}
+(here/'delivery_checks.json').write_text(json.dumps(result,ensure_ascii=False,indent=2))
+print(json.dumps(result,ensure_ascii=False,indent=2))

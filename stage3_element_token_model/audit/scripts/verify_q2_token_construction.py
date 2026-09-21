@@ -7,6 +7,15 @@ Q2: 验证元素 Token 构建的向量维度链。
 """
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[3]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
+from geochem_workspace import output_path
+
 import sys
 from pathlib import Path
 
@@ -20,7 +29,9 @@ sys.path.insert(0, str(STAGE_SRC))
 from model import ElementTokenTransformer, build_model
 from utils import OUTPUT_DIR, load_config, set_seed
 
-AUDIT_DIR = Path(__file__).resolve().parent.parent
+AUDIT_DIR = output_path("audit")
+if __name__ == "__main__":
+    (AUDIT_DIR / "outputs").mkdir(parents=True, exist_ok=True)
 
 
 def inspect_model_structure(model: ElementTokenTransformer) -> None:

@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[1]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from geochem_workspace import asset, output_path, load_config_file
+
 import json
 import os
 import sys
@@ -28,13 +40,12 @@ from visualization import (  # noqa: E402
 from xgb_analysis import feature_importance, run_classification  # noqa: E402
 
 
-PROCESSED_DIR = WORKSPACE / "pyrite_benchmark" / "data" / "processed"
-OUT_DIR = ROOT / "outputs"
+PROCESSED_DIR = asset("pyrite_processed")
+OUT_DIR = output_path()
 
 
 def load_config() -> dict:
-    with open(ROOT / "configs" / "stage2_config.json", "r", encoding="utf-8") as f:
-        return json.load(f)
+    return load_config_file(ROOT / "configs" / "stage2_config.json")
 
 
 def write_table(df: pd.DataFrame, path: Path) -> None:

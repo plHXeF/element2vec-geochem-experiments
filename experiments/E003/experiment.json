@@ -1,0 +1,45 @@
+{
+  "id": "E003",
+  "title": "黄铁矿 token Transformer",
+  "module": "stage3_element_token_model",
+  "question": "元素 token 的上下文表示相对传统编码提供了什么信息？",
+  "controls": [
+    "label_masked 主评价",
+    "label_visible 泄漏检查",
+    "输入 token 与 encoded token",
+    "静态元素身份向量不能单独当样本"
+  ],
+  "config": "stage3_element_token_model/configs/pyrite_token_transformer.yaml",
+  "assets": [
+    "pyrite_processed",
+    "stage2_run"
+  ],
+  "upstream_experiments": [
+    "E001",
+    "E002"
+  ],
+  "protocol": "主结果使用 label_masked；label_visible 仅作泄漏对照。",
+  "execution_status": "completed",
+  "scientific_outcome": "exploratory",
+  "conclusion": "上下文化 token 有结构；全量预训练后的结果属于探索性检查。",
+  "report": "stage3_element_token_model/outputs/stage3_report.md",
+  "runs": [
+    {
+      "id": "legacy-stage3",
+      "path": "runs/E003/legacy-stage3",
+      "kind": "historical"
+    }
+  ],
+  "artifacts": {
+    "code": "stage3_element_token_model",
+    "configuration": "stage3_element_token_model/configs/pyrite_token_transformer.yaml",
+    "selected_report": "stage3_element_token_model/outputs/stage3_report.md",
+    "results": [
+      "runs/E003/legacy-stage3"
+    ],
+    "weights": [
+      "runs/E003/legacy-stage3/checkpoints/token_transformer_last.pt"
+    ],
+    "weight_note": "Original checkpoint files; checksums are recorded in the frozen run artifact_checksums.json."
+  }
+}

@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[3]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args, run_dir, asset
+if __name__ == "__main__":
+    _require_run_dir()
+
 import argparse
 import copy
 import math
@@ -305,7 +312,7 @@ def evaluate_probe(model, probe_batches: list[dict], device: torch.device, pure_
 def train(config: dict, max_steps_override: int | None = None, max_samples: int | None = None) -> dict:
     if config["data"].get("value_transform", {}).get("name") == GEO_VERSION:
         destination = output_dir(config).resolve()
-        if "value_rope_geo_mask15" not in destination.parts:
+        if "value_rope_geo_mask15" not in destination.parts and run_dir() is None:
             raise ValueError("Geo experiment outputs must be inside a separate value_rope_geo_mask15 directory")
         if (destination / "checkpoints/full_model.pt").exists() or (destination / "logs/train_log.csv").exists():
             raise FileExistsError("Geo training output already exists; choose a fresh --outputs-dir to preserve the run")
@@ -507,7 +514,8 @@ def main() -> None:
         default=None,
         help="Print explicit batch progress every N micro-batches; 0 disables it.",
     )
-    args = parser.parse_args()
+    args = _guard_args(parser.parse_args())
+    _guard_args(args)
     config = copy.deepcopy(load_config(args.config))
     if args.sqlite_path is not None:
         config["data"]["sqlite_path"] = args.sqlite_path

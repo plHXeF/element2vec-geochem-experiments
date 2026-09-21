@@ -10,6 +10,13 @@ Phase 2a: 训练曲线深度分析
 """
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[3]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args, output_path, load_config_file, asset
+if __name__ == "__main__":
+    _require_run_dir()
+
 from pathlib import Path
 
 import matplotlib
@@ -19,8 +26,8 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
-OUT_DIR = Path(__file__).resolve().parent.parent / "outputs"
-LOG_PATH = Path(__file__).resolve().parents[2] / "outputs" / "logs" / "train_log.csv"
+OUT_DIR = output_path("analysis")
+LOG_PATH = asset("v2_run") / "logs" / "train_log.csv"
 
 
 def load_log() -> pd.DataFrame:

@@ -1,12 +1,19 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[3]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args, run_dir
+if __name__ == "__main__":
+    _require_run_dir()
+
 import argparse
 import sqlite3
 from pathlib import Path
 
 import pandas as pd
 
-from ..utils.io import ensure_output_dirs, load_config, output_dir, resolve_path, save_json
+from ..utils.io import ensure_output_dirs, load_config, output_dir, resolve_path, save_json, vocab_dir
 from .transforms import fit_transform_stats
 
 
@@ -15,8 +22,10 @@ def _quote(name: str) -> str:
 
 
 def build_vocab(config: dict) -> dict:
-    ensure_output_dirs(config)
     out = output_dir(config)
+    if run_dir() and vocab_dir(config).resolve() != (out / "vocab").resolve():
+        raise ValueError("To fit new vocabulary/statistics, create a run with data.vocab_dir: run://vocab; the current config selects a frozen vocabulary")
+    ensure_output_dirs(config)
     db_path = resolve_path(config["data"]["sqlite_path"])
     view = config["data"]["view_name"]
     numeric_fields = config["data"]["numeric_fields"]
@@ -104,7 +113,8 @@ def build_vocab(config: dict) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="stage3_5_element2vec_v2/configs/v2_base.yaml")
-    args = parser.parse_args()
+    args = _guard_args(parser.parse_args())
+    _guard_args(args)
     build_vocab(load_config(args.config))
 
 

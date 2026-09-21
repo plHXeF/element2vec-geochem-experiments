@@ -1,0 +1,21 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {slides} from './slides.mjs';
+import {finalizePresentation} from '@@PRESENTATION_SKILL@@/container_tools/artifact_tool_utils.mjs';
+process.env.RUNTIME_NODE_MODULES ||= '@@NODE_MODULES@@';
+const DIR=path.dirname(new URL(import.meta.url).pathname),ROOT=path.dirname(DIR);
+const SKILL='@@PRESENTATION_SKILL@@';
+const tableOwners=slides.filter(s=>['table','semanticmatrix','operatortable','representation'].includes(s.visual.kind)).map(s=>s.page);
+const chartOwners=slides.filter(s=>['chart','dualchart','triplechart'].includes(s.visual.kind)).map(s=>s.page);
+const finalPath=path.join(ROOT,'output',process.env.FINAL_NAME||'Geochem_V2项目进展_改进版.pptx');
+await finalizePresentation({workspaceDir:ROOT,candidatePath:path.join(DIR,'candidate_with_video.pptx'),finalPath,
+ explicitTotalSlideCount:slides.length,
+ pythonExecutable:'@@PYTHON@@',
+ integrityValidatorPath:path.join(SKILL,'container_tools/inspect_presentation_package_integrity.py'),
+ layoutValidatorPath:path.join(SKILL,'container_tools/inspect_presentation_layout_geometry.py'),
+ layoutArgs:['--expected-slide-size-emu','12192000,6858000','--validate-heading-fit',...tableOwners.flatMap(n=>['--require-native-table-slide',String(n)])],
+ fontPolicy:{basis:'design',families:['Hiragino Sans GB']},
+ requiredNativeTableOwnerSlides:tableOwners,requiredNativeChartOwnerSlides:chartOwners,
+ materializeLiteralChartWorkbooks:true,nativeChartTargetApplication:'portable',
+ verifyArtifactToolImport:true,receiptPath:path.join(DIR,'final_validation.json')});
+console.log('Final',finalPath);

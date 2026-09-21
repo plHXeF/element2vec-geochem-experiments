@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "assets": {
+    "pyrite_raw": "data/pyrite/pyrite-v1/raw/pyrite.xlsx",
+    "pyrite_processed": "data/pyrite/pyrite-v1/processed",
+    "whole_rock": "data/whole_rock/whole-rock-v1/geochem.db",
+    "v2_run": "runs/E004/legacy-v2",
+    "v2_checkpoint": "runs/E004/legacy-v2/checkpoints/full_model.pt",
+    "v2_vocab": "runs/E004/legacy-v2/vocab",
+    "rope_z_run": "runs/E007/legacy-rope-z",
+    "rope_z_checkpoint": "runs/E007/legacy-rope-z/checkpoints/full_model.pt",
+    "geo15_run": "runs/E008/legacy-geo-mask15",
+    "geo15_checkpoint": "runs/E008/legacy-geo-mask15/checkpoints/full_model.pt",
+    "space_audit": "runs/E005/legacy-space-audit",
+    "subspace_audit": "runs/E006/legacy-subspace-audit",
+    "latent_reference": "runs/E009/legacy-latent-v01",
+    "pyrite_model": "runs/E003/legacy-stage3/checkpoints/token_transformer_last.pt",
+    "stage2_run": "runs/E002/legacy-stage2",
+    "stage3_run": "runs/E003/legacy-stage3",
+    "presentation_pyrite": "deliverables/presentation_html",
+    "presentation_v2": "deliverables/presentation_v2_evaluation"
+  },
+  "python": "python",
+  "python_paths": [],
+  "presentation_runtime": {
+    "artifact_tool_module": "",
+    "node_modules": "",
+    "skill_directory": "",
+    "python": "",
+    "template": ""
+  }
+}

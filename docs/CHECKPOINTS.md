@@ -11,16 +11,18 @@ stage3_element_token_model/outputs/checkpoints/token_transformer_last.pt
 Element2Vec V2 checkpoints are attached to GitHub Release `v0.1.0-stage3.6` and are downloaded with:
 
 ```bash
-./scripts/fetch_checkpoints.sh
+./scripts/fetch_checkpoints.sh --run-dir /path/to/registered/mutable/run
 ```
 
 Destination:
 
 ```text
-stage3_5_element2vec_v2/outputs/checkpoints/
+<run-dir>/checkpoints/
 ```
 
 The two small files are direct Release assets. The full model and Transformer encoder are stored as ordered 64 MiB parts because large single-request uploads were unreliable on the publication connection. The fetch script downloads the parts and reconstructs the original files automatically.
+
+Existing local checkpoints are already frozen under `runs/E004`, `runs/E007`, and `runs/E008`; no download is needed for this workspace. Logical IDs in `workspace.local.json` identify the exact input checkpoint. This organization task performed no downloads or remote synchronization. Do not overwrite the historical checkpoint paths.
 
 ## Files
 

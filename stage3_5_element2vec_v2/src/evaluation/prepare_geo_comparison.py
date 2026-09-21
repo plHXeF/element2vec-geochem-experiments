@@ -1,4 +1,11 @@
 """Freeze the prior audit's exact paired IDs/pools and validate new coordinates."""
+
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[3]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args, run_dir, asset
+if __name__ == "__main__":
+    _require_run_dir()
 import argparse
 import hashlib
 import json
@@ -22,7 +29,7 @@ def sha(path):
 
 def prepare(config, baseline_audit):
     destination = output_dir(config)/"audit"
-    if "value_rope_geo_mask15" not in destination.resolve().parts:
+    if "value_rope_geo_mask15" not in destination.resolve().parts and run_dir() is None:
         raise ValueError("Use a separate value_rope_geo_mask15 output directory")
     if destination.exists():
         raise FileExistsError("Paired audit already exists; do not overwrite its frozen inputs")
@@ -84,8 +91,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="stage3_5_element2vec_v2/configs/v2_value_rope_geo_mask15.yaml")
     parser.add_argument("--sqlite-path", required=True)
-    parser.add_argument("--baseline-audit", default="stage3_5_element2vec_v2/outputs/value_rope_z/audit")
-    args = parser.parse_args()
+    parser.add_argument("--baseline-audit", default=str(asset("rope_z_run") / "audit"))
+    args = _guard_args(parser.parse_args())
+    _guard_args(args)
     config = load_config(args.config)
     config["data"]["sqlite_path"] = args.sqlite_path
     prepare(config, args.baseline_audit)

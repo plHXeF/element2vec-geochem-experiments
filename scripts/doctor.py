@@ -13,10 +13,13 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from geochem_workspace import asset
+
 MANIFEST = ROOT / "docs" / "checkpoint_manifest.json"
-CHECKPOINT_DIR = ROOT / "stage3_5_element2vec_v2" / "outputs" / "checkpoints"
-DB_PATH = ROOT / "legacy_whole_rock_geochem" / "geochem.db"
-PYRITE_PATH = ROOT / "pyrite_benchmark" / "data" / "raw" / "pyrite.xlsx"
+CHECKPOINT_DIR = asset("v2_run") / "checkpoints"
+DB_PATH = asset("whole_rock")
+PYRITE_PATH = asset("pyrite_raw")
 
 IMPORTS = {
     "numpy": "numpy",
@@ -59,8 +62,8 @@ def check_imports() -> bool:
 
 
 def check_data(check_schema: bool) -> bool:
-    print(f"[{'ok' if DB_PATH.is_file() else 'absent'}] whole-rock DB: {DB_PATH.relative_to(ROOT)}")
-    print(f"[{'ok' if PYRITE_PATH.is_file() else 'absent'}] pyrite workbook: {PYRITE_PATH.relative_to(ROOT)}")
+    print(f"[{'ok' if DB_PATH.is_file() else 'absent'}] whole-rock DB: {DB_PATH}")
+    print(f"[{'ok' if PYRITE_PATH.is_file() else 'absent'}] pyrite workbook: {PYRITE_PATH}")
     if not check_schema or not DB_PATH.is_file():
         return True
 
@@ -99,7 +102,7 @@ def check_checkpoints() -> bool:
         path = CHECKPOINT_DIR / entry["name"]
         if not path.is_file():
             ok = False
-            print(f"[absent] checkpoint: {path.relative_to(ROOT)}")
+            print(f"[absent] checkpoint: {path}")
             continue
         actual = sha256(path)
         good = actual == entry["sha256"]

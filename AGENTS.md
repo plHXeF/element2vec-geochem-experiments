@@ -6,15 +6,29 @@ This repository preserves a staged experimental history and enables continuation
 
 ## Mandatory reading order
 
-1. `README.md`
-2. `EXPERIMENT_STATUS.md`
-3. `docs/DATASET_SETUP.md`
-4. `docs/REPRODUCIBILITY.md`
-5. `stage3_6_element2vec_space_exploration/reports/element2vec_exploration_report.md`
-6. `stage3_6_element2vec_space_exploration/subspace_audit/reports/subspace_exploration_report.md`
-7. Relevant stage source/config files before changing an experiment.
+1. `README.md` and `docs/WORKSPACE_MANAGEMENT.md`.
+2. `experiments/README.md` and the target `experiments/E00N/experiment.json`.
+3. `docs/EXPERIMENT_COMMANDS.md`, `docs/DATASET_SETUP.md`, `docs/REPRODUCIBILITY.md`.
+4. The experiment card's reports, protocol and source/config files.
 
-The older reports are historical records. If a number conflicts with `EXPERIMENT_STATUS.md` or the final subspace report, prefer the later aggregate table and document the discrepancy rather than silently rewriting history.
+Experiment cards are the current authority. `EXPERIMENT_STATUS.md` and the stage reports preserve historical evidence. Preserve conflicting evidence and document discrepancies; never rewrite historical conclusions to fit new results.
+
+## Required daily workflow
+
+Register experiment → modify and commit code → create run → execute/check → update experiment card → merge reproducible implementation → freeze run. Status and scientific outcome are separate; computation failure is not a scientific negative result.
+
+- One permanent E ID per research question. Keep A–K/X sub-experiments. Stage directories remain modules, not variant backups.
+- Use `experiment/eNNN-topic`, `fix/topic`, `chore/topic` branches and separate worktrees for concurrent implementations. A parameter/seed change needs a run, not a copied stage or a branch.
+- Run `python scripts/experiment.py list` to discover registered runs. Edit the authoritative card and regenerate `index`; do not hand-edit the derived total table.
+- Formal runs must start from clean committed code. Use `new-run E00N --scratch` for debug work; it preserves the patch and untracked source. Never backfill a historical run with today's commit.
+- All new outputs belong to the workspace's `runs/E00N/<UTC-seed-random>/`. Every writing entry point requires `--run-dir`. Use `scripts/experiment.py exec` for command logs and status; all steps share the same directory.
+- Configs use `asset://`, `run://`, `repo://`; local paths belong only in `workspace.local.json`. Pin explicit upstream runs, data versions and checkpoint checksums. `latest` is navigation only.
+- Use `check --rehash`, write a result/limitation summary, then `freeze` with actual algorithms and device. Frozen runs cannot be resumed. A scientific configuration change needs a new run; resume only supported, validated steps in a mutable run.
+- Keep original cache configurations/hashes; migration maps locations instead of rewriting history. Unknown provenance stays `unknown`.
+- `data/`, frozen runs and `archive/` are immutable inputs. New preprocessing writes `prepared_data/` in its run; promote reviewed output as a new data version. Pyrite stages 2/3 read processed Stage 1 tables.
+- Preserve the same scientific controls when relocating paths. Optional fallback implementations must be named as actually used.
+- Deliverables record source run IDs in provenance. Keep generation source in `presentations/`; create intermediates in a new run and a new final delivery directory.
+- Check the Git status before edits. Stage only intended source/aggregate changes, run relevant tests and the content audit before commit. Do not auto-push, publish, clear historical results, or launch long training.
 
 ## Data boundary — never commit
 
@@ -27,7 +41,7 @@ No original or processed dataset may be committed. Never add:
 - PCA fitting/evaluation pools, serialized projection bases, token reservoirs, or per-sample neighbor tables;
 - secrets, credentials, local environment directories, or machine-specific absolute paths.
 
-Before every push run:
+After staging and before every commit or push run:
 
 ```bash
 python scripts/verify_public_tree.py --tracked
@@ -55,28 +69,23 @@ Whole-rock SQLite view -> Stage 3.5 V2 -> checkpoint -> Stage 3.6 cache/results
 - `stage3_6_element2vec_space_exploration`: breadth-first token/latent audit, PCA sweep, and strict subspace replay.
 - `legacy_whole_rock_geochem`: schema/view helper only; the database is private and absent.
 
-Run all commands from the repository root. Preserve relative paths because configs depend on them.
+Run commands from the repository/worktree root. Use logical asset IDs and the shared run context; never write new results into historical stage output folders. `latent_evaluation_benchmark` is E009. `experiments/`, `reports/`, `presentations/`, `docs/`, and `scripts/` are shared management modules.
 
-## Environment and bootstrap
+## Environment, checks and checkpoints
 
-Preferred baseline is Python 3.11 from `environment.yml`. PyTorch is required for Stage 3/3.5/3.6 extraction and training. XGBoost, UMAP, Plotly, SHAP, and HDBSCAN are used by older evaluations; some scripts fall back to simpler methods when optional packages are absent.
+Python 3.11 is specified in `environment.yml`. The local usable interpreter is recorded in workspace settings. Archived Windows binaries are not an environment. PyTorch is required for model work; optional package fallbacks must be reported with their real algorithm names. Do not commit conda environments or local absolute paths.
+
+Relevant checks (there are tests):
 
 ```bash
-conda env create -f environment.yml
-conda activate element2vec-geochem
-./scripts/fetch_checkpoints.sh
-python scripts/doctor.py
+python -m unittest discover -s tests -p 'test_*.py'
+python -m unittest discover -s stage3_5_element2vec_v2/tests -p 'test_*.py'
+python -m unittest discover -s stage3_6_element2vec_space_exploration/tests -p 'test_*.py'
+python -m unittest discover -s latent_evaluation_benchmark/tests -p 'test_*.py'
+python scripts/verify_public_tree.py --tracked
 ```
 
-Do not commit a local conda environment.
-
-## Checkpoints
-
-- The small Stage 3 checkpoint is tracked at `stage3_element_token_model/outputs/checkpoints/token_transformer_last.pt`.
-- The four V2 checkpoint files are release assets downloaded by `scripts/fetch_checkpoints.sh` into `stage3_5_element2vec_v2/outputs/checkpoints/`.
-- `full_model.pt` is the resumable training state and contains model, optimizer, scheduler, config, and vocab state. The component files are same-step exports, not independent training runs.
-- Verify SHA-256 against `docs/checkpoint_manifest.json`.
-- Do not commit V2 `.pt` files to Git or Git LFS.
+The original small Stage 3 checkpoint remains tracked as history. New weights, including V2/RoPE, are local run artifacts. `asset://v2_checkpoint`, `asset://rope_z_checkpoint`, and `asset://geo15_checkpoint` resolve frozen inputs. Component exports from the same training step are not separate runs. `docs/checkpoint_manifest.json` preserves released hashes. Checkpoint downloads require an explicit mutable run and are never automatic.
 
 ## Scientific interpretation constraints
 
@@ -121,16 +130,9 @@ Every claimed positive result must answer:
 
 Do not summarize the repository as proof of a universal low-rank geochemical language. The supported conclusion is narrower: contextualization and local chemical perturbation geometry exist; one finite-difference family shows stable PCA32/PCA64 recovery; different representation levels have different effective dimensions; and nuisance structure remains substantial.
 
-## Safe workflow for changes
+## Changes to evidence
 
-1. Inspect `git status` and do not overwrite unrelated work.
-2. Add a new experiment ID or preserve the original one plus a systematic suffix.
-3. Keep fitting and evaluation pools separate and persist their IDs only locally.
-4. Write generated sample-level output only to ignored directories.
-5. Update the registry, aggregate report, `EXPERIMENT_STATUS.md`, and reproducibility notes together.
-6. Run syntax/import smoke checks and the stage-specific verifier.
-7. Run `python scripts/verify_public_tree.py --tracked` before commit.
-8. Never push a dataset or a newly generated large checkpoint without an explicit artifact plan.
+Keep fitting/evaluation pools separate, persist IDs only locally, and preserve seeds, targets and controls. Record new evidence in the experiment card and a new report, regenerate the total index, and cite the new run. Existing snapshot reports remain unchanged. Run relevant syntax/import checks, tests, and stage verifiers before merging.
 
 ## High-priority continuation work
 

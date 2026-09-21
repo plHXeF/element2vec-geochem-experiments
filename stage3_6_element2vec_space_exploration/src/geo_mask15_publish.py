@@ -1,4 +1,13 @@
 """Publish aggregate-only artifacts for the independent geo15 experiment."""
+
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
+from geochem_workspace import asset, output_path
 import argparse
 import json
 from pathlib import Path
@@ -127,11 +136,11 @@ def publish(args):
 
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument("--output",type=Path,default=Path("stage3_5_element2vec_v2/outputs/value_rope_geo_mask15/audit"))
-    p.add_argument("--baseline",type=Path,default=Path("stage3_5_element2vec_v2/outputs/value_rope_z/audit"))
-    p.add_argument("--report",type=Path,default=Path("stage3_5_element2vec_v2/experiments/rope_geo_mask15"))
+    p.add_argument("--output",type=Path,default=output_path("audit"))
+    p.add_argument("--baseline",type=Path,default=asset("rope_z_run") / "audit")
+    p.add_argument("--report",type=Path,default=output_path("reports"))
     p.add_argument("--tables-only",action="store_true")
-    publish(p.parse_args())
+    publish(_guard_args(p.parse_args()))
 
 
 if __name__=="__main__":main()

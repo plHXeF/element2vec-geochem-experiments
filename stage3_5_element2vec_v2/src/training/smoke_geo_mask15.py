@@ -1,4 +1,11 @@
 """Two full-model updates plus probe, CPU reload and extraction; never a full run."""
+
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[3]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args, output_path
+if __name__ == "__main__":
+    _require_run_dir()
 import argparse
 import copy
 from pathlib import Path
@@ -17,8 +24,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--sqlite-path", required=True)
     parser.add_argument("--device", default="cpu")
-    parser.add_argument("--outputs-dir", default="stage3_5_element2vec_v2/outputs/value_rope_geo_mask15/smoke")
-    args = parser.parse_args()
+    parser.add_argument("--outputs-dir", default=str(output_path()))
+    args = _guard_args(parser.parse_args())
+    _guard_args(args)
     config = copy.deepcopy(load_config("stage3_5_element2vec_v2/configs/v2_value_rope_geo_mask15.yaml"))
     config["data"]["sqlite_path"] = args.sqlite_path
     config["project"]["outputs_dir"] = args.outputs_dir

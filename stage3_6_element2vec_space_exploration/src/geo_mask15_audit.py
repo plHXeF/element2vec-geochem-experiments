@@ -1,4 +1,13 @@
 """Independent post-training geo15 audit. All caches are private and versioned."""
+
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
+from geochem_workspace import asset, output_path
 import argparse
 import copy
 import gc
@@ -194,13 +203,14 @@ def global_metrics(args):
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("command",choices=["global","quality","geometry_extract","geometry","numerical"])
-    parser.add_argument("--output",type=Path,default=Path("stage3_5_element2vec_v2/outputs/value_rope_geo_mask15/audit"))
-    parser.add_argument("--baseline",type=Path,default=Path("stage3_5_element2vec_v2/outputs/value_rope_z/audit"))
-    parser.add_argument("--geo-checkpoint",type=Path,default=Path("stage3_5_element2vec_v2/outputs/value_rope_geo_mask15/checkpoints/full_model.pt"))
-    parser.add_argument("--sqlite-path",type=Path)
+    parser.add_argument("--output",type=Path,default=output_path("audit"))
+    parser.add_argument("--baseline",type=Path,default=asset("rope_z_run") / "audit")
+    parser.add_argument("--geo-checkpoint",type=Path,default=asset("geo15_checkpoint"))
+    parser.add_argument("--sqlite-path",type=Path,default=asset("whole_rock"))
     parser.add_argument("--device",default="mps")
     parser.add_argument("--batch-size",type=int,default=256)
-    args=parser.parse_args()
+    args=_guard_args(parser.parse_args())
+    _guard_args(args)
     from .geo_mask15_geometry import extract_geometry, geometry_metrics, numerical_check
     with threadpool_limits(limits=8):
         {"global":global_extract,"quality":global_metrics,

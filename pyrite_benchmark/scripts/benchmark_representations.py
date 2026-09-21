@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from geochem_workspace import asset, output_path, load_config_file, configured_seed
+
 import html
 import math
 import os
@@ -24,12 +36,12 @@ from sklearn.neighbors import NearestNeighbors
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PROCESSED_DIR = ROOT / "data" / "processed"
-RESULT_DIR = ROOT / "results" / "representation_benchmark"
+PROCESSED_DIR = asset("pyrite_processed")
+RESULT_DIR = output_path("results/representation_benchmark")
 EMBED_DIR = RESULT_DIR / "embeddings"
 FIG_DIR = RESULT_DIR / "figures"
 
-RANDOM_SEED = 42
+RANDOM_SEED = configured_seed(42)
 COVERAGE_THRESHOLD = 0.20
 KNN_K = 15
 SILHOUETTE_SAMPLE = 1500

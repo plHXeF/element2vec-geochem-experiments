@@ -1,6 +1,15 @@
 """Full label-masked extraction and diagnostic companion to the paired audit."""
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
+from geochem_workspace import asset, output_path
+
 import argparse
 import copy
 import gc
@@ -229,10 +238,11 @@ def controlled_background(args):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('phase',choices=['extract','analyze','controlled'])
-    p.add_argument('--output',type=Path,default=Path('stage3_5_element2vec_v2/outputs/value_rope_z/audit'))
+    p.add_argument('--output',type=Path,default=output_path("audit"))
     p.add_argument('--v2-checkpoint',type=Path,required=True)
-    p.add_argument('--rope-checkpoint',type=Path,default=Path('stage3_5_element2vec_v2/outputs/value_rope_z/checkpoints/full_model.pt'))
-    p.add_argument('--device',default='mps');args=p.parse_args();torch.set_num_threads(8)
+    p.add_argument('--rope-checkpoint',type=Path,default=asset("rope_z_checkpoint"))
+    p.add_argument('--device',default='mps');args=_guard_args(p.parse_args());torch.set_num_threads(8)
+    _guard_args(args)
     if args.phase=='extract':extract_extra(args)
     elif args.phase=='controlled':controlled_background(args)
     else:

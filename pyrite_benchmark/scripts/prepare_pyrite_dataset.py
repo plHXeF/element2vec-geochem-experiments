@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+import sys as _workspace_sys
+from pathlib import Path as _WorkspacePath
+_workspace_sys.path.insert(0, str(_WorkspacePath(__file__).resolve().parents[2]))
+from geochem_workspace import require_run_dir as _require_run_dir, guard_args as _guard_args
+if __name__ == "__main__":
+    _require_run_dir()
+
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from geochem_workspace import asset, output_path, load_config_file
+
 import re
 from pathlib import Path
 
@@ -8,9 +20,9 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RAW_FILE = ROOT / "data" / "raw" / "pyrite.xlsx"
-PROCESSED_DIR = ROOT / "data" / "processed"
-OUTPUT_DIR = ROOT / "outputs"
+RAW_FILE = asset("pyrite_raw")
+PROCESSED_DIR = output_path("prepared_data")
+OUTPUT_DIR = output_path()
 
 METADATA_COLUMNS = [
     "Unnamed: 0",

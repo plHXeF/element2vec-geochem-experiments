@@ -1,0 +1,44 @@
+{
+  "id": "E004",
+  "title": "全岩 Element2Vec V2",
+  "module": "stage3_5_element2vec_v2",
+  "question": "全岩 Element2Vec V2 是否学到可稳定提取的上下文表示？",
+  "controls": [
+    "训练/固定 probe 曲线",
+    "标签/数值任务",
+    "全数据与标签预训练暴露声明"
+  ],
+  "config": "stage3_5_element2vec_v2/configs/v2_base.yaml",
+  "assets": [
+    "whole_rock",
+    "v2_vocab"
+  ],
+  "upstream_experiments": [],
+  "protocol": "预训练包含全量样本与岩石标签。",
+  "execution_status": "completed",
+  "scientific_outcome": "exploratory",
+  "conclusion": "已完成 50 epoch 全量数据训练；不代表外部泛化。",
+  "report": "EXPERIMENT_STATUS.md",
+  "runs": [
+    {
+      "id": "legacy-v2",
+      "path": "runs/E004/legacy-v2",
+      "kind": "historical"
+    }
+  ],
+  "artifacts": {
+    "code": "stage3_5_element2vec_v2",
+    "configuration": "stage3_5_element2vec_v2/configs/v2_base.yaml",
+    "selected_report": "EXPERIMENT_STATUS.md",
+    "results": [
+      "runs/E004/legacy-v2"
+    ],
+    "weights": [
+      "runs/E004/legacy-v2/checkpoints/decoders.pt",
+      "runs/E004/legacy-v2/checkpoints/full_model.pt",
+      "runs/E004/legacy-v2/checkpoints/token_projector.pt",
+      "runs/E004/legacy-v2/checkpoints/transformer_encoder.pt"
+    ],
+    "weight_note": "Original checkpoint files; checksums are recorded in the frozen run artifact_checksums.json."
+  }
+}

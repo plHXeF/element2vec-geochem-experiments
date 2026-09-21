@@ -1,0 +1,94 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {FileBlob,PresentationFile} from '@@ARTIFACT_TOOL@@';
+import {slides} from './slides.mjs';
+
+const ROOT='@@WORKSPACE@@';
+const DIR=path.join(ROOT,'presentation_v2_evaluation');
+const TEMPLATE=path.join(ROOT,'2025-7-4汇报1.pptx');
+const OUTPUT=path.join(DIR,'build','candidate.pptx');
+const BLUE='#003195',COVER='#0070C0',INK='#17202B',MUTED='#526275',LIGHT='#E8EFF8';
+const W=1280,H=720,FONT='Hiragino Sans GB';
+const pres=await PresentationFile.importPptx(await FileBlob.load(TEMPLATE));
+for(const old of [...pres.slides.items])old.delete();
+function shape(slide,x,y,w,h,fill='none',geometry='rect',stroke='none',width=0){
+ return slide.shapes.add({geometry,position:{left:x,top:y,width:w,height:h},fill,
+  line:{fill:stroke,width}});
+}
+function txt(slide,s,x,y,w,h,size=20,color=INK,bold=false,align='left'){
+ const a=shape(slide,x,y,w,h,'none','textbox');a.text=s;
+ a.text.style={typeface:FONT,fontSize:size,color,bold,autoFit:'shrinkText',
+  alignment:align,verticalAlignment:'middle',insets:{left:0,right:0,top:0,bottom:0}};
+ return a;
+}
+function drawDiagram(slide,v){
+ const n=v.nodes.length;const cols=v.grid||Math.min(n,5),rows=Math.ceil(n/cols);
+ const totalW=1124,gap=20,nodeW=(totalW-gap*(cols-1))/cols;
+ const nodeH=rows>1?108:148;
+ const top=rows>1?207:225;
+ for(let i=0;i<n;i++){
+  const c=i%cols,r=Math.floor(i/cols),x=76+c*(nodeW+gap),y=top+r*(nodeH+30);
+  shape(slide,x,y,nodeW,nodeH,'#F1F5FA','rect','#AFC0D8',1);
+  shape(slide,x,y,6,nodeH,BLUE);
+  const font=n>4?21:23;
+  txt(slide,v.nodes[i],x+18,y+20,nodeW-33,40,font,BLUE,true);
+  if(v.captions?.[i])txt(slide,v.captions[i],x+18,y+65,nodeW-33,nodeH-75,16,MUTED);
+  if(c<cols-1 && i<n-1){
+   const ay=y+nodeH/2-10;txt(slide,'→',x+nodeW+1,ay,gap-1,24,20,BLUE,true,'center');
+  }
+ }
+ if(rows>1){txt(slide,'↓',630,top+nodeH+2,30,27,20,BLUE,true,'center');}
+}
+function drawImage(slide,source){
+ const full=path.join(ROOT,source.path);const ext=path.extname(full).toLowerCase();
+ const typ=ext==='.svg'?'image/svg+xml':ext==='.jpg'||ext==='.jpeg'?'image/jpeg':'image/png';
+ return fs.readFile(full).then(bytes=>slide.images.add({blob:bytes,contentType:typ,alt:source.path,
+  fit:'contain',position:{left:70,top:161,width:1140,height:386}}));
+}
+function drawHeader(slide,s,index){
+ slide.background.fill='#FFFFFF';
+ txt(slide,s.section,23,18,365,47,28,BLUE,true);
+ txt(slide,s.subtitle,410,18,835,47,19,BLUE,true,'right');
+ shape(slide,23,69,1220,1,'#D7DFEA');
+ txt(slide,s.topic,70,97,1140,51,31,INK,true);
+ txt(slide,`${index+1}/48`,1154,685,85,22,13,MUTED,false,'right');
+}
+function drawPoints(slide,points){
+ const size=points.length>=3?18:20;
+ points.forEach((p,j)=>{
+  txt(slide,'■',76,558+j*42,19,31,12,BLUE,true);
+  txt(slide,p,105,557+j*42,1090,33,size,INK);
+ });
+}
+async function drawCover(slide,s){
+ slide.background.fill='#FFFFFF';
+ shape(slide,0,120,W,214,COVER);
+ shape(slide,0,108,W,6,COVER);
+ shape(slide,0,342,W,6,COVER);
+ txt(slide,'地球化学表征评价体系',62,165,1150,58,42,'#FFFFFF',true);
+ txt(slide,'的逐步完善',62,232,800,54,41,'#FFFFFF',true);
+ txt(slide,'多维图谱逐步走向过程检验',64,378,790,44,25,BLUE,true);
+ txt(slide,'传统编码与 latent space 的共同评价',64,430,820,34,20,INK);
+ txt(slide,'2026.09.17',65,638,310,29,18,MUTED);
+ const bytes=await fs.readFile(path.join(ROOT,s.visual.path));
+ slide.images.add({blob:bytes,contentType:'image/png',alt:'保存的部分熔融轨迹示意',fit:'contain',position:{left:803,top:371,width:416,height:260}});
+ txt(slide,'过程轨迹示意，PCA 仅用于显示',821,632,384,22,12,MUTED);
+}
+
+const limit=process.env.BUILD_LIMIT?Number(process.env.BUILD_LIMIT):slides.length;
+for(let i=0;i<Math.min(limit,slides.length);i++){
+ const spec=slides[i],s=pres.slides.add();
+ if(i===0)await drawCover(s,spec);
+ else{
+  drawHeader(s,spec,i);
+  if(['image','video'].includes(spec.visual.kind))await drawImage(s,spec.visual);
+  else drawDiagram(s,spec.visual);
+  drawPoints(s,spec.points);
+  if(spec.visual.kind==='video')txt(s,'点击播放内嵌的四段过程视频。PDF 中保留此帧。',740,522,440,24,14,BLUE,true,'right');
+  if(i>=36)txt(s,`A${i-35}`,1065,96,140,49,20,MUTED,true,'right');
+ }
+ s.speakerNotes.textFrame.setText(`讲述重点：${spec.subtitle}\n${spec.points.join('；')}。\n证据与限定：${spec.notes}`);
+}
+await fs.mkdir(path.dirname(OUTPUT),{recursive:true});
+await(await PresentationFile.exportPptx(pres)).save(OUTPUT);
+console.log(`Saved ${OUTPUT}, slides=${Math.min(limit,slides.length)}`);
