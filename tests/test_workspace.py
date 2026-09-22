@@ -123,6 +123,23 @@ class WorkspaceTests(unittest.TestCase):
         p = Path(self.cli("new-run", "E001", "--config", config).stdout.strip())
         self.cli("exec", "--run-dir", p, "--", "-c", "from geochem_workspace import load_config_file; c=load_config_file('config.json'); assert c['seed']==91 and c['epsilon']==2e-9")
 
+    def test_new_asset_version_does_not_retarget_an_existing_run(self):
+        old = self.create()
+        (self.root / "data/input-v2.txt").write_text("version two\n")
+        (self.root / "workspace.local.json").write_text(json.dumps({"assets": {"toy": "data/input-v2.txt"}}))
+        self.cli("check", "--run-dir", old, "--rehash")
+        self.cli("exec", "--run-dir", old, "--", "-c", "from geochem_workspace import asset,scientific_config; assert asset('toy').read_text()=='fixed input\\n'; assert scientific_config({'input':str(asset('toy'))})['input']=='asset://toy'")
+        new = self.create()
+        self.cli("exec", "--run-dir", new, "--", "-c", "from geochem_workspace import asset; assert asset('toy').read_text()=='version two\\n'")
+
+    def test_mutable_upstream_run_cannot_become_an_input(self):
+        old = self.create()
+        data = old / "metrics/input.txt"
+        data.write_text("still being produced")
+        (self.root / "workspace.local.json").write_text(json.dumps({"assets": {"toy": str(data.relative_to(self.root))}}))
+        result = self.cli("new-run", "E001", success=False)
+        self.assertIn("Upstream run must be frozen", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

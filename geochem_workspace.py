@@ -28,7 +28,21 @@ def local_settings() -> dict:
 
 
 def asset(name: str) -> Path:
-    key, _, suffix = name.removeprefix("asset://").partition("/")
+    requested = name.removeprefix("asset://")
+    key, _, suffix = requested.partition("/")
+    active = run_dir()
+    if active and (active / "manifest.json").is_file():
+        inputs = json.loads((active / "manifest.json").read_text()).get("inputs", {})
+        for input_name in sorted(inputs, key=len, reverse=True):
+            pinned = inputs[input_name]
+            if (requested == input_name or requested.startswith(input_name + "/")) and pinned.get("path"):
+                base = workspace_root() / pinned["workspace_relative"] if pinned.get("workspace_relative") else Path(pinned["path"])
+                result = (base / requested[len(input_name):].lstrip("/")).resolve()
+                if not result.is_relative_to(base.resolve()):
+                    raise ValueError("Asset suffix escapes the pinned input")
+                if not result.exists():
+                    raise FileNotFoundError(f"Missing pinned asset {input_name}: {result}")
+                return result
     settings = local_settings()
     if key not in settings.get("assets", {}):
         raise KeyError(f"Unknown asset {key!r}; register it in workspace.local.json")
@@ -154,6 +168,11 @@ def scientific_config(config):
     value.pop("_runtime", None)
     locations = [(str(REPO_ROOT), "repo://")]
     if run_dir(): locations.append((str(run_dir()), "run://"))
+    if run_dir() and (run_dir() / "manifest.json").is_file():
+        for name, info in json.loads((run_dir() / "manifest.json").read_text()).get("inputs", {}).items():
+            if info.get("path"):
+                p = workspace_root() / info["workspace_relative"] if info.get("workspace_relative") else Path(info["path"])
+                locations.append((str(p.resolve()), f"asset://{name}"))
     try:
         for name, location in local_settings().get("assets", {}).items():
             p = Path(location)

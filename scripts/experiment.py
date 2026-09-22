@@ -109,6 +109,8 @@ def command_inputs(command, run):
 
 
 def new_run(args):
+    # Registration selects the current local asset map, not a parent run's pins.
+    os.environ.pop("GEOCHEM_RUN_DIR", None)
     card = card_for(args.experiment)
     dirty = bool(git("status", "--porcelain", "--untracked-files=all"))
     if dirty and not args.scratch:
@@ -133,7 +135,17 @@ def new_run(args):
         config["seed"] = seed
     # Resolve and hash required inputs before allocating a directory.
     input_keys = sorted(set(card["assets"]) | config_assets(config))
-    inputs = {key: fingerprint(ws.asset(key)) for key in input_keys}
+    inputs = {}
+    for key in input_keys:
+        target = ws.asset(key)
+        if target.is_relative_to(ws.workspace_root() / "runs"):
+            relative = target.relative_to(ws.workspace_root()).parts
+            upstream = ws.workspace_root().joinpath(*relative[:3])
+            metadata = upstream / "manifest.json"
+            if not metadata.is_file() or not json.loads(metadata.read_text()).get("frozen"):
+                raise ValueError(f"Upstream run must be frozen before it becomes an input: {upstream}")
+        inputs[key] = {**fingerprint(target), "path": str(target),
+                       "workspace_relative": str(target.relative_to(ws.workspace_root())) if target.is_relative_to(ws.workspace_root()) else None}
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + f"-s{seed}-" + secrets.token_hex(3)
     p = ws.workspace_root() / "runs" / card["id"] / run_id
     p.mkdir(parents=True, exist_ok=False)
@@ -177,6 +189,7 @@ def new_run(args):
 
 def inspect_run(path, rehash=False):
     p = Path(path).resolve()
+    os.environ["GEOCHEM_RUN_DIR"] = str(p)
     manifest = json.loads((p / "manifest.json").read_text())
     errors = []
     for name in ["config.resolved.yaml", "environment.txt", "summary.md"]:
