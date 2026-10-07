@@ -22,7 +22,7 @@ V2/RoPE 默认使用冻结的 V2 词表和统计量。若研究问题要求重�
 
 首次数据准备或验证解析规则使用 E001 调试/准备运行，执行 `pyrite_benchmark/scripts/prepare_pyrite_dataset.py`。结果在该运行的 `prepared_data/`，正式采用前登记为新的数据版本。
 
-模型训练不会自动启动，也没有新增训练断点恢复功能。E009 可恢复已经完成的缓存步骤；改变科学配置应新建运行。
+E001–E008 历史训练入口不会自动启动，也没有新增训练断点恢复功能。E009 可恢复已经完成的缓存步骤；E010 另有严格校验的训练恢复入口，见下文。改变科学配置应新建运行。
 
 ## 配对审计的路径写法
 
@@ -35,3 +35,13 @@ V2/RoPE 默认使用冻结的 V2 词表和统计量。若研究问题要求重�
 随后使用相同参数执行 `extract`、`analyze`、`probe`。如需评价本次新训练权重，将 `--rope-checkpoint` 指向当前 run 的 `checkpoints/full_model.pt`。补充控制和汇总仍按原 RoPE 协议执行，输出已转入当前 run。
 
 E008 先调用 `-m stage3_5_element2vec_v2.src.evaluation.prepare_geo_comparison --config stage3_5_element2vec_v2/configs/v2_value_rope_geo_mask15.yaml --sqlite-path asset://whole_rock` 建立配对协议，再按原协议调用 geo_mask15 的 global、quality、geometry_extract、geometry、numerical、probe/checks/publish。每步共用 run；新模型需显式传入其权重。`geo_mask15_publish` 的训练图读取本次 run 的 logs；只检查历史模型而没有本次训练日志时使用 `--tables-only`，或单独登记引用的训练运行。
+
+## E010 全量 RoPE 维度扫描
+
+[实验协议](../experiments/E010/PROTOCOL.md)、[已完成验收与执行命令](../experiments/E010/README.md)。全量输入 `asset://e010_prepared` 已冻结；含化学观测985,996条，143个字段身份。
+
+`python scripts/e010_scan.py plan` 只预览16个配置，不创建run或训练。使用者显式创建父run，再通过 `experiment.py exec` 调用扫描器 `run`；短消融配置 `stage3_5_element2vec_v2/configs/e010/ablations.json`，完整扫描配置 `stage3_5_element2vec_v2/configs/e010/scan.json`。两个入口独立，不自动连跑。
+
+各子run执行 `stage3_5_element2vec_v2.src.e010.cli` 的 `preflight`、`train`、`verify-training`。预检无优化器更新。训练断点含优化器、随机状态、数据/配置指纹和完整遍历游标，`resume` 只接受原配置和原输入；支持的成功恢复必须保留失败历史并经过验证后才能冻结。已冻结run不可恢复。
+
+评价使用同一模块的 `extract --checkpoint ...` 和 `evaluate`，配置 `analysis.json`。所有样本级缓存及权重均只写私有run。E010实现交付不包含任何真实数据训练。

@@ -21,15 +21,57 @@
   "protocol": "experiments/E010/PROTOCOL.md",
   "execution_status": "planned",
   "scientific_outcome": "not_evaluated",
-  "conclusion": "实现与验收中；未启动真实数据优化或正式训练。",
+  "conclusion": "实现与独立验收通过；全量985996条输入已冻结。16配置可由使用者启动；尚未执行真实数据训练，科学结论未评价。",
   "report": "experiments/E010/README.md",
-  "runs": [],
+  "runs": [
+    {
+      "id": "20261007T065305Z-s42-79ed84",
+      "path": "runs/E010/20261007T065305Z-s42-79ed84",
+      "kind": "scratch",
+      "purpose": "superseded preliminary preparation; cancelled"
+    },
+    {
+      "id": "20261007T135913Z-s42-773907",
+      "path": "runs/E010/20261007T135913Z-s42-773907",
+      "kind": "scratch",
+      "purpose": "accepted immutable preparation"
+    },
+    {
+      "id": "20261007T140915Z-s42-d6c104",
+      "path": "runs/E010/20261007T140915Z-s42-d6c104",
+      "kind": "formal",
+      "purpose": "native1024 MPS preflight; zero optimizer updates"
+    },
+    {
+      "id": "20261007T141044Z-s42-4534fe",
+      "path": "runs/E010/20261007T141044Z-s42-4534fe",
+      "kind": "formal",
+      "purpose": "fixed1024 MPS preflight; zero optimizer updates"
+    },
+    {
+      "id": "20261007T141158Z-s42-520611",
+      "path": "runs/E010/20261007T141158Z-s42-520611",
+      "kind": "formal",
+      "purpose": "native8 MPS preflight; zero optimizer updates"
+    }
+  ],
   "artifacts": {
     "code": "stage3_5_element2vec_v2/src/e010",
     "configuration": "stage3_5_element2vec_v2/configs/e010",
     "selected_report": "experiments/E010/README.md",
-    "results": [],
+    "results": [
+      "experiments/E010/ACCEPTANCE.md",
+      "experiments/E010/COVERAGE_AND_MATRIX.md"
+    ],
     "weights": [],
     "weight_note": "No E010 trained weights yet."
+  },
+  "implementation_status": "accepted",
+  "training_status": "not_started",
+  "prepared_input": {
+    "asset": "e010_prepared",
+    "run_id": "20261007T135913Z-s42-773907",
+    "original_rows": 985996,
+    "original_observations": 23629373
   }
 }

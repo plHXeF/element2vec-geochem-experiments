@@ -1,8 +1,18 @@
 # E010 实现与执行入口
 
-正式训练尚未运行，科学结论 `not_evaluated`。协议见 [PROTOCOL.md](PROTOCOL.md)。实现集中在 `stage3_5_element2vec_v2/src/e010`，沿用现有 RoPE encoder 与工作区运行管理。
+实现与 gpt-6.1-sol 独立验收通过。真实数据训练尚未运行，科学结论 `not_evaluated`。协议见 [PROTOCOL.md](PROTOCOL.md)。实现集中在 `stage3_5_element2vec_v2/src/e010`，沿用现有 RoPE encoder 与工作区运行管理。
 
 覆盖基准：985,996 条含任一化学观测的记录、23,629,373 个原始非空格。词表 118 元素 + 25 氧化物/辅助量。16 配置为 fixed/native 两组各 8 个宽度。fixed 固定 768 主干、共享线性 projector；总参数仍有 embedding/projector 的已列示差异。
+
+## 已完成的验收
+
+实现提交 `a840190`：Stage 3.5 共54项通过；工作区管理14项、Stage 3.6 14项、E009基础11项通过。全量数据与16架构参数矩阵核验完成；native1024、fixed1024→768及native8三个正式MPS预检都通过，权重不变、梯度有限、优化器更新为0。历史AppleDouble复验和数值库线程限制见 [验收记录](ACCEPTANCE.md)。
+
+数据准备 run `20261007T135913Z-s42-773907` 已冻结，注册为 `asset://e010_prepared`。覆盖、有限精度和精确参数数目见 [覆盖与参数矩阵](COVERAGE_AND_MATRIX.md)。40个元素身份没有观测；保留嵌入槽位但不宣称已训练。
+
+完整50epoch矩阵是长期计算：native1024最大面板短测1.4594秒/32条，按这个密集面板速度外推约12.5小时/epoch；实际有稀疏面板与优化/存储开销差异，不能视为准确完工时间。短消融和主扫描分别启动，不自动从短消融跳到主扫描。
+
+建议本机测试/评价保留 `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1`。
 
 ## 输入准备
 

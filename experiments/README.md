@@ -102,6 +102,11 @@ log/rank 是主要 value-only baseline；mask 与 raw robust 保留为对照。
 
 [实验卡](E010/experiment.json) · [代码](../stage3_5_element2vec_v2) · [配置](../stage3_5_element2vec_v2/configs/e010/prepare.json)
 
-实现与验收中；未启动真实数据优化或正式训练。
+实现与独立验收通过；全量985996条输入已冻结。16配置可由使用者启动；尚未执行真实数据训练，科学结论未评价。
 
+- [历史运行 20261007T065305Z-s42-79ed84](../../runs/E010/20261007T065305Z-s42-79ed84/summary.md) · [来源与状态](../../runs/E010/20261007T065305Z-s42-79ed84/manifest.json) · [逐文件校验](../../runs/E010/20261007T065305Z-s42-79ed84/artifact_checksums.json)
+- [历史运行 20261007T135913Z-s42-773907](../../runs/E010/20261007T135913Z-s42-773907/summary.md) · [来源与状态](../../runs/E010/20261007T135913Z-s42-773907/manifest.json) · [逐文件校验](../../runs/E010/20261007T135913Z-s42-773907/artifact_checksums.json)
+- [历史运行 20261007T140915Z-s42-d6c104](../../runs/E010/20261007T140915Z-s42-d6c104/summary.md) · [来源与状态](../../runs/E010/20261007T140915Z-s42-d6c104/manifest.json) · [逐文件校验](../../runs/E010/20261007T140915Z-s42-d6c104/artifact_checksums.json)
+- [历史运行 20261007T141044Z-s42-4534fe](../../runs/E010/20261007T141044Z-s42-4534fe/summary.md) · [来源与状态](../../runs/E010/20261007T141044Z-s42-4534fe/manifest.json) · [逐文件校验](../../runs/E010/20261007T141044Z-s42-4534fe/artifact_checksums.json)
+- [历史运行 20261007T141158Z-s42-520611](../../runs/E010/20261007T141158Z-s42-520611/summary.md) · [来源与状态](../../runs/E010/20261007T141158Z-s42-520611/manifest.json) · [逐文件校验](../../runs/E010/20261007T141158Z-s42-520611/artifact_checksums.json)
 - 权重：本实验未训练独立模型；依赖见实验卡。
