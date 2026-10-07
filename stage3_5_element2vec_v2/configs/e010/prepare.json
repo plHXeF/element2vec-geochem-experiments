@@ -1,0 +1,7 @@
+{
+  "e010_version": 1,
+  "source_asset": "asset://whole_rock",
+  "expected_rows": 985996,
+  "seed": 42,
+  "censor_rules": []
+}

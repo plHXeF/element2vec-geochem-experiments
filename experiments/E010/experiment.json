@@ -1,0 +1,35 @@
+{
+  "id": "E010",
+  "title": "全量地球化学数据、有限角度 RoPE 与嵌入维度扫描",
+  "module": "stage3_5_element2vec_v2",
+  "question": "全量观测、状态感知稳健训练与氧化物派生表示下，embedding 维度及 Transformer 容量如何影响分层表示？",
+  "controls": [
+    "固定主干与原生维度两组八维扫描",
+    "原始化学、missingness、随机初始化与 PCA/RP",
+    "全量预训练及标签暴露声明",
+    "氧化物换算依赖组遮盖",
+    "来源、文献、材料类型、低覆盖与观测状态"
+  ],
+  "config": "stage3_5_element2vec_v2/configs/e010/prepare.json",
+  "assets": [],
+  "upstream_experiments": [
+    "E004",
+    "E007",
+    "E008",
+    "E009"
+  ],
+  "protocol": "experiments/E010/PROTOCOL.md",
+  "execution_status": "planned",
+  "scientific_outcome": "not_evaluated",
+  "conclusion": "实现与验收中；未启动真实数据优化或正式训练。",
+  "report": "experiments/E010/README.md",
+  "runs": [],
+  "artifacts": {
+    "code": "stage3_5_element2vec_v2/src/e010",
+    "configuration": "stage3_5_element2vec_v2/configs/e010",
+    "selected_report": "experiments/E010/README.md",
+    "results": [],
+    "weights": [],
+    "weight_note": "No E010 trained weights yet."
+  }
+}

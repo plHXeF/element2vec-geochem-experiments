@@ -1,0 +1,10 @@
+{
+  "e010_version": 1,
+  "prepared_asset": "asset://e010_prepared",
+  "seed": 42,
+  "configurations": [
+    "stage3_5_element2vec_v2/configs/e010/ablation_primary.json",
+    "stage3_5_element2vec_v2/configs/e010/ablation_huber.json",
+    "stage3_5_element2vec_v2/configs/e010/ablation_tanh.json"
+  ]
+}

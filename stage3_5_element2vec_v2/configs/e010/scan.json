@@ -1,0 +1,23 @@
+{
+  "e010_version": 1,
+  "prepared_asset": "asset://e010_prepared",
+  "seed": 42,
+  "configurations": [
+    "stage3_5_element2vec_v2/configs/e010/fixed_0008.json",
+    "stage3_5_element2vec_v2/configs/e010/fixed_0016.json",
+    "stage3_5_element2vec_v2/configs/e010/fixed_0032.json",
+    "stage3_5_element2vec_v2/configs/e010/fixed_0064.json",
+    "stage3_5_element2vec_v2/configs/e010/fixed_0128.json",
+    "stage3_5_element2vec_v2/configs/e010/fixed_0256.json",
+    "stage3_5_element2vec_v2/configs/e010/fixed_0512.json",
+    "stage3_5_element2vec_v2/configs/e010/fixed_1024.json",
+    "stage3_5_element2vec_v2/configs/e010/native_0008.json",
+    "stage3_5_element2vec_v2/configs/e010/native_0016.json",
+    "stage3_5_element2vec_v2/configs/e010/native_0032.json",
+    "stage3_5_element2vec_v2/configs/e010/native_0064.json",
+    "stage3_5_element2vec_v2/configs/e010/native_0128.json",
+    "stage3_5_element2vec_v2/configs/e010/native_0256.json",
+    "stage3_5_element2vec_v2/configs/e010/native_0512.json",
+    "stage3_5_element2vec_v2/configs/e010/native_1024.json"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "e010_version": 1,
+  "prepared_asset": "asset://e010_prepared",
+  "expected_rows": 985996,
+  "angle": "atan",
+  "loss": "student_t",
+  "model": {
+    "arm": "fixed",
+    "embedding_dim": 128,
+    "fixed_token_dim": 768,
+    "layers": 12,
+    "dropout": 0.1,
+    "gradient_checkpointing": false
+  },
+  "training": {
+    "seed": 42,
+    "epochs": 2,
+    "effective_batch": 1024,
+    "micro_batch": 32,
+    "device": "mps",
+    "learning_rate": 0.00025,
+    "min_lr": 3e-06,
+    "warmup_steps": 500,
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "checkpoint_every": 100,
+    "retain_epochs": [
+      1,
+      2
+    ],
+    "log_every": 20,
+    "probe_size": 8192,
+    "probe_every": 500
+  }
+}

@@ -255,6 +255,30 @@ def execute(args):
     raise SystemExit(code)
 
 
+def verified_e010_resume(manifest, run):
+    """Keep failures in history, but allow a successful, verified E010 continuation."""
+    if manifest.get("experiment_id") != "E010": return False
+    module = "stage3_5_element2vec_v2.src.e010.cli"
+    steps = manifest.get("commands", [])
+    failed = [i for i, step in enumerate(steps) if step.get("exit_code") != 0]
+    if not failed: return True
+    for i in failed:
+        cmd = steps[i].get("command", [])
+        if module not in cmd or "train" not in cmd: return False
+    successful_resumes = [i for i, step in enumerate(steps) if step.get("exit_code") == 0
+                          and module in step.get("command", []) and "train" in step["command"] and "--resume" in step["command"]]
+    verified = [i for i, step in enumerate(steps) if step.get("exit_code") == 0
+                and module in step.get("command", []) and "verify-training" in step["command"]]
+    if not successful_resumes or not verified or max(successful_resumes) <= max(failed) or max(verified) <= max(successful_resumes):
+        return False
+    receipt_path = run / "training_verification.json"
+    if not receipt_path.is_file(): return False
+    receipt = json.loads(receipt_path.read_text())
+    checkpoint = run / "checkpoints/latest.pt"
+    return bool(receipt.get("passed") and checkpoint.is_file()
+                and receipt.get("checkpoint_sha256") == ws.sha256(checkpoint))
+
+
 def freeze(args):
     os.environ["GEOCHEM_RUN_DIR"] = str(Path(args.run_dir).resolve())
     p = ws.require_run_dir(); result = inspect_run(p, rehash=True)
@@ -262,7 +286,8 @@ def freeze(args):
     m = json.loads((p / "manifest.json").read_text())
     if args.status == "completed" and not m["commands"]:
         raise ValueError("No executed step has been recorded")
-    if args.status == "completed" and any(c.get("exit_code") != 0 for c in m["commands"]):
+    recovered = getattr(args, "allow_verified_resume", False) and verified_e010_resume(m, p)
+    if args.status == "completed" and any(c.get("exit_code") != 0 for c in m["commands"]) and not recovered:
         raise ValueError("A step failed; explain and freeze as failed or create a new run")
     if args.status != "completed" and args.outcome != "not_evaluated":
         raise ValueError("Failed/cancelled execution must use outcome not_evaluated; record partial scientific observations in the summary")
@@ -271,6 +296,7 @@ def freeze(args):
     hashes = {str(f.relative_to(p)): ws.sha256(f) for f in sorted(p.rglob("*")) if f.is_file() and not f.is_symlink() and f not in excluded and "__pycache__" not in f.parts}
     ws.write_json(p / "artifact_checksums.json", hashes)
     m.update(status=args.status, frozen=True, finished_at=now(), scientific_outcome=args.outcome, algorithms=args.algorithms, device=args.device)
+    if recovered: m["verified_resume"] = True
     ws.write_json(p / "manifest.json", m)
     print(f"Frozen {p}")
 
@@ -309,7 +335,7 @@ def main():
     p = sub.add_parser("new-run"); p.add_argument("experiment"); p.add_argument("--seed", type=int); p.add_argument("--config"); p.add_argument("--scratch", action="store_true")
     p = sub.add_parser("check"); p.add_argument("--run-dir", required=True); p.add_argument("--rehash", action="store_true")
     p = sub.add_parser("exec"); p.add_argument("--run-dir", required=True); p.add_argument("command", nargs=argparse.REMAINDER)
-    p = sub.add_parser("freeze"); p.add_argument("--run-dir", required=True); p.add_argument("--status", choices=["completed", "failed", "cancelled"], required=True); p.add_argument("--outcome", choices=["positive", "negative", "mixed", "inconclusive", "not_evaluated"], required=True); p.add_argument("--summary", required=True); p.add_argument("--algorithms", required=True); p.add_argument("--device", required=True)
+    p = sub.add_parser("freeze"); p.add_argument("--run-dir", required=True); p.add_argument("--status", choices=["completed", "failed", "cancelled"], required=True); p.add_argument("--outcome", choices=["positive", "negative", "mixed", "inconclusive", "not_evaluated"], required=True); p.add_argument("--summary", required=True); p.add_argument("--algorithms", required=True); p.add_argument("--device", required=True); p.add_argument("--allow-verified-resume", action="store_true")
     args = parser.parse_args()
     if args.action == "list":
         for c in cards():

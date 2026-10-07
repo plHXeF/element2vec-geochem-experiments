@@ -6,6 +6,12 @@ import pandas as pd
 import torch
 from src.common import sha,digest,save_json,ROOT,array_digest
 class CheckpointRepresentation:
+ def __new__(cls,spec,features,device='cpu',batch_size=256):
+  if spec.get('format')=='e010':
+   sys.path.insert(0,spec['implementation_root'])
+   from stage3_5_element2vec_v2.src.e010.adapter import E010CheckpointRepresentation
+   return E010CheckpointRepresentation(spec,features,device,batch_size)
+  return super().__new__(cls)
  def __init__(self,spec,features,device='cpu',batch_size=256):
   self.spec=spec;self.name=spec['name'];self.features=features;self.device=device;self.batch_size=batch_size
   sys.path.insert(0,spec['implementation_root'])

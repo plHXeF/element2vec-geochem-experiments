@@ -13,6 +13,7 @@
 | [E007](E007/experiment.json) | Value RoPE-z | completed / mixed | [报告](../stage3_6_element2vec_space_exploration/reports/value_rope_z_20260911/REPORT.md) |
 | [E008](E008/experiment.json) | RoPE_geo + 15% mask | completed / mixed | [报告](../stage3_5_element2vec_v2/experiments/rope_geo_mask15/REPORT.md) |
 | [E009](E009/experiment.json) | Latent Evaluation Benchmark | completed / mixed | [报告](../reports/E009/REPORT.md) |
+| [E010](E010/experiment.json) | 全量地球化学数据、有限角度 RoPE 与嵌入维度扫描 | planned / not_evaluated | [报告](../experiments/E010/README.md) |
 
 ## E001 · 黄铁矿基础表示
 
@@ -95,4 +96,12 @@ log/rank 是主要 value-only baseline；mask 与 raw robust 保留为对照。
 比较可解码性、信息充分性与过程几何；不使用加权总分。
 
 - [历史运行 legacy-latent-v01](../../runs/E009/legacy-latent-v01/summary.md) · [来源与状态](../../runs/E009/legacy-latent-v01/manifest.json) · [逐文件校验](../../runs/E009/legacy-latent-v01/artifact_checksums.json)
+- 权重：本实验未训练独立模型；依赖见实验卡。
+
+## E010 · 全量地球化学数据、有限角度 RoPE 与嵌入维度扫描
+
+[实验卡](E010/experiment.json) · [代码](../stage3_5_element2vec_v2) · [配置](../stage3_5_element2vec_v2/configs/e010/prepare.json)
+
+实现与验收中；未启动真实数据优化或正式训练。
+
 - 权重：本实验未训练独立模型；依赖见实验卡。
