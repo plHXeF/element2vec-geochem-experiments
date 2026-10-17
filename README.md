@@ -74,6 +74,8 @@ The included CSV files are compact vocabularies, model-derived static embeddings
 
 Create the Python environment from `environment.yml`, then configure local inputs using [dataset setup](docs/DATASET_SETUP.md) and `docs/workspace.local.example.json`. The current local workspace is already configured.
 
+For Windows CPU preparation and checks, use the [uv-managed Python 3.11 environment](environments/local-cpu/README.md), which pins exact dependencies separately from the HPC CUDA environment.
+
 ```bash
 python scripts/doctor.py --check-schema
 python scripts/experiment.py list

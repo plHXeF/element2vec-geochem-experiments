@@ -102,7 +102,7 @@ log/rank 是主要 value-only baseline；mask 与 raw robust 保留为对照。
 
 [实验卡](E010/experiment.json) · [代码](../stage3_5_element2vec_v2) · [配置](../stage3_5_element2vec_v2/configs/e010/prepare.json)
 
-原实现与独立验收通过；历史全量985996条输入已冻结。Slurm/A800×4入口仅执行原顺序后12配置、每卡独立训练。本clone数据库已拷贝且只读核验与历史SHA-256、覆盖数一致；本机尚无准备资产，未启动训练，科学结论未评价。
+原实现与独立验收通过；历史全量985996条输入已冻结。Slurm/A800×4入口仅执行后12配置、每卡独立训练，登记在计算节点作业内完成。本clone数据库核验一致，uv/Python3.11 CPU环境通过83项合成与管理测试；本机尚无准备资产，未启动真实训练，科学结论未评价。
 
 - [历史运行 20261007T065305Z-s42-79ed84](../../runs/E010/20261007T065305Z-s42-79ed84/summary.md) · [来源与状态](../../runs/E010/20261007T065305Z-s42-79ed84/manifest.json) · [逐文件校验](../../runs/E010/20261007T065305Z-s42-79ed84/artifact_checksums.json)
 - [历史运行 20261007T135913Z-s42-773907](../../runs/E010/20261007T135913Z-s42-773907/summary.md) · [来源与状态](../../runs/E010/20261007T135913Z-s42-773907/manifest.json) · [逐文件校验](../../runs/E010/20261007T135913Z-s42-773907/artifact_checksums.json)
@@ -110,4 +110,8 @@ log/rank 是主要 value-only baseline；mask 与 raw robust 保留为对照。
 - [历史运行 20261007T141044Z-s42-4534fe](../../runs/E010/20261007T141044Z-s42-4534fe/summary.md) · [来源与状态](../../runs/E010/20261007T141044Z-s42-4534fe/manifest.json) · [逐文件校验](../../runs/E010/20261007T141044Z-s42-4534fe/artifact_checksums.json)
 - [历史运行 20261007T141158Z-s42-520611](../../runs/E010/20261007T141158Z-s42-520611/summary.md) · [来源与状态](../../runs/E010/20261007T141158Z-s42-520611/manifest.json) · [逐文件校验](../../runs/E010/20261007T141158Z-s42-520611/artifact_checksums.json)
 - [历史运行 20261017T010750Z-s42-793cbd](../../runs/E010/20261017T010750Z-s42-793cbd/summary.md) · [来源与状态](../../runs/E010/20261017T010750Z-s42-793cbd/manifest.json) · [逐文件校验](../../runs/E010/20261017T010750Z-s42-793cbd/artifact_checksums.json)
+- [历史运行 20261017T012647Z-s42-1c7c3f](../../runs/E010/20261017T012647Z-s42-1c7c3f/summary.md) · [来源与状态](../../runs/E010/20261017T012647Z-s42-1c7c3f/manifest.json) · [逐文件校验](../../runs/E010/20261017T012647Z-s42-1c7c3f/artifact_checksums.json)
+- [历史运行 20261017T013023Z-s42-1bb3ea](../../runs/E010/20261017T013023Z-s42-1bb3ea/summary.md) · [来源与状态](../../runs/E010/20261017T013023Z-s42-1bb3ea/manifest.json) · [逐文件校验](../../runs/E010/20261017T013023Z-s42-1bb3ea/artifact_checksums.json)
+- [历史运行 20261017T013114Z-s42-096a4b](../../runs/E010/20261017T013114Z-s42-096a4b/summary.md) · [来源与状态](../../runs/E010/20261017T013114Z-s42-096a4b/manifest.json) · [逐文件校验](../../runs/E010/20261017T013114Z-s42-096a4b/artifact_checksums.json)
+- [历史运行 20261017T013210Z-s42-5a5264](../../runs/E010/20261017T013210Z-s42-5a5264/summary.md) · [来源与状态](../../runs/E010/20261017T013210Z-s42-5a5264/manifest.json) · [逐文件校验](../../runs/E010/20261017T013210Z-s42-5a5264/artifact_checksums.json)
 - 权重：本实验未训练独立模型；依赖见实验卡。
