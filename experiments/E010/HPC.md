@@ -47,9 +47,9 @@ cp docs/workspace.e010.example.json "$GEOCHEM_WORKSPACE/workspace.local.json"
 
 ```powershell
 $PREP_RUN = ./scripts/local_cpu.ps1 scripts/experiment.py new-run E010 --config stage3_5_element2vec_v2/configs/e010/prepare.json
-./scripts/local_cpu.ps1 scripts/experiment.py exec --run-dir "$PREP_RUN" -- -m stage3_5_element2vec_v2.src.e010.cli prepare
-./scripts/local_cpu.ps1 scripts/experiment.py exec --run-dir "$PREP_RUN" -- -m stage3_5_element2vec_v2.src.e010.cli verify-data
-./scripts/local_cpu.ps1 scripts/experiment.py exec --run-dir "$PREP_RUN" -- -m stage3_5_element2vec_v2.src.e010.cli matrix
+./scripts/local_cpu.ps1 scripts/experiment.py exec --run-dir "$PREP_RUN" '--' -m stage3_5_element2vec_v2.src.e010.cli prepare
+./scripts/local_cpu.ps1 scripts/experiment.py exec --run-dir "$PREP_RUN" '--' -m stage3_5_element2vec_v2.src.e010.cli verify-data
+./scripts/local_cpu.ps1 scripts/experiment.py exec --run-dir "$PREP_RUN" '--' -m stage3_5_element2vec_v2.src.e010.cli matrix
 ./scripts/local_cpu.ps1 scripts/experiment.py check --run-dir "$PREP_RUN" --rehash
 ./scripts/local_cpu.ps1 scripts/experiment.py freeze --run-dir "$PREP_RUN" --status completed --outcome not_evaluated `
   --summary 'E010 full-coverage preparation and schema/coverage checks passed; no model training.' `

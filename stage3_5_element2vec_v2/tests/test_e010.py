@@ -271,9 +271,11 @@ class PreparationTests(unittest.TestCase):
             before=digest_file(db)
             with contextlib.redirect_stdout(io.StringIO()): report=prepare_database(db,p/"prepared",expected_rows=7,chunk_size=3)
             self.assertEqual(report["rows"],7);self.assertEqual(before,digest_file(db))
-            d=PreparedData(p/"prepared",rehash=True)
-            np.testing.assert_allclose(d.weights[:2],[.5,.5]);self.assertTrue(verify_data(d)["passed"])
-            self.assertEqual(d.states[-1,s.INDEX["Sr"]],s.UNKNOWN)
+            with PreparedData(p/"prepared",rehash=True) as d:
+                np.testing.assert_allclose(d.weights[:2],[.5,.5]);self.assertTrue(verify_data(d)["passed"])
+                self.assertEqual(d.states[-1,s.INDEX["Sr"]],s.UNKNOWN)
+            self.assertIsNone(d.values)
+            d.close()  # idempotent; the temporary-directory cleanup must release every file
             with self.assertRaises(FileExistsError):prepare_database(db,p/"prepared")
 
 

@@ -219,3 +219,21 @@ class PreparedData:
 
     def __len__(self):
         return len(self.values)
+
+    def close(self):
+        """Release owned mappings before moving/deleting files on Windows.
+
+        Call only after consumers have finished using this data and its views.
+        """
+        for name in ("values", "states", "sample_ids", "labels", "weights"):
+            array = getattr(self, name, None)
+            mapping = getattr(array, "_mmap", None)
+            if mapping is not None and not mapping.closed: mapping.close()
+            setattr(self, name, None)
+
+    def __enter__(self):
+        if self.values is None: raise ValueError("Prepared data is closed")
+        return self
+
+    def __exit__(self, *_):
+        self.close()

@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import sqlite3
+from contextlib import closing
 
 import numpy as np
 import pandas as pd
@@ -24,7 +25,7 @@ def hash_int(value):
 
 def make_cohort(root, size=12000, token_size=20000):
     root = Path(root)
-    with sqlite3.connect(root / "metadata.sqlite") as c:
+    with closing(sqlite3.connect(root / "metadata.sqlite")) as c:
         meta = pd.read_sql_query("SELECT * FROM samples ORDER BY row_index", c)
     parent = {}
     def find(x):
@@ -86,6 +87,7 @@ def make_cohort(root, size=12000, token_size=20000):
         available = sorted(available, key=lambda r: hash_int(f"token42:{r}:{j}"))[:per]
         candidates.extend((int(r), j) for r in available)
     pd.DataFrame(candidates, columns=["row_index", "tag_index"]).to_csv(root/"token_cohort.csv", index=False)
+    states._mmap.close()
     save_json(root/"cohort_contract.json", {"seed": 42, "rows": len(pool), "token_rows": len(candidates),
               "split_counts": {str(k): int(v) for k, v in pool.split.value_counts().items()},
               "max_population_component": int(pd.Series(components).value_counts().max()),
@@ -199,7 +201,7 @@ def evaluate(data, root, device="cpu"):
     for name, sha in manifest["files"].items():
         if digest_file(rep/name) != sha: raise ValueError("Representation file modified")
     pool = pd.read_csv(rep/"cohort.csv"); rows = pool.row_index.to_numpy(np.int64)
-    with sqlite3.connect(data.root/"metadata.sqlite") as c:
+    with closing(sqlite3.connect(data.root/"metadata.sqlite")) as c:
         meta = pd.read_sql_query("SELECT row_index,data_source,material,canonical_ref_id,observed_count FROM samples ORDER BY row_index", c).iloc[rows].reset_index(drop=True)
     split = pool.split.to_numpy(); fit = split == 0; test = split == 2
     if fit.sum() < 3 or test.sum() < 3:

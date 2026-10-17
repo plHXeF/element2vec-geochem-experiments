@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 import sqlite3
+from contextlib import closing
 import tempfile
 import unittest
 
@@ -102,7 +103,7 @@ class IndependentAcceptance(unittest.TestCase):
             pool.to_csv(d.root/'cohort.csv',index=False)
             tokens=pd.DataFrame([(int(r),INDEX['Sr']) for r in rows],columns=['row_index','tag_index']);tokens.to_csv(d.root/'token_cohort.csv',index=False)
             meta=pd.DataFrame({'row_index':rows,'data_source':['a' if i%2 else 'b' for i in rows],'material':'rock','canonical_ref_id':rows,'observed_count':4})
-            with sqlite3.connect(d.root/'metadata.sqlite') as conn:meta.to_sql('samples',conn,index=False)
+            with closing(sqlite3.connect(d.root/'metadata.sqlite')) as conn, conn:meta.to_sql('samples',conn,index=False)
             out=p/'run';out.mkdir();extract(path,d,out,batch_size=5)
             manifest=json.loads((out/'representations/manifest.json').read_text())
             self.assertEqual(manifest['mode'],'chemistry_only');self.assertEqual(manifest['rows'],36)

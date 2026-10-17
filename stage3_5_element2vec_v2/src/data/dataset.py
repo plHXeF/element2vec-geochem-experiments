@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 import math
 import sqlite3
+from contextlib import closing
 from dataclasses import dataclass
 from typing import Any
 
@@ -98,7 +99,7 @@ class WholeRockTokenDataset(Dataset):
         limit = max_samples if max_samples is not None else data_cfg.get("max_samples")
         limit_clause = f" LIMIT {int(limit)}" if limit else ""
         query = f"SELECT {', '.join(_quote(c) for c in cols)} FROM {_quote(data_cfg['view_name'])}{limit_clause}"
-        with sqlite3.connect(resolve_path(data_cfg["sqlite_path"])) as conn:
+        with closing(sqlite3.connect(resolve_path(data_cfg["sqlite_path"]))) as conn:
             self.df = pd.read_sql_query(query, conn)
         self.df, self.coordinate_qc = transform_numeric_frame(self.df, config, vocab)
         self.numeric_mask = config.get('masking', {}).get('numeric_values', {'strategy': 'single'})

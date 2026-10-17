@@ -13,6 +13,14 @@ uv run --locked --project environments/local-cpu python scripts/experiment.py li
 
 也可使用 `./scripts/local_cpu.ps1 scripts/experiment.py list`。它直接使用已经同步的环境，设置 UTF-8 和单线程数值库，不自动下载或更新依赖；退出状态透传给调用者。直接调用解释器时，也应保留这些环境设置。
 
+PowerShell 脚本会消费未加引号的 `--`，调用 `exec` 时需将它写为字面量 `'--'`：
+
+```powershell
+./scripts/local_cpu.ps1 scripts/experiment.py exec --run-dir $RUN '--' -m stage3_5_element2vec_v2.src.e010.cli verify-data
+```
+
+包装器还为直接调用设置项目环境内的 Matplotlib 缓存；通过 `experiment.py exec` 启动时，仍使用各 run 独立的缓存目录。
+
 此环境的解释器为本目录 `.venv/Scripts/python.exe`，本机 `workspace.local.json` 应指向它。已有仓库根目录 `.venv` 保留，不能与这里的 Python 3.11 环境混用。新终端可以从用户 PATH 找到 uv；已打开的终端需重新打开或刷新用户环境变量。
 
 ## 安装与更新约定

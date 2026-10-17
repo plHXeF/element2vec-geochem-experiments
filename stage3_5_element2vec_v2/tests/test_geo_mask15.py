@@ -2,6 +2,7 @@
 import copy
 import math
 import sqlite3
+from contextlib import closing
 import tempfile
 import unittest
 from pathlib import Path
@@ -118,7 +119,7 @@ class MultiMaskTests(unittest.TestCase):
         self.vocab = load_vocab_bundle(self.config)
         self.frame = fixture(self.config, self.vocab)
         self.config["data"]["sqlite_path"] = str(Path(self.tmp.name)/"synthetic.db")
-        with sqlite3.connect(self.config["data"]["sqlite_path"]) as conn:
+        with closing(sqlite3.connect(self.config["data"]["sqlite_path"])) as conn, conn:
             self.frame.to_sql(self.config["data"]["view_name"], conn, index=False)
         self.dataset = WholeRockTokenDataset(self.config, self.vocab)
 

@@ -6,6 +6,7 @@ import json
 import math
 from pathlib import Path
 import time
+from contextlib import closing
 
 import numpy as np
 import torch
@@ -61,7 +62,7 @@ def preflight(config, data, root):
     model = build(config, data).to(device)
     size = min(config["training"]["micro_batch"], len(data))
     # Use largest real panels, not only sparse rows which underestimate memory.
-    with __import__("sqlite3").connect(data.root/"metadata.sqlite") as conn:
+    with closing(__import__("sqlite3").connect(data.root/"metadata.sqlite")) as conn:
         ids = [r[0] for r in conn.execute("SELECT row_index FROM samples ORDER BY observed_count DESC,row_index LIMIT ?", (size,))]
     before = {k: v.detach().cpu().clone() for k,v in model.state_dict().items()}
     elapsed = []
