@@ -28,6 +28,8 @@ fi
 : "${GEOCHEM_WORKSPACE:?Set GEOCHEM_WORKSPACE to your configured workspace}"
 
 module load apps/anaconda3/2021.05
+# Legacy conda.sh reads PS1 even in non-interactive shells under set -u.
+export PS1="${PS1-}"
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "${E010_CONDA_ENV:-element2vec-geochem}"
 

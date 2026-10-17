@@ -88,7 +88,9 @@ class BatchBootstrapTests(unittest.TestCase):
             with self.subTest(fail=fail), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary); (root/"bin").mkdir()
                 (root/"conda/etc/profile.d").mkdir(parents=True)
-                (root/"conda/etc/profile.d/conda.sh").write_bytes(b'''conda() {
+                (root/"conda/etc/profile.d/conda.sh").write_bytes(b''': "$PS1"
+conda() {
+  : "$PS1"
   if [[ "$1" == activate ]]; then
     export CONDA_PREFIX="$2" PATH="$2/bin:$PATH"
   else command conda "$@"; fi
@@ -125,6 +127,7 @@ export ENV_TARGET="$GEOCHEM_WORKSPACE/.hpc/e010-cu118-v1" E010_ENV_PREFIX="$GEOC
 mkdir -p "$GEOCHEM_WORKSPACE/data/whole_rock/whole-rock-v1" "$GEOCHEM_WORKSPACE/runs/E010/20261017T013747Z-s42-0a349d/prepared_data"
 touch "$GEOCHEM_WORKSPACE/data/whole_rock/whole-rock-v1/geochem.db" "$GEOCHEM_WORKSPACE/runs/E010/20261017T013747Z-s42-0a349d/artifact_checksums.json" "$GEOCHEM_WORKSPACE/runs/E010/20261017T013747Z-s42-0a349d/prepared_data/manifest.json"
 module() { :; }; export -f module
+unset PS1
 bash "$TEST_SCRIPT" new || exit $?
 bash "$TEST_SCRIPT" new || exit $?
 bash "$TEST_GPU_SCRIPT" new

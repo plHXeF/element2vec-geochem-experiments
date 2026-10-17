@@ -26,6 +26,8 @@ unset PYTHONPATH GEOCHEM_RUN_DIR
 export PYTHONNOUSERSITE=1 PYTHONUTF8=1 PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
 module load apps/anaconda3/2021.05
+# Legacy conda.sh reads PS1 even in non-interactive shells under set -u.
+export PS1="${PS1-}"
 source "$(conda info --base)/etc/profile.d/conda.sh"
 
 ENV_PREFIX="${E010_ENV_PREFIX:-$GEOCHEM_WORKSPACE/.hpc/e010-cu118-v1}"
