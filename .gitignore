@@ -123,6 +123,10 @@ build/
 
 # Managed workspace: all new generated artifacts live outside Git.
 workspace.local.json
+/data/
+/runs/
+/slurm-*.out
+/slurm-*.err
 .run-directory-required/
 latent_evaluation_benchmark/cache/
 latent_evaluation_benchmark/outputs/

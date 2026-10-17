@@ -70,11 +70,13 @@ def preflight(config, data, root):
             model.zero_grad(set_to_none=True)
             batch = to_device(make_batch(data, ids, model, forced_task=task), device)
             if device.type == "mps": torch.mps.synchronize()
+            if device.type == "cuda": torch.cuda.synchronize()
             start = time.monotonic()
             outputs = model(batch)
             loss, _ = per_sample_loss(outputs, batch, torch.ones(len(FIELDS), device=device))
             loss.mean().backward()
             if device.type == "mps": torch.mps.synchronize()
+            if device.type == "cuda": torch.cuda.synchronize()
             elapsed.append(time.monotonic()-start)
             if not torch.isfinite(loss).all(): raise FloatingPointError("Preflight loss not finite")
             if any(p.grad is not None and not torch.isfinite(p.grad).all() for p in model.parameters()):
@@ -89,11 +91,16 @@ def preflight(config, data, root):
                   "config_signature": signature(config), "finite_gradients": True,
                   "note": "forward/backward feasibility only; optimizer/memory/IO costs make runtime an estimate"}
         if device.type == "mps": report["mps_driver_bytes"] = torch.mps.driver_allocated_memory()
+        if device.type == "cuda":
+            report.update(cuda_device_name=torch.cuda.get_device_name(),
+                          cuda_peak_allocated_bytes=torch.cuda.max_memory_allocated(),
+                          cuda_peak_reserved_bytes=torch.cuda.max_memory_reserved())
         save_json(root/"preflight.json", report)
         return report
     finally:
         del model, before
         if device.type == "mps": torch.mps.empty_cache()
+        if device.type == "cuda": torch.cuda.empty_cache()
 
 
 def verify_training(root, data, config):

@@ -23,28 +23,21 @@ def invoke(arguments, capture=False):
     return result.stdout.strip() if capture else None
 
 
-def main():
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("command", choices=["plan", "run", "resume"])
-    p.add_argument("--config", default=f"{PREFIX}/scan.json")
-    args = p.parse_args()
-    if args.command == "plan":
-        cfg = json.loads(ws.resolve_path(args.config).read_text())
-        for path in cfg["configurations"]:
-            print(f"new-run E010 --config {path}")
-            print(f"  exec --run-dir RUN -- -m {MODULE} preflight --config {path}")
-            print(f"  exec --run-dir RUN -- -m {MODULE} train --config {path}")
-        print("No run created; no training started.")
-        return
-    root = ws.require_run_dir(); ws.guard_args(args)
-    cfg = ws.load_config_file(args.config)
+def scan(root, cfg, resume=False):
+    """Each GPU owns one parent registry; children never share a writable run."""
     registry = root/"scan_registry.json"
-    if args.command == "run" and registry.exists():
+    if not resume and registry.exists():
         raise FileExistsError("Scan exists; use resume")
-    state = json.loads(registry.read_text()) if registry.exists() else {"configurations": cfg["configurations"], "runs": {}}
-    if state["configurations"] != cfg["configurations"]:
+    if resume and not registry.exists():
+        raise FileNotFoundError("No registered scan to resume")
+    configurations = cfg["configurations"]
+    if not configurations or len(configurations) != len(set(configurations)):
+        raise ValueError("Scan must contain unique configurations")
+    state = json.loads(registry.read_text()) if resume else {"configurations": configurations, "runs": {}}
+    if state["configurations"] != configurations:
         raise ValueError("Scan matrix changed")
-    for config in cfg["configurations"]:
+    for config in configurations:
+        device = json.loads(ws.resolve_path(config).read_text())["training"]["device"]
         record = state["runs"].get(config)
         if record and record["status"] == "completed": continue
         if record:
@@ -54,6 +47,9 @@ def main():
             record = {"path": str(run.relative_to(ws.workspace_root())), "status": "ready"}
             state["runs"][config] = record; ws.write_json(registry, state)
         manifest = json.loads((run/"manifest.json").read_text())
+        parent_input = json.loads((root/"manifest.json").read_text())["inputs"]["e010_prepared"]
+        if manifest["inputs"]["e010_prepared"]["sha256"] != parent_input["sha256"]:
+            raise ValueError("Prepared input differs from the parent scan; preserve both runs and restore the pinned asset")
         if manifest.get("frozen"):
             if manifest.get("status") == "completed" and (run/"training_verification.json").exists():
                 record["status"] = "completed"; ws.write_json(registry, state); continue
@@ -70,11 +66,30 @@ def main():
             if (run/"checkpoints/latest.pt").exists(): command.append("--resume")
             invoke(command)
         invoke(["exec", "--run-dir", str(run), "--", "-m", MODULE, "verify-training", "--config", config])
+        invoke(["check", "--run-dir", str(run), "--rehash"])
         invoke(["freeze", "--run-dir", str(run), "--status", "completed", "--outcome", "not_evaluated",
                 "--summary", "E010 full-data training passed exposure/checkpoint verification; representation evaluation remains separate.",
-                "--algorithms", "Element2Vec E010 two-family RoPE; AdamW; Student-t4 or registered ablation", "--device", "mps", "--allow-verified-resume"])
+                "--algorithms", "Element2Vec E010 two-family RoPE; AdamW; Student-t4 or registered ablation", "--device", device, "--allow-verified-resume"])
         record["status"] = "completed"; ws.write_json(registry, state)
     print("All registered configurations completed. No additional seeds were launched.")
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("command", choices=["plan", "run", "resume"])
+    p.add_argument("--config", default=f"{PREFIX}/scan.json")
+    args = p.parse_args()
+    if args.command == "plan":
+        cfg = json.loads(ws.resolve_path(args.config).read_text())
+        for path in cfg["configurations"]:
+            print(f"new-run E010 --config {path}")
+            print(f"  exec --run-dir RUN -- -m {MODULE} preflight --config {path}")
+            print(f"  exec --run-dir RUN -- -m {MODULE} train --config {path}")
+        print("No run created; no training started.")
+        return
+    root = ws.require_run_dir(); ws.guard_args(args)
+    cfg = ws.load_config_file(args.config)
+    scan(root, cfg, resume=args.command == "resume")
 
 
 if __name__ == "__main__":

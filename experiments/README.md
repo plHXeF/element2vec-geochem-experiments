@@ -102,7 +102,7 @@ log/rank 是主要 value-only baseline；mask 与 raw robust 保留为对照。
 
 [实验卡](E010/experiment.json) · [代码](../stage3_5_element2vec_v2) · [配置](../stage3_5_element2vec_v2/configs/e010/prepare.json)
 
-实现与独立验收通过；全量985996条输入已冻结。16配置可由使用者启动；尚未执行真实数据训练，科学结论未评价。
+原实现与独立验收通过；历史全量985996条输入已冻结。新增Slurm/A800×4入口仅执行原顺序后12配置、每卡独立训练；本clone尚缺数据库及准备资产，未启动训练，科学结论未评价。
 
 - [历史运行 20261007T065305Z-s42-79ed84](../../runs/E010/20261007T065305Z-s42-79ed84/summary.md) · [来源与状态](../../runs/E010/20261007T065305Z-s42-79ed84/manifest.json) · [逐文件校验](../../runs/E010/20261007T065305Z-s42-79ed84/artifact_checksums.json)
 - [历史运行 20261007T135913Z-s42-773907](../../runs/E010/20261007T135913Z-s42-773907/summary.md) · [来源与状态](../../runs/E010/20261007T135913Z-s42-773907/manifest.json) · [逐文件校验](../../runs/E010/20261007T135913Z-s42-773907/artifact_checksums.json)

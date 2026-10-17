@@ -45,3 +45,5 @@ E008 先调用 `-m stage3_5_element2vec_v2.src.evaluation.prepare_geo_comparison
 各子run执行 `stage3_5_element2vec_v2.src.e010.cli` 的 `preflight`、`train`、`verify-training`。预检无优化器更新。训练断点含优化器、随机状态、数据/配置指纹和完整遍历游标，`resume` 只接受原配置和原输入；支持的成功恢复必须保留失败历史并经过验证后才能冻结。已冻结run不可恢复。
 
 评价使用同一模块的 `extract --checkpoint ...` 和 `evaluate`，配置 `analysis.json`。所有样本级缓存及权重均只写私有run。E010实现交付不包含任何真实数据训练。
+
+Slurm / NVIDIA A800×4 的后12项入口、数据迁移和显式提交/恢复步骤见 [E010 HPC 说明](../experiments/E010/HPC.md)。`python scripts/e010_slurm.py plan` 只预览：每卡一配置、四队列并行，不是 DDP。新 CUDA 配置保留原科学参数；不会启动原扫描前4项、短消融或额外种子。当前 clone 尚缺私有输入，修改完成后等待使用者拷贝数据库。

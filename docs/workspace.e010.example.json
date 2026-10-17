@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "assets": {
+    "whole_rock": "data/whole_rock/whole-rock-v1/geochem.db",
+    "e010_prepared": "data/whole_rock/e010-prepared-v1"
+  },
+  "python": "python",
+  "python_paths": []
+}

@@ -1,0 +1,10 @@
+{
+  "e010_version": 1,
+  "prepared_asset": "asset://e010_prepared",
+  "seed": 42,
+  "configurations": [
+    "stage3_5_element2vec_v2/configs/e010/hpc/fixed_0256.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/native_0256.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/native_0128.json"
+  ]
+}

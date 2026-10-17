@@ -1,0 +1,19 @@
+{
+  "e010_version": 1,
+  "prepared_asset": "asset://e010_prepared",
+  "seed": 42,
+  "configurations": [
+    "stage3_5_element2vec_v2/configs/e010/hpc/fixed_0128.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/fixed_0256.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/fixed_0512.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/fixed_1024.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/native_0008.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/native_0016.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/native_0032.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/native_0064.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/native_0128.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/native_0256.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/native_0512.json",
+    "stage3_5_element2vec_v2/configs/e010/hpc/native_1024.json"
+  ]
+}
