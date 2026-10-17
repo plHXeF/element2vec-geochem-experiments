@@ -55,6 +55,16 @@ class BatchBootstrapTests(unittest.TestCase):
         self.assertEqual(directives["gres"], "gpu:4")
         self.assertEqual(directives["mem"], "35G")
 
+    def test_cpu_setup_requests_no_gpu_and_gpu_stage_cannot_install(self):
+        script = (scan.ws.REPO_ROOT/"scripts/slurm/e010_env_cpu.sh").read_text()
+        directives = dict(line.removeprefix("#SBATCH --").split("=", 1)
+                          for line in script.splitlines() if line.startswith("#SBATCH --"))
+        self.assertEqual(directives["partition"], "cpu_compute")
+        self.assertFalse(any("gpu" in key or key == "gres" for key in directives))
+        gpu_script = (scan.ws.REPO_ROOT/"scripts/slurm/e010_a6000_start.sh").read_text()
+        self.assertNotIn("pip install", gpu_script)
+        self.assertNotIn("conda create", gpu_script)
+
     def bash(self):
         bash = shutil.which("bash")
         if not bash:
@@ -67,7 +77,7 @@ class BatchBootstrapTests(unittest.TestCase):
     def test_batch_script_refuses_execution_outside_allocation(self):
         bash = self.bash()
         env = os.environ.copy(); env.pop("SLURM_JOB_ID", None)
-        for name in ("e010_a6000.sh", "e010_a6000_start.sh"):
+        for name in ("e010_a6000.sh", "e010_a6000_start.sh", "e010_env_cpu.sh"):
             script = scan.ws.REPO_ROOT/"scripts/slurm"/name
             result = subprocess.run([bash, str(script), "new"], env=env, capture_output=True, text=True)
             self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
@@ -103,7 +113,8 @@ if [[ "$1 $2 $3" == "-m pip install" && "$TEST_FAIL" == 1 ]]; then exit 9; fi
 if [[ "${2:-}" == new-run ]]; then echo "$TEST_TEMP/coordinator"; fi
 ''')
                 env = os.environ.copy()
-                env.update(TEST_TEMP=str(root), TEST_SCRIPT=str(scan.ws.REPO_ROOT/"scripts/slurm/e010_a6000_start.sh"),
+                env.update(TEST_TEMP=str(root), TEST_SCRIPT=str(scan.ws.REPO_ROOT/"scripts/slurm/e010_env_cpu.sh"),
+                           TEST_GPU_SCRIPT=str(scan.ws.REPO_ROOT/"scripts/slurm/e010_a6000_start.sh"),
                            SLURM_JOB_ID="test-allocation", SLURM_NTASKS="4", SLURM_SUBMIT_DIR=str(scan.ws.REPO_ROOT),
                            TEST_FAIL=fail)
                 bootstrap = '''
@@ -115,7 +126,8 @@ mkdir -p "$GEOCHEM_WORKSPACE/data/whole_rock/whole-rock-v1" "$GEOCHEM_WORKSPACE/
 touch "$GEOCHEM_WORKSPACE/data/whole_rock/whole-rock-v1/geochem.db" "$GEOCHEM_WORKSPACE/runs/E010/20261017T013747Z-s42-0a349d/artifact_checksums.json" "$GEOCHEM_WORKSPACE/runs/E010/20261017T013747Z-s42-0a349d/prepared_data/manifest.json"
 module() { :; }; export -f module
 bash "$TEST_SCRIPT" new || exit $?
-bash "$TEST_SCRIPT" new
+bash "$TEST_SCRIPT" new || exit $?
+bash "$TEST_GPU_SCRIPT" new
 '''
                 result = subprocess.run([self.bash(), "-c", bootstrap], env=env, capture_output=True, text=True)
                 calls = (root/"calls.txt").read_text().splitlines()
@@ -127,8 +139,44 @@ bash "$TEST_SCRIPT" new
                 else:
                     self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
                     self.assertEqual(sum("pip install" in call for call in calls), 2)
-                    self.assertEqual(sum("new-run E010" in call for call in calls), 2)
+                    self.assertEqual(sum("new-run E010" in call for call in calls), 1)
+                    self.assertEqual(calls.count("scripts/e010_hpc_setup.py --prepare-only"), 2)
                     self.assertLess(calls.index("scripts/e010_hpc_setup.py"), next(i for i,c in enumerate(calls) if "new-run" in c))
+
+    def test_submission_wrapper_waits_for_success_and_cpu_submit_failure_stops(self):
+        for fail in ("0", "1"):
+            with self.subTest(fail=fail), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                command = root/"sbatch"
+                command.write_bytes(b'''#!/bin/bash
+echo "$*" >> "$TEST_LOG"
+if [[ "$*" == *e010_env_cpu.sh* ]]; then
+  [[ "$TEST_FAIL" == 0 ]] || exit 8
+  echo '1234;test-cluster'
+else echo 5678; fi
+''')
+                command.chmod(0o755)
+                env = os.environ.copy()
+                env.update(TEST_TEMP=str(root), TEST_FAIL=fail,
+                           TEST_SCRIPT=str(scan.ws.REPO_ROOT/"scripts/submit_e010.sh"),
+                           TEST_REPO=str(scan.ws.REPO_ROOT))
+                bootstrap = '''
+if command -v cygpath >/dev/null; then TEST_TEMP=$(cygpath -u "$TEST_TEMP"); fi
+export PATH="$TEST_TEMP:$PATH" TEST_LOG="$TEST_TEMP/calls.txt"
+cd "$TEST_REPO"
+bash "$TEST_SCRIPT" new
+'''
+                result = subprocess.run([self.bash(), "-c", bootstrap], env=env, capture_output=True, text=True)
+                calls = (root/"calls.txt").read_text().splitlines()
+                if fail == "1":
+                    self.assertEqual(result.returncode, 8)
+                    self.assertEqual(len(calls), 1)
+                else:
+                    self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+                    self.assertEqual(len(calls), 2)
+                    self.assertIn("--dependency=afterok:1234", calls[1])
+                    self.assertIn("--kill-on-invalid-dep=yes", calls[1])
+                    self.assertTrue(calls[1].endswith("e010_a6000_start.sh new"))
 
     def test_new_run_registration_happens_inside_batch_job(self):
         with tempfile.TemporaryDirectory() as temporary:

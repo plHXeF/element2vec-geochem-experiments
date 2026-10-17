@@ -5,6 +5,7 @@ or rewrite the frozen Windows preparation run.
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import importlib
 import importlib.metadata
@@ -65,7 +66,7 @@ def verify_inputs(root):
             "e010_prepared": prepared.relative_to(root).as_posix()}
 
 
-def check_environment():
+def check_environment(require_cuda=True):
     if sys.version_info[:2] != (3, 11):
         raise RuntimeError("HPC environment requires Python 3.11")
     requirements = (REPO/"environments/hpc-cu118/requirements.txt").read_text()
@@ -80,6 +81,9 @@ def check_environment():
     import torch
     if torch.__version__ != "2.5.1+cu118" or torch.version.cuda != "11.8":
         raise RuntimeError("Expected torch 2.5.1+cu118; preserve the original environment for resume")
+    if not require_cuda:
+        print("CUDA wheel and dependencies verified on CPU; GPU execution will be checked in the GPU job", flush=True)
+        return
     if not torch.cuda.is_available() or torch.cuda.device_count() != 4:
         raise RuntimeError("Batch allocation must expose exactly four CUDA GPUs")
     for slot in range(4):
@@ -112,14 +116,16 @@ def configure(root, assets):
     print(f"Configured {path}; inputs unchanged", flush=True)
 
 
-def main():
+def main(prepare_only=False):
     if not os.environ.get("SLURM_JOB_ID"):
         raise RuntimeError("HPC setup is allowed only inside a Slurm compute allocation")
     root = Path(os.environ["GEOCHEM_WORKSPACE"]).expanduser().resolve()
     assets = verify_inputs(root)
-    check_environment()
+    check_environment(require_cuda=not prepare_only)
     configure(root, assets)
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--prepare-only", action="store_true", help="CPU setup: validate installed packages without executing CUDA")
+    main(prepare_only=parser.parse_args().prepare_only)

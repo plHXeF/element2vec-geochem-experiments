@@ -38,7 +38,7 @@ E008 先调用 `-m stage3_5_element2vec_v2.src.evaluation.prepare_geo_comparison
 
 ## E010 全量 RoPE 维度扫描
 
-首次 HPC 配置与训练可在上传完整数据库及冻结准备 run 后，直接从仓库根目录提交 `sbatch scripts/slurm/e010_a6000_start.sh new`。专用环境安装、输入核验、`workspace.local.json` 生成和训练均在计算节点完成；详情及首次联网要求见 [HPC 说明](../experiments/E010/HPC.md)。文件管理节点不运行环境安装或检查。
+首次 HPC 配置与训练可在上传完整数据库及冻结准备 run 后，从仓库根目录执行 `bash scripts/submit_e010.sh new`，只提交CPU环境安装作业和依赖其成功的GPU训练作业。环境安装、输入核验和 `workspace.local.json` 生成不申请GPU；四卡检查和训练在GPU节点完成。环境已经装好则直接提交 `sbatch scripts/slurm/e010_a6000_start.sh new`，复用环境。详情及联网要求见 [HPC 说明](../experiments/E010/HPC.md)。文件管理节点不运行环境安装或检查。
 
 [实验协议](../experiments/E010/PROTOCOL.md)、[已完成验收与执行命令](../experiments/E010/README.md)。全量输入 `asset://e010_prepared` 已冻结；含化学观测985,996条，143个字段身份。
 

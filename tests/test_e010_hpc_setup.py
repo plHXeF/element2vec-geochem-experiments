@@ -100,5 +100,12 @@ class SetupTests(unittest.TestCase):
             setup.main()
         self.assertFalse((self.root/"workspace.local.json").exists())
 
+    def test_cpu_phase_defers_cuda_execution(self):
+        with patch.dict(os.environ, {"SLURM_JOB_ID": "fixture", "GEOCHEM_WORKSPACE": str(self.root)}), \
+                patch.object(setup, "check_environment") as check, redirect_stdout(io.StringIO()):
+            setup.main(prepare_only=True)
+        check.assert_called_once_with(require_cuda=False)
+        self.assertTrue((self.root/"workspace.local.json").exists())
+
 
 if __name__ == "__main__": unittest.main()

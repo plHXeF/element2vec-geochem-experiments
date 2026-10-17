@@ -37,20 +37,20 @@ runs/E010/20261017T013747Z-s42-0a349d/  # 完整冻结目录
 ```
 
 ```bash
-sbatch scripts/slurm/e010_a6000_start.sh new
+bash scripts/submit_e010.sh new
 ```
 
-此入口默认工作区为仓库根目录，不需要先运行 Python 或 conda。它在计算节点申请 4 张 RTX A6000、16 核 CPU、35G 主机内存，创建专用 Python 3.11 / torch 2.5.1+cu118 环境，逐文件核验上传的冻结运行和数据库，兼容 Windows 校验清单中的反斜杠路径，再写入被 Git 忽略的 `workspace.local.json`。原冻结文件完全不改写。若已有配置中的两个输入资产指向别处则停止，避免静默改绑输入。
+此入口默认工作区为仓库根目录，只调用两次 `sbatch`，不在提交节点运行 Python、conda、哈希或数据检查。第一项在 `cpu_compute` 申请4核CPU、16G内存，**不申请GPU**，安装专用 Python 3.11 / torch 2.5.1+cu118 环境，逐文件核验上传的冻结运行和数据库，兼容 Windows 校验清单中的反斜杠路径，再写入被 Git 忽略的 `workspace.local.json`。原冻结文件完全不改写。若已有配置中的两个输入资产指向别处则停止，避免静默改绑输入。
 
-依赖导入、版本、pip 一致性和四卡 CUDA 前向/反向通过后，调用下文的 `e010_a6000.sh new` 开始后12项训练。任何一步失败均不进入训练。环境位于 `<workspace>/.hpc/e010-cu118-v1/`，后续复用，不自动升级；安装清单保留在环境内。首次安装需要计算节点可以访问 conda-forge、PyPI 和 PyTorch 下载站，并计入 GPU 作业时间；下载失败会停止，需要按平台允许的离线安装流程处理，不能在禁止计算的管理节点改跑安装。环境方案与锁定范围见 [Linux CUDA 环境](../../environments/hpc-cu118/README.md)。
+第二项用 Slurm `afterok` 依赖等待第一项成功，才会申请4张 RTX A6000、16核CPU、35G主机内存；若安装失败，依赖作业取消，不占GPU安装软件。GPU入口只激活已装环境、做四卡 CUDA 前向/反向检查，再调用下文的 `e010_a6000.sh new` 开始后12项训练。环境位于 `<workspace>/.hpc/e010-cu118-v1/`，后续复用，不自动升级；安装清单保留在环境内。首次安装需要CPU计算节点可访问 conda-forge、PyPI 和 PyTorch 下载站，且环境路径须由CPU/GPU节点共享。安装会消耗CPU作业时间，不申请GPU；网络受限时需使用平台允许的离线安装流程。参见 [Slurm依赖说明](https://slurm.schedmd.com/sbatch.html#OPT_dependency) 和 [Linux CUDA 环境](../../environments/hpc-cu118/README.md)。
 
-若数据位于独立共享工作区，可在提交前设置 `GEOCHEM_WORKSPACE`；否则无需设置。所有计算均在作业内。首次作业输出为 `slurm-e010-<jobid>.out/err`，协调 run 路径在输出中。恢复原运行时使用同一已安装环境：
+若数据位于独立共享工作区，可在提交前设置 `GEOCHEM_WORKSPACE`；否则无需设置。所有计算均在作业内。CPU安装日志为 `slurm-e010-env-<jobid>.out/err`，GPU日志为 `slurm-e010-<jobid>.out/err`，协调 run 路径在GPU输出中。环境已成功安装时，可直接提交 `sbatch scripts/slurm/e010_a6000_start.sh new`，不再排队安装；恢复原运行时使用同一已安装环境：
 
 ```bash
 sbatch scripts/slurm/e010_a6000_start.sh resume "$LAUNCH_RUN"
 ```
 
-本次本地通过25项调度/安装模拟/迁移核验测试；模拟不实际下载或安装 Linux 环境，也不代表 Slurm/CUDA 实机验收。尚未连接 HPC 或提交训练。
+本次本地通过28项调度/安装模拟/迁移核验测试；模拟不实际下载或安装 Linux 环境，也不代表 Slurm/CUDA 实机验收。用户已提交旧版作业265409，更新脚本不会改变Slurm保存的旧作业脚本，不应在活跃训练期间更新源码。旧版若已在安装，等待本次完成并复用环境即可；此修正取消后续在GPU作业内安装软件的路径。本机未连接HPC，无法确认该作业当前状态。
 
 ### 已有环境时的手工入口
 

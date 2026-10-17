@@ -9,7 +9,7 @@
 #SBATCH --output=slurm-e010-%j.out
 #SBATCH --error=slurm-e010-%j.err
 
-# Submit with sbatch from the repository root. All setup runs on the compute node.
+# GPU stage: reuse the CPU-installed environment, never install packages here.
 set -euo pipefail
 [[ -n "${SLURM_JOB_ID:-}" ]] || { echo "Submit this script with sbatch; setup requires a compute allocation" >&2; exit 2; }
 [[ "${SLURM_NTASKS:-0}" == 4 ]] || { echo "Exactly four Slurm tasks are required" >&2; exit 2; }
@@ -28,30 +28,13 @@ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
 module load apps/anaconda3/2021.05
 source "$(conda info --base)/etc/profile.d/conda.sh"
 
-mkdir -p "$GEOCHEM_WORKSPACE/.hpc"
-SETUP_LOCK="$GEOCHEM_WORKSPACE/.hpc/e010-setup.lock"
-mkdir "$SETUP_LOCK" || { echo "Another setup may be active; inspect $SETUP_LOCK before retrying" >&2; exit 2; }
-trap 'rmdir "$SETUP_LOCK"' EXIT
 ENV_PREFIX="${E010_ENV_PREFIX:-$GEOCHEM_WORKSPACE/.hpc/e010-cu118-v1}"
 RECIPE="$(sha256sum environments/hpc-cu118/requirements.txt | cut -d ' ' -f 1)-torch2.5.1cu118-py311-v1"
-if [[ -f "$ENV_PREFIX/.e010-ready" ]]; then
-  [[ "$(cat "$ENV_PREFIX/.e010-ready")" == "$RECIPE" ]] || { echo "Environment recipe changed; choose a new E010_ENV_PREFIX" >&2; exit 2; }
-else
-  [[ ! -e "$ENV_PREFIX" ]] || { echo "Incomplete or unmanaged environment at $ENV_PREFIX; preserve it and select a new E010_ENV_PREFIX" >&2; exit 2; }
-  echo "Creating E010 Python 3.11 / torch 2.5.1 CUDA 11.8 environment on compute node"
-  conda create --yes --prefix "$ENV_PREFIX" --override-channels --channel conda-forge python=3.11 pip=24.3.1
-  "$ENV_PREFIX/bin/python" -m pip install --only-binary=:all: --index-url https://pypi.org/simple -r environments/hpc-cu118/requirements.txt
-  "$ENV_PREFIX/bin/python" -m pip install --only-binary=:all: torch==2.5.1+cu118 --index-url https://download.pytorch.org/whl/cu118
-  "$ENV_PREFIX/bin/python" -m pip check
-  "$ENV_PREFIX/bin/python" -m pip freeze > "$ENV_PREFIX/e010-installed.txt"
-  printf '%s\n' "$RECIPE" > "$ENV_PREFIX/.e010-ready"
-fi
+[[ -f "$ENV_PREFIX/.e010-ready" ]] || { echo "Environment not ready; use bash scripts/submit_e010.sh (CPU setup first)" >&2; exit 2; }
+[[ "$(cat "$ENV_PREFIX/.e010-ready")" == "$RECIPE" ]] || { echo "Environment recipe changed; run CPU setup with a new E010_ENV_PREFIX" >&2; exit 2; }
 conda activate "$ENV_PREFIX"
 export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
 python -m pip check
 python scripts/e010_hpc_setup.py
-# Release the setup lock before the long training allocation continues.
-rmdir "$SETUP_LOCK"
-trap - EXIT
 export E010_CONDA_ENV="$ENV_PREFIX"
 exec bash scripts/slurm/e010_a6000.sh "$@"
