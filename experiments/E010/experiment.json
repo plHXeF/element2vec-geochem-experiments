@@ -21,7 +21,7 @@
   "protocol": "experiments/E010/PROTOCOL.md",
   "execution_status": "planned",
   "scientific_outcome": "not_evaluated",
-  "conclusion": "原实现与独立验收通过；本机CPU全量985996条输入已准备、核验并冻结，登记为新的准备版本，保留与历史float32角度合并数量的差异。Slurm/A800×4入口仅执行后12配置、每卡独立训练，登记在计算节点作业内完成。尚未启动真实训练，科学结论未评价。",
+  "conclusion": "原实现与独立验收通过；本机CPU全量985996条输入已准备、核验并冻结，登记为新的准备版本，保留与历史float32角度合并数量的差异。Slurm/RTX A6000×4入口仅执行后12配置、每卡独立训练，总计16核CPU、35G主机内存起试，登记在计算节点作业内完成。尚未启动真实训练，科学结论未评价。",
   "report": "experiments/E010/README.md",
   "runs": [
     {
@@ -110,11 +110,12 @@
   "training_status": "not_started",
   "hpc_execution": {
     "documentation": "experiments/E010/HPC.md",
-    "launcher": "scripts/slurm/e010_a800.sh",
+    "launcher": "scripts/slurm/e010_a6000.sh",
     "config": "stage3_5_element2vec_v2/configs/e010/hpc/scan_last12.json",
     "selection": "original scan.json ordered entries 5-16; fixed128/256/512/1024 plus all eight native dimensions",
-    "parallelism": "4 independent single-GPU queues; 3 configurations per queue; NVIDIA A800",
-    "local_validation": "15 scheduling/bootstrap tests, 14 workspace tests and 54 Stage 3.5 synthetic tests passed on Python 3.11.17 CPU; no Slurm/CUDA or real-data execution",
+    "parallelism": "4 independent single-GPU queues; 3 configurations per queue; NVIDIA RTX A6000",
+    "resources": {"partition": "nvidia_gpu2", "nodes": 1, "tasks": 4, "cpus_per_task": 4, "gpus": 4, "memory": "35G", "memory_status": "initial request; four-worker peak not measured"},
+    "local_validation": "16 scheduling/bootstrap tests and 14 workspace tests passed after RTX A6000 adaptation on Python 3.11.17 CPU; prior 54 Stage 3.5 synthetic tests passed; no Slurm/CUDA training execution",
     "input_status": "database verified; local CPU prepared input frozen in 20261017T013747Z-s42-0a349d and registered as asset://e010_prepared; HPC transfer and CUDA preflight pending",
     "input_verification_run": "20261017T010750Z-s42-793cbd"
   },

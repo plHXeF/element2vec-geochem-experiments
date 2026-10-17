@@ -44,6 +44,17 @@ class MatrixTests(unittest.TestCase):
 
 
 class BatchBootstrapTests(unittest.TestCase):
+    def test_a6000_allocation_respects_cpu_cap_and_memory_request(self):
+        script = (scan.ws.REPO_ROOT/"scripts/slurm/e010_a6000.sh").read_text()
+        directives = dict(line.removeprefix("#SBATCH --").split("=", 1)
+                          for line in script.splitlines() if line.startswith("#SBATCH --"))
+        self.assertEqual(directives["partition"], "nvidia_gpu2")
+        self.assertEqual(directives["nodes"], "1")
+        self.assertEqual(directives["ntasks"], "4")
+        self.assertEqual(int(directives["ntasks"])*int(directives["cpus-per-task"]), 16)
+        self.assertEqual(directives["gres"], "gpu:4")
+        self.assertEqual(directives["mem"], "35G")
+
     def bash(self):
         bash = shutil.which("bash")
         if not bash:
@@ -56,7 +67,7 @@ class BatchBootstrapTests(unittest.TestCase):
     def test_batch_script_refuses_execution_outside_allocation(self):
         bash = self.bash()
         env = os.environ.copy(); env.pop("SLURM_JOB_ID", None)
-        script = scan.ws.REPO_ROOT/"scripts/slurm/e010_a800.sh"
+        script = scan.ws.REPO_ROOT/"scripts/slurm/e010_a6000.sh"
         result = subprocess.run([bash, str(script), "new"], env=env, capture_output=True, text=True)
         self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
         self.assertIn("Run only inside a Slurm allocation", result.stderr)
@@ -74,7 +85,7 @@ class BatchBootstrapTests(unittest.TestCase):
             for name, text in scripts.items():
                 path = root/"bin"/name; path.write_bytes(text.encode()); path.chmod(0o755)
             env = os.environ.copy()
-            env.update(TEST_TEMP=str(root), TEST_SCRIPT=str(scan.ws.REPO_ROOT/"scripts/slurm/e010_a800.sh"),
+            env.update(TEST_TEMP=str(root), TEST_SCRIPT=str(scan.ws.REPO_ROOT/"scripts/slurm/e010_a6000.sh"),
                        SLURM_JOB_ID="test-allocation", SLURM_NTASKS="4", SLURM_SUBMIT_DIR=str(scan.ws.REPO_ROOT),
                        GEOCHEM_WORKSPACE=str(root), CONDA_PREFIX=str(root/"conda"))
             bootstrap = '''
@@ -193,14 +204,20 @@ class RoutingTests(unittest.TestCase):
 
     def test_slurm_uses_four_disjoint_runs_and_scheduler_gpu_binding(self):
         self.context()
+        def completed_workers(*args, **kwargs):
+            for slot, child in enumerate(self.children):
+                (child/"slurm_device.json").write_text(json.dumps({"slot": slot, "gpu": "NVIDIA RTX A6000"}))
         with patch.dict(os.environ, {"SLURM_JOB_ID": "synthetic-job", "SLURM_NTASKS": "4"}), \
-                patch.object(hpc, "invoke", side_effect=self.invoke), patch.object(hpc.subprocess, "run") as srun:
+                patch.object(hpc, "invoke", side_effect=self.invoke), \
+                patch.object(hpc.subprocess, "run", side_effect=completed_workers) as srun:
             hpc.launch(self.parent)
             state = json.loads((self.parent/"slurm_registry.json").read_text())
             self.assertEqual(len({v["path"] for v in state["slots"].values()}), 4)
             command = srun.call_args.args[0]
             for flag in ["--ntasks=4", "--gpus-per-task=1", "--gpu-bind=single:1", "--kill-on-bad-exit=1"]:
                 self.assertIn(flag, command)
+            receipt = json.loads((self.parent/"slurm_complete.json").read_text())
+            self.assertEqual([d["gpu"] for d in receipt["devices"]], ["NVIDIA RTX A6000"]*4)
             self.calls.clear()
             hpc.launch(self.parent, resume=True)
             self.assertFalse(self.calls)  # no replacement runs on resubmission
@@ -226,7 +243,7 @@ class RoutingTests(unittest.TestCase):
         (self.parent/"slurm_registry.json").write_text(json.dumps({"slots": {"2": {
             "path": child.relative_to(self.workspace).as_posix(), "config": config}}}))
         cuda = SimpleNamespace(is_available=lambda: True, device_count=lambda: 1,
-                               get_device_name=lambda i: "NVIDIA A800 80GB PCIe")
+                               get_device_name=lambda i: "NVIDIA RTX A6000")
         with patch.dict(os.environ, {"SLURM_PROCID": "2", "CUDA_VISIBLE_DEVICES": "scheduler-assigned"}), \
                 patch.dict(sys.modules, {"torch": SimpleNamespace(cuda=cuda)}), \
                 patch.object(sys, "version_info", (3, 11, 0)), patch.object(hpc, "invoke") as invoke:
@@ -235,6 +252,13 @@ class RoutingTests(unittest.TestCase):
             self.assertEqual(command[:3], ["exec", "--run-dir", str(child)])
             self.assertEqual(command[-1], config)
             self.assertEqual(os.environ["CUDA_VISIBLE_DEVICES"], "scheduler-assigned")
+            self.assertEqual(json.loads((child/"slurm_device.json").read_text())["gpu"], "NVIDIA RTX A6000")
+            cuda.get_device_name = lambda i: "NVIDIA A800 80GB PCIe"
+            invoke.reset_mock()
+            with self.assertRaisesRegex(RuntimeError, "Expected NVIDIA RTX A6000"):
+                hpc.worker(self.parent)
+            invoke.assert_not_called()
+            cuda.get_device_name = lambda i: "NVIDIA RTX A6000"
             cuda.device_count = lambda: 4
             invoke.reset_mock()
             with self.assertRaises(RuntimeError): hpc.worker(self.parent)

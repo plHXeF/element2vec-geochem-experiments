@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=e010-last12
-#SBATCH --partition=nvidia_gpu
+#SBATCH --partition=nvidia_gpu2
 #SBATCH --nodes=1
 #SBATCH --ntasks=4
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:4
-#SBATCH --mem=140G
+#SBATCH --mem=35G
 
 # Submit from the repository root. New coordinator registration happens only
 # inside this allocation, never on the file-management node (see HPC.md).

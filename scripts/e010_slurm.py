@@ -74,8 +74,11 @@ def launch(root, resume=False):
         sys.executable, "-u", "scripts/e010_slurm.py", "worker", "--launch-run", str(root),
     ], cwd=ws.REPO_ROOT, check=True)
     # Only the coordinator writes this receipt; workers never mutate its run.
+    devices = [json.loads((ws.workspace_root()/state["slots"][str(slot)]["path"]/"slurm_device.json").read_text())
+               for slot in range(4)]
     ws.write_json(root/"slurm_complete.json", {"passed": True, "training_runs": 12,
-                  "slurm_job_id": os.environ["SLURM_JOB_ID"], "device": "4 x NVIDIA A800; one model per GPU"})
+                  "slurm_job_id": os.environ["SLURM_JOB_ID"], "devices": devices,
+                  "parallelism": "one model per GPU"})
 
 
 def worker(root):
@@ -86,13 +89,18 @@ def worker(root):
         raise RuntimeError("E010 HPC environment requires Python 3.11")
     if not torch.cuda.is_available() or torch.cuda.device_count() != 1:
         raise RuntimeError("Each Slurm task must see exactly one assigned CUDA GPU")
-    if "A800" not in torch.cuda.get_device_name(0).upper():
-        raise RuntimeError(f"Expected NVIDIA A800, got {torch.cuda.get_device_name(0)}")
+    gpu = torch.cuda.get_device_name(0)
+    if "RTX A6000" not in gpu.upper():
+        raise RuntimeError(f"Expected NVIDIA RTX A6000, got {gpu}")
     state = json.loads((root/"slurm_registry.json").read_text())
     record = state["slots"][str(rank)]
     run = ws.workspace_root()/record["path"]
     mode = "resume" if (run/"scan_registry.json").exists() else "run"
-    print(json.dumps({"slot": rank, "gpu": torch.cuda.get_device_name(0),
+    device = {"slot": rank, "gpu": gpu,
+              "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
+              "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES")}
+    ws.write_json(run/"slurm_device.json", device)
+    print(json.dumps({"slot": rank, "gpu": gpu,
                       "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
                       "run": str(run), "mode": mode}), flush=True)
     # invoke clears the coordinator's run environment before binding this shard.

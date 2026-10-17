@@ -102,7 +102,7 @@ log/rank 是主要 value-only baseline；mask 与 raw robust 保留为对照。
 
 [实验卡](E010/experiment.json) · [代码](../stage3_5_element2vec_v2) · [配置](../stage3_5_element2vec_v2/configs/e010/prepare.json)
 
-原实现与独立验收通过；本机CPU全量985996条输入已准备、核验并冻结，登记为新的准备版本，保留与历史float32角度合并数量的差异。Slurm/A800×4入口仅执行后12配置、每卡独立训练，登记在计算节点作业内完成。尚未启动真实训练，科学结论未评价。
+原实现与独立验收通过；本机CPU全量985996条输入已准备、核验并冻结，登记为新的准备版本，保留与历史float32角度合并数量的差异。Slurm/RTX A6000×4入口仅执行后12配置、每卡独立训练，总计16核CPU、35G主机内存起试，登记在计算节点作业内完成。尚未启动真实训练，科学结论未评价。
 
 - [历史运行 20261007T065305Z-s42-79ed84](../../runs/E010/20261007T065305Z-s42-79ed84/summary.md) · [来源与状态](../../runs/E010/20261007T065305Z-s42-79ed84/manifest.json) · [逐文件校验](../../runs/E010/20261007T065305Z-s42-79ed84/artifact_checksums.json)
 - [历史运行 20261007T135913Z-s42-773907](../../runs/E010/20261007T135913Z-s42-773907/summary.md) · [来源与状态](../../runs/E010/20261007T135913Z-s42-773907/manifest.json) · [逐文件校验](../../runs/E010/20261007T135913Z-s42-773907/artifact_checksums.json)

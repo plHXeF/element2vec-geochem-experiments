@@ -1,4 +1,4 @@
-# E010：Slurm / NVIDIA A800 × 4
+# E010：Slurm / NVIDIA RTX A6000 × 4
 
 2026-10-17 实现说明。仅运行原 `scan.json` 顺序中的第 5–16 项，跳过 fixed 的 8/16/32/64D。用户选择四个独立配置并行，每配置一张 GPU。没有 DDP、批量放大、混合精度或学习率缩放；原 50 epochs、effective batch 1024、micro batch 32、seed 42、损失、probe 和保存协议保持不变。原 MPS 配置与历史报告保留。科学结果仍为 `not_evaluated`。
 
@@ -27,7 +27,11 @@
 
 ## HPC 环境与路径
 
-在 HPC 建立 Python 3.11 环境，安装 `environment.yml` 的依赖及与集群驱动兼容的 CUDA PyTorch。原示例脚本的 `sae-fsdet` 环境属于另一项目，不应直接复用。作业脚本沿用该示例的 `nvidia_gpu` 分区和 `apps/anaconda3/2021.05` 模块，默认环境名 `element2vec-geochem`，可用 `E010_CONDA_ENV` 指定。它申请一节点、4 tasks、每 task 8 CPU、4 GPU、总内存 140G；集群如需 account、walltime 或 GPU 类型名，按管理员实际配置给 `sbatch` 加参数。没有猜测 A800 的 GRES 类型别名；worker 会验证实际设备为 A800。
+在 HPC 建立 Python 3.11 环境，安装 `environment.yml` 的依赖及与集群驱动兼容、支持 RTX A6000 的 CUDA PyTorch；本机 Windows CPU 环境不迁移。原示例脚本的 `sae-fsdet` 环境属于另一项目，不应直接复用。作业脚本改用平台显示的 RTX A6000 分区 `nvidia_gpu2`，保留 `apps/anaconda3/2021.05` 模块，默认环境名 `element2vec-geochem`，可用 `E010_CONDA_ENV` 指定。
+
+当前申请一节点、4 tasks、每 task 4 CPU（总计 16 核）、4 GPU、整节点作业合计 `--mem=35G` 主机内存。35G 是首次尝试的申请值，尚未测得四训练进程的实际内存峰值；它不是每卡 35G，也不是显存。初版 140G 只是原示例单卡 35G 的四倍估算，已撤销。首次运行后在集群允许的入口查看作业 OOM 状态和内存统计，再决定是否调整申请；不会自动改变训练批量或协议。
+
+集群如需 account、walltime 或 GPU 类型名，按管理员实际配置给 `sbatch` 加参数。没有猜测 RTX A6000 的 GRES 类型别名；worker 会验证实际设备为 RTX A6000、每 task 仅见一张卡，并在队列 run 的 `slurm_device.json` 及协调 run 的成功 receipt 中记录实际设备。驱动、CUDA 环境与显存余量仍须在计算节点实测。
 
 HPC 工作区建议与仓库分开。以下变量填本机实际路径，不将绝对路径提交 Git：
 
@@ -43,7 +47,7 @@ cp docs/workspace.e010.example.json "$GEOCHEM_WORKSPACE/workspace.local.json"
 `workspace.local.json` 模板的 `e010_prepared` 是待配置位置，不是现有数据。两个准备方式二选一：
 
 1. 如原已冻结准备 run `20261007T135913Z-s42-773907` 可取得，迁移整个目录至本工作区 `runs/E010/`，将本地 `e010_prepared` 映射设为其 `prepared_data`。保留原 manifest 和校验，不补写当前提交。完整性与原库输入核验在本机或允许的计算节点进行，不在文件管理节点运行。
-2. 如仅有数据库而没有可迁移的准备资产，在本机 Windows 新建准备 run，使用以下命令。本次已经完成这些步骤，迁移现有新冻结 run 即可。不要在 HPC 文件管理节点生成数据，也不为准备占用 A800 卡时。
+2. 如仅有数据库而没有可迁移的准备资产，在本机 Windows 新建准备 run，使用以下命令。本次已经完成这些步骤，迁移现有新冻结 run 即可。不要在 HPC 文件管理节点生成数据，也不为准备占用 GPU 卡时。
 
 ```powershell
 $PREP_RUN = ./scripts/local_cpu.ps1 scripts/experiment.py new-run E010 --config stage3_5_element2vec_v2/configs/e010/prepare.json
@@ -64,7 +68,7 @@ $PREP_RUN = ./scripts/local_cpu.ps1 scripts/experiment.py new-run E010 --config 
 
 ```bash
 sbatch --output=slurm-e010-%j.out --error=slurm-e010-%j.err \
-  scripts/slurm/e010_a800.sh new
+  scripts/slurm/e010_a6000.sh new
 ```
 
 协调器先创建四个独立队列 run，再让每个 worker 在自己的队列中调用原扫描器。每项有独立训练 run，依次执行 preflight（无优化器更新）→ train → verify-training → check --rehash → freeze。设备正确记录为 CUDA；CUDA 预检会同步计时并记录设备及峰值显存。任何 task 失败，`srun --kill-on-bad-exit=1` 停止同作业其他 task，不继续发起新训练。已完成的训练 run 保持冻结；不会进行后续评价、额外 seed 或短消融。
@@ -77,7 +81,7 @@ sbatch --output=slurm-e010-%j.out --error=slurm-e010-%j.err \
 
 ```bash
 sbatch --output="$LAUNCH_RUN/logs/batch-%j.out" --error="$LAUNCH_RUN/logs/batch-%j.err" \
-  scripts/slurm/e010_a800.sh resume "$LAUNCH_RUN"
+  scripts/slurm/e010_a6000.sh resume "$LAUNCH_RUN"
 ```
 
 从原 `slurm_registry.json` 定位队列和训练 run；已完成项跳过，存在 durable `latest.pt` 的训练以 `--resume` 继续。冻结输入不能变。失败历史保留。原流程仅支持训练步骤的严格恢复：失败发生在 preflight/verify 等非训练步骤，或训练尚无第一个 durable checkpoint 时，需保留旧证据并创建新 run，不能删除日志冒充恢复。配置更改也需新 run。
@@ -88,4 +92,4 @@ Slurm 强制终止可能留下 `.execution.lock` 或未写回的命令状态。�
 
 本次在本机 Python 3.12 上完成 13 项新增无数据调度测试、14 项原运行管理测试，全部通过；Python 编译检查、Bash 语法检查和公开树审计通过。测试虚拟环境只补充 PyYAML，留在 Git 忽略目录，没有安装训练环境或生成研究 run。
 
-上段记录的是初始交付时的验收边界。数据库现已拷贝核验，本机 Python 3.11 CPU 环境的后续验收另见环境说明。当前没有 Slurm 或 A800，CPU 合成检查不代表 HPC 实机验收；首次真实执行仍须通过每个配置的 CUDA preflight。
+上段记录的是初始交付时的验收边界。数据库现已拷贝核验，本机 Python 3.11 CPU 环境的后续验收另见环境说明。本次切换 RTX A6000 后，本机通过 16 项调度/bootstrap 测试、14 项工作区测试、Bash 语法检查和公开树审计，涵盖资源总量、设备拒绝、GPU 隔离和实际设备 receipt。当前没有 Slurm/CUDA 实机验收；首次真实执行仍须通过每个配置的 CUDA preflight，35G 主机内存是否足够尚待实测。没有提交作业或启动训练。
