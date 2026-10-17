@@ -5,6 +5,7 @@ from contextlib import ExitStack
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -40,6 +41,58 @@ class MatrixTests(unittest.TestCase):
                 return json.dumps(cfg)
             return value
         with patch.object(Path, "read_text", changed), self.assertRaises(ValueError): hpc.validate_matrix()
+
+
+class BatchBootstrapTests(unittest.TestCase):
+    def bash(self):
+        bash = shutil.which("bash")
+        if not bash:
+            git = shutil.which("git")
+            candidate = Path(git).parent.parent/"bin/bash.exe" if git else None
+            if candidate and candidate.is_file(): bash = str(candidate)
+        if not bash: self.skipTest("Bash is not installed")
+        return bash
+
+    def test_batch_script_refuses_execution_outside_allocation(self):
+        bash = self.bash()
+        env = os.environ.copy(); env.pop("SLURM_JOB_ID", None)
+        script = scan.ws.REPO_ROOT/"scripts/slurm/e010_a800.sh"
+        result = subprocess.run([bash, str(script), "new"], env=env, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
+        self.assertIn("Run only inside a Slurm allocation", result.stderr)
+
+    def test_new_run_registration_happens_inside_batch_job(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); (root/"bin").mkdir()
+            (root/"conda/etc/profile.d").mkdir(parents=True)
+            (root/"conda/etc/profile.d/conda.sh").write_text("")
+            scripts = {
+                "conda": '#!/bin/bash\nif [[ "$1" == info ]]; then echo "$TEST_CONDA_BASE"; fi\n',
+                "nvidia-smi": "#!/bin/bash\nexit 0\n",
+                "python": '#!/bin/bash\nprintf "%s\\n" "$*" >> "$TEST_LOG"\nif [[ "$2" == new-run ]]; then echo "$TEST_EXPECTED_RUN"; fi\n',
+            }
+            for name, text in scripts.items():
+                path = root/"bin"/name; path.write_bytes(text.encode()); path.chmod(0o755)
+            env = os.environ.copy()
+            env.update(TEST_TEMP=str(root), TEST_SCRIPT=str(scan.ws.REPO_ROOT/"scripts/slurm/e010_a800.sh"),
+                       SLURM_JOB_ID="test-allocation", SLURM_NTASKS="4", SLURM_SUBMIT_DIR=str(scan.ws.REPO_ROOT),
+                       GEOCHEM_WORKSPACE=str(root), CONDA_PREFIX=str(root/"conda"))
+            bootstrap = '''
+task_root="$TEST_TEMP"
+if command -v cygpath >/dev/null; then task_root=$(cygpath -u "$task_root"); fi
+export PATH="$task_root/bin:$PATH"
+export TEST_CONDA_BASE="$task_root/conda" TEST_LOG="$task_root/calls.txt" TEST_EXPECTED_RUN="$task_root/registered-run"
+module() { :; }
+export -f module
+bash "$TEST_SCRIPT" new
+'''
+            result = subprocess.run([self.bash(), "-c", bootstrap], env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+            calls = (root/"calls.txt").read_text().splitlines()
+            self.assertEqual(len(calls), 2)
+            self.assertIn("new-run E010 --config", calls[0])
+            self.assertIn("scripts/e010_slurm.py run", calls[1])
+            self.assertIn("E010 coordinator run:", result.stdout)
 
 
 class RoutingTests(unittest.TestCase):

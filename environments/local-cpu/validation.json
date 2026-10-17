@@ -1,0 +1,6 @@
+{
+  "seed": 42,
+  "purpose": "Windows Python 3.11 CPU environment acceptance; no data preparation or real-data training",
+  "environment_definition": "repo://environments/local-cpu/pyproject.toml",
+  "dependency_lock": "repo://environments/local-cpu/uv.lock"
+}
