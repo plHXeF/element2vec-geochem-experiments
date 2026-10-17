@@ -67,10 +67,68 @@ class BatchBootstrapTests(unittest.TestCase):
     def test_batch_script_refuses_execution_outside_allocation(self):
         bash = self.bash()
         env = os.environ.copy(); env.pop("SLURM_JOB_ID", None)
-        script = scan.ws.REPO_ROOT/"scripts/slurm/e010_a6000.sh"
-        result = subprocess.run([bash, str(script), "new"], env=env, capture_output=True, text=True)
-        self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
-        self.assertIn("Run only inside a Slurm allocation", result.stderr)
+        for name in ("e010_a6000.sh", "e010_a6000_start.sh"):
+            script = scan.ws.REPO_ROOT/"scripts/slurm"/name
+            result = subprocess.run([bash, str(script), "new"], env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
+            self.assertIn("allocation", result.stderr)
+
+    def test_setup_job_installs_once_and_install_failure_never_starts_training(self):
+        for fail in ("0", "1"):
+            with self.subTest(fail=fail), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary); (root/"bin").mkdir()
+                (root/"conda/etc/profile.d").mkdir(parents=True)
+                (root/"conda/etc/profile.d/conda.sh").write_bytes(b'''conda() {
+  if [[ "$1" == activate ]]; then
+    export CONDA_PREFIX="$2" PATH="$2/bin:$PATH"
+  else command conda "$@"; fi
+}
+''')
+                scripts = {
+                    "git": '#!/bin/bash\nexit 0\n',
+                    "conda": '''#!/bin/bash
+if [[ "$1" == info ]]; then echo "$TEST_CONDA_BASE"; exit; fi
+echo "CONDA_CREATE" >> "$TEST_LOG"
+mkdir -p "$ENV_TARGET/bin"
+cp "$TEST_TEMP/fake-python" "$ENV_TARGET/bin/python"
+chmod +x "$ENV_TARGET/bin/python"
+''',
+                    "nvidia-smi": '#!/bin/bash\nexit 0\n',
+                }
+                for name, text in scripts.items():
+                    path = root/"bin"/name; path.write_bytes(text.encode()); path.chmod(0o755)
+                (root/"fake-python").write_bytes(b'''#!/bin/bash
+echo "$*" >> "$TEST_LOG"
+if [[ "$1 $2 $3" == "-m pip install" && "$TEST_FAIL" == 1 ]]; then exit 9; fi
+if [[ "${2:-}" == new-run ]]; then echo "$TEST_TEMP/coordinator"; fi
+''')
+                env = os.environ.copy()
+                env.update(TEST_TEMP=str(root), TEST_SCRIPT=str(scan.ws.REPO_ROOT/"scripts/slurm/e010_a6000_start.sh"),
+                           SLURM_JOB_ID="test-allocation", SLURM_NTASKS="4", SLURM_SUBMIT_DIR=str(scan.ws.REPO_ROOT),
+                           TEST_FAIL=fail)
+                bootstrap = '''
+if command -v cygpath >/dev/null; then TEST_TEMP=$(cygpath -u "$TEST_TEMP"); fi
+export TEST_TEMP TEST_LOG="$TEST_TEMP/calls.txt" TEST_CONDA_BASE="$TEST_TEMP/conda"
+export PATH="$TEST_TEMP/bin:$PATH" GEOCHEM_WORKSPACE="$TEST_TEMP/workspace"
+export ENV_TARGET="$GEOCHEM_WORKSPACE/.hpc/e010-cu118-v1" E010_ENV_PREFIX="$GEOCHEM_WORKSPACE/.hpc/e010-cu118-v1"
+mkdir -p "$GEOCHEM_WORKSPACE/data/whole_rock/whole-rock-v1" "$GEOCHEM_WORKSPACE/runs/E010/20261017T013747Z-s42-0a349d/prepared_data"
+touch "$GEOCHEM_WORKSPACE/data/whole_rock/whole-rock-v1/geochem.db" "$GEOCHEM_WORKSPACE/runs/E010/20261017T013747Z-s42-0a349d/artifact_checksums.json" "$GEOCHEM_WORKSPACE/runs/E010/20261017T013747Z-s42-0a349d/prepared_data/manifest.json"
+module() { :; }; export -f module
+bash "$TEST_SCRIPT" new || exit $?
+bash "$TEST_SCRIPT" new
+'''
+                result = subprocess.run([self.bash(), "-c", bootstrap], env=env, capture_output=True, text=True)
+                calls = (root/"calls.txt").read_text().splitlines()
+                self.assertEqual(calls.count("CONDA_CREATE"), 1)
+                if fail == "1":
+                    self.assertEqual(result.returncode, 9, result.stdout+result.stderr)
+                    self.assertFalse(any("new-run" in call for call in calls))
+                    self.assertFalse(any("e010_hpc_setup.py" in call for call in calls))
+                else:
+                    self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+                    self.assertEqual(sum("pip install" in call for call in calls), 2)
+                    self.assertEqual(sum("new-run E010" in call for call in calls), 2)
+                    self.assertLess(calls.index("scripts/e010_hpc_setup.py"), next(i for i,c in enumerate(calls) if "new-run" in c))
 
     def test_new_run_registration_happens_inside_batch_job(self):
         with tempfile.TemporaryDirectory() as temporary:

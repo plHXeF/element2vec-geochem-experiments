@@ -1,0 +1,11 @@
+# Direct dependencies for E010 training; CUDA torch is installed separately
+# from the official cu118 index by e010_a6000_start.sh.
+numpy==1.26.4
+pandas==2.2.3
+scipy==1.14.1
+scikit-learn==1.5.2
+matplotlib==3.9.2
+seaborn==0.13.2
+PyYAML==6.0.2
+openpyxl==3.1.5
+Pillow==11.0.0

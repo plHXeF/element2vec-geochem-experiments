@@ -27,6 +27,33 @@
 
 ## HPC 环境与路径
 
+### 首次安装环境、配置工作区并启动训练
+
+数据库及完整准备 run 按下列结构上传完成后，在仓库根目录提交：
+
+```text
+data/whole_rock/whole-rock-v1/geochem.db
+runs/E010/20261017T013747Z-s42-0a349d/  # 完整冻结目录
+```
+
+```bash
+sbatch scripts/slurm/e010_a6000_start.sh new
+```
+
+此入口默认工作区为仓库根目录，不需要先运行 Python 或 conda。它在计算节点申请 4 张 RTX A6000、16 核 CPU、35G 主机内存，创建专用 Python 3.11 / torch 2.5.1+cu118 环境，逐文件核验上传的冻结运行和数据库，兼容 Windows 校验清单中的反斜杠路径，再写入被 Git 忽略的 `workspace.local.json`。原冻结文件完全不改写。若已有配置中的两个输入资产指向别处则停止，避免静默改绑输入。
+
+依赖导入、版本、pip 一致性和四卡 CUDA 前向/反向通过后，调用下文的 `e010_a6000.sh new` 开始后12项训练。任何一步失败均不进入训练。环境位于 `<workspace>/.hpc/e010-cu118-v1/`，后续复用，不自动升级；安装清单保留在环境内。首次安装需要计算节点可以访问 conda-forge、PyPI 和 PyTorch 下载站，并计入 GPU 作业时间；下载失败会停止，需要按平台允许的离线安装流程处理，不能在禁止计算的管理节点改跑安装。环境方案与锁定范围见 [Linux CUDA 环境](../../environments/hpc-cu118/README.md)。
+
+若数据位于独立共享工作区，可在提交前设置 `GEOCHEM_WORKSPACE`；否则无需设置。所有计算均在作业内。首次作业输出为 `slurm-e010-<jobid>.out/err`，协调 run 路径在输出中。恢复原运行时使用同一已安装环境：
+
+```bash
+sbatch scripts/slurm/e010_a6000_start.sh resume "$LAUNCH_RUN"
+```
+
+本次本地通过25项调度/安装模拟/迁移核验测试；模拟不实际下载或安装 Linux 环境，也不代表 Slurm/CUDA 实机验收。尚未连接 HPC 或提交训练。
+
+### 已有环境时的手工入口
+
 在 HPC 建立 Python 3.11 环境，安装 `environment.yml` 的依赖及与集群驱动兼容、支持 RTX A6000 的 CUDA PyTorch；本机 Windows CPU 环境不迁移。原示例脚本的 `sae-fsdet` 环境属于另一项目，不应直接复用。作业脚本改用平台显示的 RTX A6000 分区 `nvidia_gpu2`，保留 `apps/anaconda3/2021.05` 模块，默认环境名 `element2vec-geochem`，可用 `E010_CONDA_ENV` 指定。
 
 当前申请一节点、4 tasks、每 task 4 CPU（总计 16 核）、4 GPU、整节点作业合计 `--mem=35G` 主机内存。35G 是首次尝试的申请值，尚未测得四训练进程的实际内存峰值；它不是每卡 35G，也不是显存。初版 140G 只是原示例单卡 35G 的四倍估算，已撤销。首次运行后在集群允许的入口查看作业 OOM 状态和内存统计，再决定是否调整申请；不会自动改变训练批量或协议。

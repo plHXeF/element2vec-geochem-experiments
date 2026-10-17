@@ -125,6 +125,7 @@ build/
 workspace.local.json
 /data/
 /runs/
+/.hpc/
 /slurm-*.out
 /slurm-*.err
 .run-directory-required/
