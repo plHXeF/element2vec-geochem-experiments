@@ -21,7 +21,7 @@
   "protocol": "experiments/E010/PROTOCOL.md",
   "execution_status": "planned",
   "scientific_outcome": "not_evaluated",
-  "conclusion": "原实现与独立验收通过；历史全量985996条输入已冻结。新增Slurm/A800×4入口仅执行原顺序后12配置、每卡独立训练；本clone尚缺数据库及准备资产，未启动训练，科学结论未评价。",
+  "conclusion": "原实现与独立验收通过；历史全量985996条输入已冻结。Slurm/A800×4入口仅执行原顺序后12配置、每卡独立训练。本clone数据库已拷贝且只读核验与历史SHA-256、覆盖数一致；本机尚无准备资产，未启动训练，科学结论未评价。",
   "report": "experiments/E010/README.md",
   "runs": [
     {
@@ -53,6 +53,12 @@
       "path": "runs/E010/20261007T141158Z-s42-520611",
       "kind": "formal",
       "purpose": "native8 MPS preflight; zero optimizer updates"
+    },
+    {
+      "id": "20261017T010750Z-s42-793cbd",
+      "path": "runs/E010/20261017T010750Z-s42-793cbd",
+      "kind": "formal",
+      "purpose": "read-only database transfer verification on new clone; no preparation or training"
     }
   ],
   "artifacts": {
@@ -62,7 +68,8 @@
     "results": [
       "experiments/E010/ACCEPTANCE.md",
       "experiments/E010/COVERAGE_AND_MATRIX.md",
-      "experiments/E010/HPC.md"
+      "experiments/E010/HPC.md",
+      "experiments/E010/INPUT_VERIFICATION_20261017.md"
     ],
     "weights": [],
     "weight_note": "No E010 trained weights yet."
@@ -76,7 +83,8 @@
     "selection": "original scan.json ordered entries 5-16; fixed128/256/512/1024 plus all eight native dimensions",
     "parallelism": "4 independent single-GPU queues; 3 configurations per queue; NVIDIA A800",
     "local_validation": "13 data-free orchestration tests and 14 workspace tests passed on Python 3.12; syntax/public-tree checks passed; no PyTorch, Slurm/CUDA or real-data execution",
-    "input_status": "database and prepared asset absent in current clone"
+    "input_status": "database copied and read-only verified against historical hash and full coverage; prepared asset still absent in current clone",
+    "input_verification_run": "20261017T010750Z-s42-793cbd"
   },
   "prepared_input": {
     "asset": "e010_prepared",
