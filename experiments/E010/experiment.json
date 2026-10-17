@@ -21,7 +21,7 @@
   "protocol": "experiments/E010/PROTOCOL.md",
   "execution_status": "planned",
   "scientific_outcome": "not_evaluated",
-  "conclusion": "原实现与独立验收通过；历史全量985996条输入已冻结。Slurm/A800×4入口仅执行后12配置、每卡独立训练，登记在计算节点作业内完成。本clone数据库核验一致，uv/Python3.11 CPU环境通过83项合成与管理测试；本机尚无准备资产，未启动真实训练，科学结论未评价。",
+  "conclusion": "原实现与独立验收通过；本机CPU全量985996条输入已准备、核验并冻结，登记为新的准备版本，保留与历史float32角度合并数量的差异。Slurm/A800×4入口仅执行后12配置、每卡独立训练，登记在计算节点作业内完成。尚未启动真实训练，科学结论未评价。",
   "report": "experiments/E010/README.md",
   "runs": [
     {
@@ -83,6 +83,12 @@
       "path": "runs/E010/20261017T013210Z-s42-5a5264",
       "kind": "formal",
       "purpose": "accepted Windows Python 3.11 CPU environment; 83 synthetic/management tests and locked resync passed; no real preparation or training"
+    },
+    {
+      "id": "20261017T013747Z-s42-0a349d",
+      "path": "runs/E010/20261017T013747Z-s42-0a349d",
+      "kind": "formal",
+      "purpose": "accepted Windows CPU full-data preparation; coverage, cohorts, weights and parameter counts verified; new immutable input version; no training"
     }
   ],
   "artifacts": {
@@ -94,7 +100,8 @@
       "experiments/E010/COVERAGE_AND_MATRIX.md",
       "experiments/E010/HPC.md",
       "experiments/E010/INPUT_VERIFICATION_20261017.md",
-      "experiments/E010/LOCAL_ENVIRONMENT_20261017.md"
+      "experiments/E010/LOCAL_ENVIRONMENT_20261017.md",
+      "experiments/E010/LOCAL_PREPARATION_20261017.md"
     ],
     "weights": [],
     "weight_note": "No E010 trained weights yet."
@@ -108,7 +115,7 @@
     "selection": "original scan.json ordered entries 5-16; fixed128/256/512/1024 plus all eight native dimensions",
     "parallelism": "4 independent single-GPU queues; 3 configurations per queue; NVIDIA A800",
     "local_validation": "15 scheduling/bootstrap tests, 14 workspace tests and 54 Stage 3.5 synthetic tests passed on Python 3.11.17 CPU; no Slurm/CUDA or real-data execution",
-    "input_status": "database copied and read-only verified against historical hash and full coverage; prepared asset still absent in current clone",
+    "input_status": "database verified; local CPU prepared input frozen in 20261017T013747Z-s42-0a349d and registered as asset://e010_prepared; HPC transfer and CUDA preflight pending",
     "input_verification_run": "20261017T010750Z-s42-793cbd"
   },
   "local_environment": {
@@ -121,10 +128,23 @@
     "status": "accepted",
     "installed_packages": 33
   },
-  "prepared_input": {
+  "historical_prepared_inputs": [{
     "asset": "e010_prepared",
     "run_id": "20261007T135913Z-s42-773907",
     "original_rows": 985996,
     "original_observations": 23629373
+  }],
+  "preparation_status": "completed",
+  "prepared_input": {
+    "asset": "e010_prepared",
+    "data_version": "e010-prepared-win-cpu-20261017",
+    "run_id": "20261017T013747Z-s42-0a349d",
+    "source_commit": "3b03a74",
+    "original_rows": 985996,
+    "original_observations": 23629373,
+    "derived_exact": 5905557,
+    "lower_bounds": 415122,
+    "prepared_fingerprint": "543122e578b1c13c5640bda414e03b4e8f32a21f961482c2571ca90969fe2b6b",
+    "historical_difference": "float32 angle merges: 1313 versus 1337 of 1831106 adjacent unique-concentration pairs; exact historical prepared files unavailable"
   }
 }

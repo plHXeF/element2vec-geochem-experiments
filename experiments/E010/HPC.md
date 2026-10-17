@@ -21,7 +21,7 @@
 
 仅拷贝数据库仍需显式执行一次 E010 准备，或者另外拷贝原已冻结的准备运行。旧卡片记录的 985,996 行和原准备 run 是历史证据，不能据此声称新机器已有输入。原库 SHA-256 见 `ACCEPTANCE.md`；输入变更需独立记录，不能放宽覆盖检查去迎合结果。
 
-后续更新（同日）：使用者已拷贝数据库，新 clone 的只读核验通过，SHA-256、985,996 条唯一训练记录和 23,629,373 个原始观测均与历史一致。见 [本次输入核验](INPUT_VERIFICATION_20261017.md)。本机环境现由 [uv CPU 环境](../../environments/local-cpu/README.md) 管理；本轮只安装与验收环境，仍未生成本机准备资产。
+后续更新（同日）：使用者已拷贝数据库，新 clone 的只读核验通过，SHA-256、985,996 条唯一训练记录和 23,629,373 个原始观测均与历史一致。见 [本次输入核验](INPUT_VERIFICATION_20261017.md)。本机环境由 [uv CPU 环境](../../environments/local-cpu/README.md) 管理；环境验收后，已另行完成本地准备并冻结为 `20261017T013747Z-s42-0a349d`。当前 `asset://e010_prepared` 指向此新 run，迁移时复制整个冻结目录；聚合核验和与历史的数值差异见 [本地准备报告](LOCAL_PREPARATION_20261017.md)。下文准备命令用于将来需要新版本时，不必为本次迁移重复生成。
 
 **集群硬约束：文件管理节点禁止任何计算。** 以下所有 Python 命令、数据准备和测试在本机执行。HPC 端只在分配到的计算节点作业内执行环境检查、运行登记、输入哈希和训练；文件管理节点只承担集群允许的文件传输、配置文件编辑与作业提交。
 
@@ -43,7 +43,7 @@ cp docs/workspace.e010.example.json "$GEOCHEM_WORKSPACE/workspace.local.json"
 `workspace.local.json` 模板的 `e010_prepared` 是待配置位置，不是现有数据。两个准备方式二选一：
 
 1. 如原已冻结准备 run `20261007T135913Z-s42-773907` 可取得，迁移整个目录至本工作区 `runs/E010/`，将本地 `e010_prepared` 映射设为其 `prepared_data`。保留原 manifest 和校验，不补写当前提交。完整性与原库输入核验在本机或允许的计算节点进行，不在文件管理节点运行。
-2. 当前仅迁移了数据库，后续在本机 Windows 新建准备 run，使用以下命令。不要在 HPC 文件管理节点生成数据，也不为准备占用 A800 卡时。此过程另行显式启动，不属于环境安装验收。
+2. 如仅有数据库而没有可迁移的准备资产，在本机 Windows 新建准备 run，使用以下命令。本次已经完成这些步骤，迁移现有新冻结 run 即可。不要在 HPC 文件管理节点生成数据，也不为准备占用 A800 卡时。
 
 ```powershell
 $PREP_RUN = ./scripts/local_cpu.ps1 scripts/experiment.py new-run E010 --config stage3_5_element2vec_v2/configs/e010/prepare.json
